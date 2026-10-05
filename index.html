@@ -167,7 +167,7 @@ function go(screen, extra) { S = Object.assign({ screen: screen }, extra || {});
 function render() {
   const v = { home: vHome, book: vBook, tlogin: vTLogin, tclasses: vTClasses, tclass: vTClass, tpay: vTPay, tset: vTSet }[S.screen] || vHome;
   v();
-  if ($('app') && !$('verTag')) $('app').insertAdjacentHTML('beforeend', '<div id="verTag" class="sm" style="text-align:center;opacity:.5;padding:18px 0 28px">Open Room · version 5-Oct-B</div>');
+  if ($('app') && !$('verTag')) $('app').insertAdjacentHTML('beforeend', '<div id="verTag" class="sm" style="text-align:center;opacity:.5;padding:18px 0 28px">Open Room · version 5-Oct-C</div>');
 }
 async function loadPublic() {
   try { INFO = await api({ action: 'info' }); } catch (e) {}
@@ -234,7 +234,19 @@ function vHome() {
   $('iAmT').onclick = () => go('tlogin');
   document.querySelectorAll('[data-book]').forEach(b => b.onclick = () => {
     const c = CLASSES.find(x => x.id === b.dataset.book);
-    if (ME.role !== 'parent') return authSheet(() => go('book', { cls: c }));
+    if (ME.role !== 'parent') return authSheet(async () => {
+      /* free class + only one child: book straight away, so signing up is not mistaken for booking */
+      const kids = (MINE && MINE.children) || [];
+      const already = ((MINE && MINE.bookings) || []).some(x => x.class && x.class.id === c.id && x.status !== 'cancelled');
+      if (!c.fee && kids.length === 1 && !already) {
+        try {
+          await api({ action: 'book', class_id: c.id, child_id: kids[0].id, utr: '' });
+          await Promise.all([loadMine(), loadPublic()]);
+          go('home'); return toast('Seat booked for ' + kids[0].name + '!');
+        } catch (e) { toast(e.message, true); }
+      }
+      go('book', { cls: c });
+    });
     go('book', { cls: c });
   });
   document.querySelectorAll('[data-join]').forEach(b => b.onclick = () => {
@@ -296,6 +308,7 @@ function vBook() {
         '<div class="sm">Name: ' + esc(INFO.upi_name || INFO.teacher) + '</div></div>' +
         '<div><label class="f" for="bUtr">UPI reference number (12 digits, shown in your payment app after paying)</label>' +
         '<input class="in" id="bUtr" inputmode="numeric" placeholder="e.g. 412345678901"></div>' : '') +
+    '<div class="sm" style="text-align:center;font-weight:700;color:var(--ink)">Not booked yet — tap the button below to book the seat.</div>' +
     '<button class="btn block" id="bGo">' + (c.fee ? 'I have paid — book my seat' : 'Book my seat') + '</button>' +
     (c.fee ? '<div class="sm" style="text-align:center">The teacher checks the payment and confirms your seat.</div>' : '') +
     '</main>';
