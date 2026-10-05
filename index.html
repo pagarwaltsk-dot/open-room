@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1B2340">
+<title>Open Room</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito+Sans:wght@400;600;700;800&display=swap">
+<style>
+  :root{
+    --ink:#1B2340; --muted:#5B647D; --bg:#F3F5FA; --card:#FFFFFF; --line:#DDE2EC;
+    --teal:#0F6E70; --teal-soft:#E3F4EF; --gold:#F2A900; --gold-soft:#FFF4D6; --red:#C4382C; --red-soft:#FCEBEA;
+    --live:#10162B;
+    --fd:'Baloo 2', 'Trebuchet MS', system-ui, sans-serif;
+    --fb:'Nunito Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{background:var(--bg);color:var(--ink);font-family:var(--fb);font-size:16px;line-height:1.45}
+  button,input,select,textarea{font:inherit;color:inherit}
+  button{cursor:pointer}
+  a{color:var(--teal)}
+  .wrap{max-width:560px;margin:0 auto;min-height:100%;display:flex;flex-direction:column}
+  header.top{background:var(--ink);color:#fff;padding:calc(env(safe-area-inset-top,0px) + 18px) 18px 16px;display:flex;align-items:center;gap:12px}
+  header.top.teacher{background:var(--teal)}
+  .logo{width:42px;height:42px;border-radius:12px;background:var(--gold);color:var(--ink);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:800;font-size:20px;flex:0 0 auto}
+  .ttl{flex:1;min-width:0}
+  .ttl .a{font-family:var(--fd);font-weight:700;font-size:20px;line-height:1.1}
+  .ttl .b{font-size:13px;opacity:.8}
+  .hbtn{border:0;background:rgba(255,255,255,.14);color:#fff;border-radius:999px;padding:8px 12px;font-weight:800;font-size:13px;min-height:40px}
+  main{flex:1;padding:16px 16px 40px;display:flex;flex-direction:column;gap:14px}
+  .lbl{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:6px 2px -4px}
+  .card{background:var(--card);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px}
+  .row{display:flex;align-items:center;gap:10px}
+  .grow{flex:1;min-width:0}
+  .badge{min-width:58px;height:58px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;padding:0 6px;text-align:center}
+  .ctitle{font-family:var(--fd);font-weight:700;font-size:19px;line-height:1.15}
+  .sm{font-size:13.5px;color:var(--muted)}
+  .btn{border:0;border-radius:14px;min-height:50px;padding:0 18px;font-weight:800;font-size:15.5px;background:var(--gold);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
+  .btn.teal{background:var(--teal);color:#fff}
+  .btn.ghost{background:#fff;border:1.5px solid var(--line);color:var(--ink)}
+  .btn.red{background:var(--red);color:#fff}
+  .btn.small{min-height:42px;font-size:14px;padding:0 14px;border-radius:12px}
+  .btn.block{width:100%}
+  .btn:disabled{opacity:.45;cursor:default}
+  .chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;min-height:40px;padding:0 14px;font-weight:700;font-size:14px}
+  .chip.on{background:var(--teal);border-color:var(--teal);color:#fff}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:12px;font-weight:800;border-radius:999px;padding:4px 10px;white-space:nowrap}
+  .tag.wait{background:var(--gold-soft);color:#8A5A00}
+  .tag.ok{background:var(--teal-soft);color:var(--teal)}
+  .tag.no{background:var(--red-soft);color:var(--red)}
+  label.f{font-size:13px;font-weight:700;color:var(--muted);display:block;margin-bottom:5px}
+  .in{width:100%;min-height:48px;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff;font-size:16px}
+  textarea.in{resize:vertical;min-height:72px}
+  .empty{text-align:center;color:var(--muted);padding:26px 14px;background:#fff;border-radius:18px}
+  .foot{text-align:center;padding:10px 0 24px}
+  .foot button{background:none;border:0;color:var(--muted);font-size:13.5px;text-decoration:underline;min-height:40px}
+  .tabs{display:flex;background:#fff;border-radius:14px;padding:4px;gap:4px}
+  .tabs button{flex:1;min-height:44px;border:0;border-radius:10px;background:transparent;font-weight:800;color:var(--muted);font-size:14px}
+  .tabs button.on{background:var(--teal);color:#fff}
+  .count{background:var(--red);color:#fff;border-radius:999px;font-size:11.5px;padding:1px 7px;margin-left:4px}
+  .veil{position:fixed;inset:0;background:rgba(16,22,43,.55);display:flex;align-items:flex-end;justify-content:center;z-index:40}
+  .sheet{background:var(--bg);width:100%;max-width:560px;border-radius:22px 22px 0 0;padding:20px 16px calc(env(safe-area-inset-bottom,0px) + 20px);max-height:92vh;overflow:auto;display:flex;flex-direction:column;gap:12px}
+  .sheet h2{margin:0;font-family:var(--fd);font-size:22px}
+  #toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 16px;border-radius:14px;font-weight:700;font-size:14.5px;z-index:60;max-width:92vw;box-shadow:0 6px 20px rgba(0,0,0,.2)}
+  #toast.bad{background:var(--red)}
+  .upi{background:#fff;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px;border:1.5px dashed var(--line)}
+  .mono{font-family:ui-monospace, SFMono-Regular, Menlo, monospace;font-size:15px;word-break:break-all}
+  /* live room */
+  #live{position:fixed;inset:0;background:var(--live);z-index:30;display:flex;flex-direction:column}
+  #live .bar{padding:calc(env(safe-area-inset-top,0px) + 10px) 12px 10px;display:flex;align-items:center;gap:10px;color:#fff}
+  #live .dot{background:#E5484D;border-radius:999px;font-size:12px;font-weight:800;padding:4px 10px}
+  #live .frame{flex:1;min-height:0;position:relative}
+  #live .ctl{display:flex;gap:8px;padding:10px 12px calc(env(safe-area-inset-bottom,0px) + 12px);background:#0A0F1F}
+  #live .ctl button{flex:1;min-height:50px;border:0;border-radius:14px;font-weight:800;font-size:14px;background:#222A44;color:#fff}
+  #live .ctl button.gold{background:var(--gold);color:var(--ink)}
+  #taskBanner{position:absolute;left:12px;right:12px;top:12px;background:var(--gold);color:var(--ink);border-radius:16px;padding:12px 16px;display:flex;align-items:center;gap:12px;z-index:5;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+  #taskBanner .t{flex:1;font-weight:800;font-size:16px}
+  #taskBanner .s{font-family:var(--fd);font-weight:800;font-size:28px}
+  #starPop{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);background:#fff;color:var(--ink);border-radius:20px;padding:16px 22px;font-family:var(--fd);font-weight:800;font-size:24px;z-index:6;box-shadow:0 10px 30px rgba(0,0,0,.3);text-align:center}
+  #starPop .big{font-size:44px;color:var(--gold);line-height:1}
+  .hide{display:none!important}
+  @media (prefers-reduced-motion:no-preference){ #starPop{animation:pop .35s ease-out} @keyframes pop{from{transform:translate(-50%,-50%) scale(.6);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}} }
+  :focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div id="overlay"></div>
+<div id="toast" class="hide"></div>
+<div id="live" class="hide">
+  <div class="bar"><span class="dot">● LIVE</span><span class="grow" id="liveTitle" style="font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></span></div>
+  <div class="frame" id="liveFrame">
+    <div id="taskBanner" class="hide"><div class="grow"><div style="font-size:11.5px;font-weight:800;letter-spacing:.08em">TASK FOR EVERYONE</div><div class="t" id="taskText"></div></div><div class="s" id="taskSecs"></div></div>
+    <div id="starPop" class="hide"><div class="big">★</div><div id="starName"></div></div>
+  </div>
+  <div class="ctl" id="liveCtl"></div>
+</div>
+
+<script>
+/* ================= YOUR SUPABASE PROJECT =================
+   Supabase > Project Settings > API Keys (or the Connect button):
+     SUPA_URL = the Project URL, like https://abcdefgh.supabase.co
+     SUPA_KEY = the Publishable key (sb_publishable_...) or the anon key.
+   Both are meant to be public: the tables are locked and the only way in
+   is or_call(), which checks every sign-in. */
+const SUPA_URL = 'PASTE-YOUR-SUPABASE-PROJECT-URL-HERE';
+const SUPA_KEY = 'PASTE-YOUR-SUPABASE-PUBLISHABLE-KEY-HERE';
+
+/* ---------------- small helpers ---------------- */
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const LSK = 'openroom:v1';
+let ME = { tok: '', role: '' };
+try { ME = Object.assign(ME, JSON.parse(localStorage.getItem(LSK) || '{}')); } catch (e) {}
+const keep = () => { try { localStorage.setItem(LSK, JSON.stringify(ME)); } catch (e) {} };
+const KINDS = ['Dance', 'Drawing', 'Craft', 'Story time', 'Music', 'Science fun', 'Yoga', 'Cooking', 'Other'];
+const TINT = { 'Dance':'#FCE7B2', 'Drawing':'#F7DCE6', 'Craft':'#DDF0DC', 'Story time':'#E4E0F7', 'Music':'#D9EEF0', 'Science fun':'#D9E6FA', 'Yoga':'#E8F1D6', 'Cooking':'#FDE2D0', 'Other':'#E6E9F2' };
+const money = n => '₹' + Number(n || 0).toLocaleString('en-IN');
+const when = iso => new Date(iso).toLocaleString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
+const startMs = c => Date.parse(c.starts_at);
+const roomOpen = c => Date.now() >= startMs(c) - 15 * 60000 && Date.now() <= startMs(c) + (c.minutes + 30) * 60000;
+let toastT = null;
+function toast(msg, bad) {
+  const t = $('toast'); t.textContent = msg; t.className = bad ? 'bad' : ''; clearTimeout(toastT);
+  toastT = setTimeout(() => t.className = 'hide', 3200);
+}
+function sheet(html, wire) {
+  $('overlay').innerHTML = '<div class="veil" id="veil"><div class="sheet" role="dialog" aria-modal="true">' + html + '</div></div>';
+  $('veil').onclick = e => { if (e.target.id === 'veil') closeSheet(); };
+  if (wire) wire();
+}
+function closeSheet() { $('overlay').innerHTML = ''; }
+
+/* ---------------- talking to the server ---------------- */
+const keyHeaders = () => Object.assign({ 'Content-Type': 'application/json', apikey: SUPA_KEY },
+  /^eyJ/.test(SUPA_KEY) ? { Authorization: 'Bearer ' + SUPA_KEY } : {});
+async function api(p) {
+  const body = Object.assign({}, p);
+  if (ME.tok) body.tok = ME.tok;
+  let r;
+  try {
+    r = await fetch(SUPA_URL.replace(/\/+$/, '') + '/rest/v1/rpc/or_call', { method: 'POST', headers: keyHeaders(), body: JSON.stringify({ p: body }) });
+  } catch (e) { throw new Error('No internet connection'); }
+  let j = null; try { j = await r.json(); } catch (e) {}
+  if (!r.ok) throw new Error((j && (j.message || j.hint)) || ('Server replied ' + r.status));
+  if (j && j.need_login) { ME = { tok: '', role: '' }; keep(); go(S.screen && S.screen.charAt(0) === 't' ? 'tlogin' : 'home'); throw new Error('Please sign in again'); }
+  if (j && j.error) throw new Error(j.error);
+  return j;
+}
+async function roomPass(classId) {
+  const r = await fetch(SUPA_URL.replace(/\/+$/, '') + '/functions/v1/room', { method: 'POST', headers: keyHeaders(), body: JSON.stringify({ tok: ME.tok, class_id: classId }) });
+  let j = null; try { j = await r.json(); } catch (e) {}
+  if (!r.ok || !j || !j.url) throw new Error((j && (j.error || j.message)) || 'Could not open the class room');
+  return j;
+}
+
+/* ---------------- state and screens ---------------- */
+let S = { screen: 'home' }, INFO = { teacher: '', intro: '', upi: '', upi_name: '', ready: true }, CLASSES = [], MINE = null, OV = null;
+function go(screen, extra) { S = Object.assign({ screen: screen }, extra || {}); render(); window.scrollTo(0, 0); }
+function render() {
+  const v = { home: vHome, book: vBook, tlogin: vTLogin, tclasses: vTClasses, tclass: vTClass, tpay: vTPay, tset: vTSet }[S.screen] || vHome;
+  v();
+}
+async function loadPublic() {
+  try { INFO = await api({ action: 'info' }); } catch (e) {}
+  try { CLASSES = (await api({ action: 'classes' })).classes || []; } catch (e) { toast(e.message, true); }
+}
+async function loadMine() {
+  if (ME.role !== 'parent' || !ME.tok) { MINE = null; return; }
+  try { MINE = await api({ action: 'me' }); } catch (e) { MINE = null; }
+}
+async function loadTeacher() {
+  try { OV = (await api({ action: 'overview' })).classes || []; } catch (e) { toast(e.message, true); OV = OV || []; }
+}
+
+/* ----- parent: home ----- */
+function header(teacher) {
+  return '<header class="top' + (teacher ? ' teacher' : '') + '"><div class="logo">OR</div><div class="ttl">' +
+    '<div class="a">' + (teacher ? 'Teacher' : 'Open Room') + '</div>' +
+    '<div class="b">' + esc(teacher ? (INFO.teacher || '') : ('Small live classes' + (INFO.teacher ? ' with ' + INFO.teacher : ''))) + '</div></div>' +
+    (teacher ? '<button class="hbtn" id="hSet">Settings</button>'
+             : (ME.role === 'parent' ? '<button class="hbtn" id="hOut">Sign out</button>' : '<button class="hbtn" id="hIn">Sign in</button>')) +
+    '</header>';
+}
+function classCard(c, mineForClass) {
+  const full = c.left <= 0;
+  return '<div class="card"><div class="row" style="align-items:flex-start;gap:12px">' +
+    '<div class="badge" style="background:' + (TINT[c.kind] || TINT.Other) + '">' + esc(c.kind || 'Class') + '</div>' +
+    '<div class="grow"><div class="ctitle">' + esc(c.title) + '</div>' +
+    '<div class="sm">' + esc(when(c.starts_at)) + ' · ' + c.minutes + ' min · ' + (c.fee ? money(c.fee) : 'Free') + '</div>' +
+    (c.about ? '<div class="sm" style="margin-top:4px;color:var(--ink)">' + esc(c.about) + '</div>' : '') + '</div></div>' +
+    '<div class="row"><div class="grow sm" style="font-weight:700">' +
+      (mineForClass ? esc(mineForClass) : (full ? 'Full' : (c.left === 1 ? 'Last seat left' : c.left + ' of ' + c.seats + ' seats left'))) + '</div>' +
+    '<button class="btn small" data-book="' + c.id + '"' + (full ? ' disabled' : '') + '>' + (full ? 'Full' : 'Book a seat') + '</button></div></div>';
+}
+function statusTag(b) {
+  if (b.status === 'confirmed') return '<span class="tag ok">Seat confirmed</span>';
+  if (b.status === 'pending') return '<span class="tag wait">Checking payment</span>';
+  if (b.status === 'rejected') return '<span class="tag no">Payment not found</span>';
+  return '<span class="tag no">Cancelled</span>';
+}
+function vHome() {
+  const mine = (MINE && MINE.bookings) || [];
+  const upcoming = mine.filter(b => startMs(b.class) + (b.class.minutes + 30) * 60000 > Date.now() && b.status !== 'cancelled');
+  const byClass = {};
+  upcoming.forEach(b => { (byClass[b.class.id] = byClass[b.class.id] || []).push(b.child); });
+  $('app').innerHTML = header(false) + '<main>' +
+    (INFO.intro ? '<div class="card" style="background:var(--ink);color:#fff"><div style="font-weight:800">' + esc(INFO.teacher) + '</div><div style="font-size:14.5px;opacity:.9">' + esc(INFO.intro) + '</div></div>' : '') +
+    (upcoming.length ? '<div class="lbl">My bookings</div>' + upcoming.map(b => {
+        const open = b.status === 'confirmed' && roomOpen(b.class);
+        return '<div class="card"><div class="row"><div class="grow"><div style="font-weight:800">' + esc(b.class.title) + '</div>' +
+          '<div class="sm">' + esc(b.child) + ' · ' + esc(when(b.class.starts_at)) + '</div></div>' + statusTag(b) + '</div>' +
+          (b.status === 'confirmed' ? '<button class="btn teal block" data-join="' + b.class.id + '"' + (open ? '' : ' disabled') + '>' +
+             (open ? 'Join the class now' : 'Join opens 15 min before') + '</button>' : '') +
+          (b.status === 'rejected' ? '<div class="sm">The teacher could not find this payment. Book again with the right UPI reference, or message her.</div>' : '') +
+          (b.status === 'pending' ? '<div class="sm">The teacher checks the payment and confirms your seat. Usually within a few hours.</div>' : '') +
+          '</div>';
+      }).join('') : '') +
+    '<div class="lbl">Classes this week</div>' +
+    (CLASSES.length ? CLASSES.map(c => classCard(c, byClass[c.id] ? 'Booked for ' + byClass[c.id].join(', ') : '')).join('')
+                    : '<div class="empty">No classes open right now. Check back soon.</div>') +
+    '<div class="sm" style="text-align:center;padding:4px 10px">Every class is live, with the teacher and at most a few children, so each child is seen and heard.</div>' +
+    '</main><div class="foot"><button id="iAmT">I’m the teacher</button></div>';
+  if ($('hIn')) $('hIn').onclick = () => authSheet(null);
+  if ($('hOut')) $('hOut').onclick = () => { ME = { tok: '', role: '' }; keep(); MINE = null; vHome(); toast('Signed out'); };
+  $('iAmT').onclick = () => go('tlogin');
+  document.querySelectorAll('[data-book]').forEach(b => b.onclick = () => {
+    const c = CLASSES.find(x => x.id === b.dataset.book);
+    if (ME.role !== 'parent') return authSheet(() => go('book', { cls: c }));
+    go('book', { cls: c });
+  });
+  document.querySelectorAll('[data-join]').forEach(b => b.onclick = () => {
+    const bk = mine.find(x => x.class.id === b.dataset.join); joinLive(bk.class, false);
+  });
+}
+
+/* ----- parent: sign up / sign in ----- */
+function authSheet(after, mode) {
+  mode = mode || 'new';
+  sheet('<h2>' + (mode === 'new' ? 'Your details' : 'Sign in') + '</h2>' +
+    '<div class="tabs"><button id="aNew" class="' + (mode === 'new' ? 'on' : '') + '">New here</button><button id="aOld" class="' + (mode === 'old' ? 'on' : '') + '">I have an account</button></div>' +
+    (mode === 'new'
+      ? '<div><label class="f" for="pName">Your name (parent)</label><input class="in" id="pName" autocomplete="name"></div>' +
+        '<div><label class="f" for="pPhone">Mobile number (WhatsApp)</label><input class="in" id="pPhone" inputmode="tel" autocomplete="tel"></div>' +
+        '<div class="row" style="gap:10px"><div class="grow"><label class="f" for="cName">Child’s name</label><input class="in" id="cName"></div>' +
+        '<div style="width:96px"><label class="f" for="cAge">Age</label><input class="in" id="cAge" inputmode="numeric"></div></div>' +
+        '<div><label class="f" for="pPin">Choose a 4-digit PIN</label><input class="in" id="pPin" inputmode="numeric" maxlength="4" type="password" autocomplete="new-password"></div>' +
+        '<div class="sm">You will use your number and this PIN to sign in on another phone.</div>'
+      : '<div><label class="f" for="pPhone">Mobile number</label><input class="in" id="pPhone" inputmode="tel" autocomplete="tel"></div>' +
+        '<div><label class="f" for="pPin">PIN</label><input class="in" id="pPin" inputmode="numeric" maxlength="4" type="password" autocomplete="current-password"></div>') +
+    '<button class="btn block" id="aGo">' + (mode === 'new' ? 'Continue' : 'Sign in') + '</button>',
+    () => {
+      $('aNew').onclick = () => authSheet(after, 'new');
+      $('aOld').onclick = () => authSheet(after, 'old');
+      $('aGo').onclick = async () => {
+        $('aGo').disabled = true;
+        try {
+          const j = mode === 'new'
+            ? await api({ action: 'parent_signup', name: $('pName').value, phone: $('pPhone').value, child: $('cName').value, age: $('cAge').value, pin: $('pPin').value })
+            : await api({ action: 'parent_login', phone: $('pPhone').value, pin: $('pPin').value });
+          ME = { tok: j.tok, role: 'parent' }; keep(); closeSheet();
+          await loadMine(); toast('Welcome!');
+          if (after) after(); else vHome();
+        } catch (e) { $('aGo').disabled = false; toast(e.message, true); }
+      };
+    });
+}
+
+/* ----- parent: book a seat ----- */
+function upiLink(c) {
+  return 'upi://pay?pa=' + encodeURIComponent(INFO.upi) + '&pn=' + encodeURIComponent(INFO.upi_name || INFO.teacher || 'Teacher') +
+    '&am=' + encodeURIComponent(c.fee) + '&cu=INR&tn=' + encodeURIComponent(('Open Room ' + c.title).slice(0, 40));
+}
+function vBook() {
+  const c = S.cls; if (!c) return go('home');
+  const kids = (MINE && MINE.children) || [];
+  if (!S.child && kids.length) S.child = kids[0].id;
+  $('app').innerHTML = header(false) + '<main>' +
+    '<button class="chip" id="bBack" style="align-self:flex-start">‹ Back</button>' +
+    classCard(Object.assign({}, c), '') +
+    '<div class="lbl">Who is coming?</div><div class="card"><div class="chips">' +
+      kids.map(k => '<button class="chip' + (S.child === k.id ? ' on' : '') + '" data-kid="' + k.id + '">' + esc(k.name) + (k.age ? ', ' + k.age : '') + '</button>').join('') +
+      '<button class="chip" id="bAddKid">+ Another child</button></div></div>' +
+    (c.fee ? '<div class="lbl">Pay ' + money(c.fee) + ' by UPI</div><div class="upi">' +
+        '<a class="btn teal block" href="' + esc(upiLink(c)) + '">Pay ' + money(c.fee) + ' with a UPI app</a>' +
+        '<div class="sm">Or pay to this UPI ID from any app:</div>' +
+        '<div class="row"><div class="grow mono" id="upiId">' + esc(INFO.upi || '[UPI ID not set yet]') + '</div><button class="chip" id="bCopy">Copy</button></div>' +
+        '<div class="sm">Name: ' + esc(INFO.upi_name || INFO.teacher) + '</div></div>' +
+        '<div><label class="f" for="bUtr">UPI reference number (12 digits, shown in your payment app after paying)</label>' +
+        '<input class="in" id="bUtr" inputmode="numeric" placeholder="e.g. 412345678901"></div>' : '') +
+    '<button class="btn block" id="bGo">' + (c.fee ? 'I have paid — book my seat' : 'Book my seat') + '</button>' +
+    (c.fee ? '<div class="sm" style="text-align:center">The teacher checks the payment and confirms your seat.</div>' : '') +
+    '</main>';
+  $('bBack').onclick = () => go('home');
+  document.querySelectorAll('[data-kid]').forEach(b => b.onclick = () => { S.child = b.dataset.kid; vBook(); });
+  $('bAddKid').onclick = () => sheet('<h2>Add a child</h2>' +
+    '<div><label class="f" for="nkName">Name</label><input class="in" id="nkName"></div>' +
+    '<div><label class="f" for="nkAge">Age</label><input class="in" id="nkAge" inputmode="numeric"></div>' +
+    '<button class="btn block" id="nkGo">Add</button>', () => {
+      $('nkGo').onclick = async () => {
+        try { await api({ action: 'add_child', name: $('nkName').value, age: $('nkAge').value }); await loadMine();
+          const ks = MINE.children; S.child = ks[ks.length - 1].id; closeSheet(); vBook(); }
+        catch (e) { toast(e.message, true); }
+      };
+    });
+  if ($('bCopy')) $('bCopy').onclick = () => {
+    const t = INFO.upi;
+    try { navigator.clipboard.writeText(t).then(() => toast('UPI ID copied'), () => toast(t)); } catch (e) { toast(t); }
+  };
+  $('bGo').onclick = async () => {
+    if (!S.child) return toast('Pick your child', true);
+    $('bGo').disabled = true;
+    try {
+      await api({ action: 'book', class_id: c.id, child_id: S.child, utr: $('bUtr') ? $('bUtr').value : '' });
+      await Promise.all([loadMine(), loadPublic()]);
+      go('home'); toast(c.fee ? 'Booked! The teacher will confirm your seat.' : 'Seat booked!');
+    } catch (e) { $('bGo').disabled = false; toast(e.message, true); }
+  };
+}
+
+/* ----- teacher: sign in / first set-up ----- */
+function vTLogin() {
+  if (ME.role === 'teacher' && ME.tok) return go('tclasses');
+  const first = !INFO.ready;
+  $('app').innerHTML = header(true).replace('<button class="hbtn" id="hSet">Settings</button>', '<button class="hbtn" id="hBack">Back</button>') + '<main>' +
+    (first
+      ? '<div class="card"><div class="ctitle">Set up your classroom</div><div class="sm">Done once. After this, only your PIN opens the teacher side.</div></div>' +
+        '<div><label class="f" for="tName">Your name, as parents will see it</label><input class="in" id="tName"></div>' +
+        '<div><label class="f" for="tIntro">One line about you and your classes</label><textarea class="in" id="tIntro" placeholder="Fun, small live classes for kids 5–10: dance, drawing, craft, stories."></textarea></div>' +
+        '<div><label class="f" for="tUpi">Your UPI ID (parents pay here)</label><input class="in" id="tUpi" placeholder="name@okaxis"></div>' +
+        '<div><label class="f" for="tUpiName">Name on that UPI account</label><input class="in" id="tUpiName"></div>' +
+        '<div><label class="f" for="tPin">Choose a teacher PIN (at least 4 digits)</label><input class="in" id="tPin" inputmode="numeric" type="password" autocomplete="new-password"></div>' +
+        '<button class="btn block" id="tGo">Create my classroom</button>'
+      : '<div class="card"><div class="ctitle">Teacher sign in</div></div>' +
+        '<div><label class="f" for="tPin">Teacher PIN</label><input class="in" id="tPin" inputmode="numeric" type="password" autocomplete="current-password"></div>' +
+        '<button class="btn block" id="tGo">Sign in</button>') +
+    '</main>';
+  $('hBack').onclick = () => go('home');
+  $('tGo').onclick = async () => {
+    $('tGo').disabled = true;
+    try {
+      const j = first
+        ? await api({ action: 'teacher_setup', name: $('tName').value, intro: $('tIntro').value, upi: $('tUpi').value, upi_name: $('tUpiName').value, pin: $('tPin').value })
+        : await api({ action: 'teacher_login', pin: $('tPin').value });
+      ME = { tok: j.tok, role: 'teacher' }; keep(); await loadPublic(); await loadTeacher(); go('tclasses');
+    } catch (e) { $('tGo').disabled = false; toast(e.message, true); }
+  };
+}
+
+/* ----- teacher: classes ----- */
+function tTabs(on) {
+  const pend = (OV || []).reduce((n, c) => n + (c.bookings || []).filter(b => b.status === 'pending').length, 0);
+  return '<div class="tabs"><button data-tt="tclasses" class="' + (on === 'tclasses' ? 'on' : '') + '">Classes</button>' +
+    '<button data-tt="tpay" class="' + (on === 'tpay' ? 'on' : '') + '">Payments' + (pend ? '<span class="count">' + pend + '</span>' : '') + '</button></div>';
+}
+function wireTeacher() {
+  document.querySelectorAll('[data-tt]').forEach(b => b.onclick = () => go(b.dataset.tt));
+  if ($('hSet')) $('hSet').onclick = () => go('tset');
+}
+function vTClasses() {
+  if (ME.role !== 'teacher') return go('tlogin');
+  const list = (OV || []).filter(c => c.status === 'open' && startMs(c) + (c.minutes + 30) * 60000 > Date.now());
+  $('app').innerHTML = header(true) + '<main>' + tTabs('tclasses') +
+    '<button class="btn block" id="tNew">+ Open a new class</button>' +
+    (list.length ? list.map(c => {
+      const conf = c.bookings.filter(b => b.status === 'confirmed'), pend = c.bookings.filter(b => b.status === 'pending');
+      const open = roomOpen(c);
+      return '<div class="card"><div class="row" style="align-items:flex-start;gap:12px"><div class="badge" style="background:' + (TINT[c.kind] || TINT.Other) + '">' + esc(c.kind || 'Class') + '</div>' +
+        '<div class="grow"><div class="ctitle">' + esc(c.title) + '</div><div class="sm">' + esc(when(c.starts_at)) + ' · ' + c.minutes + ' min · ' + (c.fee ? money(c.fee) : 'Free') + '</div></div></div>' +
+        '<div class="sm" style="color:var(--ink)"><b>' + conf.length + '</b> confirmed' + (pend.length ? ', <b>' + pend.length + '</b> waiting for payment check' : '') + ' · ' + c.seats + ' seats</div>' +
+        (conf.length ? '<div class="sm">' + conf.map(b => esc(b.child) + (b.age ? ' (' + b.age + ')' : '')).join(', ') + '</div>' : '') +
+        '<div class="row" style="flex-wrap:wrap">' +
+          '<button class="btn teal small" data-start="' + c.id + '"' + (open ? '' : ' disabled') + '>' + (open ? 'Start class' : 'Start (15 min before)') + '</button>' +
+          '<button class="btn ghost small" data-edit="' + c.id + '">Edit</button>' +
+          '<button class="btn ghost small" data-cancel="' + c.id + '" style="color:var(--red)">Cancel</button></div></div>';
+    }).join('') : '<div class="empty">No classes open. Tap “Open a new class” to start.</div>') +
+    '</main>';
+  wireTeacher();
+  $('tNew').onclick = () => go('tclass', { edit: null });
+  document.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => go('tclass', { edit: OV.find(c => c.id === b.dataset.edit) }));
+  document.querySelectorAll('[data-start]').forEach(b => b.onclick = () => joinLive(OV.find(c => c.id === b.dataset.start), true));
+  document.querySelectorAll('[data-cancel]').forEach(b => b.onclick = () => {
+    const c = OV.find(x => x.id === b.dataset.cancel);
+    sheet('<h2>Cancel this class?</h2><div>' + esc(c.title) + '</div><div class="sm">It disappears for parents. Message the booked families and refund or move them to another class.</div>' +
+      '<button class="btn red block" id="cxGo">Cancel the class</button><button class="btn ghost block" id="cxNo">Keep it</button>', () => {
+        $('cxNo').onclick = closeSheet;
+        $('cxGo').onclick = async () => { try { await api({ action: 'class_cancel', id: c.id }); closeSheet(); await loadTeacher(); vTClasses(); toast('Class cancelled'); } catch (e) { toast(e.message, true); } };
+      });
+  });
+}
+function localInput(iso) {
+  const d = iso ? new Date(iso) : new Date(Date.now() + 86400000);
+  if (!iso) { d.setHours(17, 0, 0, 0); }
+  const p = n => String(n).padStart(2, '0');
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + 'T' + p(d.getHours()) + ':' + p(d.getMinutes());
+}
+function vTClass() {
+  const c = S.edit || { title: '', kind: 'Dance', about: '', minutes: 40, seats: 5, fee: 200 };
+  if (!S.kind) S.kind = c.kind || 'Dance';
+  $('app').innerHTML = header(true) + '<main>' +
+    '<button class="chip" id="fBack" style="align-self:flex-start">‹ Back</button>' +
+    '<div class="ctitle">' + (S.edit ? 'Change this class' : 'Open a new class') + '</div>' +
+    '<div><label class="f" for="fTitle">What will you do?</label><input class="in" id="fTitle" value="' + esc(c.title) + '" placeholder="Dance & move: Bihu steps"></div>' +
+    '<div><div class="f">Kind of class</div><div class="chips">' + KINDS.map(k => '<button class="chip' + (S.kind === k ? ' on' : '') + '" data-kind="' + esc(k) + '">' + esc(k) + '</button>').join('') + '</div></div>' +
+    '<div><label class="f" for="fAbout">Note for parents (what to keep ready)</label><textarea class="in" id="fAbout">' + esc(c.about) + '</textarea></div>' +
+    '<div><label class="f" for="fWhen">Date and time</label><input class="in" id="fWhen" type="datetime-local" value="' + localInput(c.starts_at) + '"></div>' +
+    '<div class="row" style="gap:10px">' +
+      '<div class="grow"><label class="f" for="fMin">Minutes</label><input class="in" id="fMin" inputmode="numeric" value="' + c.minutes + '"></div>' +
+      '<div class="grow"><label class="f" for="fSeats">Seats</label><input class="in" id="fSeats" inputmode="numeric" value="' + c.seats + '"></div>' +
+      '<div class="grow"><label class="f" for="fFee">Fee (₹)</label><input class="in" id="fFee" inputmode="numeric" value="' + c.fee + '"></div></div>' +
+    '<button class="btn block" id="fGo">' + (S.edit ? 'Save changes' : 'Open for booking') + '</button>' +
+    '</main>';
+  $('fBack').onclick = () => go('tclasses');
+  document.querySelectorAll('[data-kind]').forEach(b => b.onclick = () => {
+    const keepVals = { t: $('fTitle').value, a: $('fAbout').value, w: $('fWhen').value, m: $('fMin').value, s: $('fSeats').value, f: $('fFee').value };
+    S.kind = b.dataset.kind; vTClass();
+    $('fTitle').value = keepVals.t; $('fAbout').value = keepVals.a; $('fWhen').value = keepVals.w; $('fMin').value = keepVals.m; $('fSeats').value = keepVals.s; $('fFee').value = keepVals.f;
+  });
+  $('fGo').onclick = async () => {
+    const w = $('fWhen').value; if (!w) return toast('Pick the date and time', true);
+    $('fGo').disabled = true;
+    try {
+      await api({ action: 'class_save', id: S.edit ? S.edit.id : '', title: $('fTitle').value, kind: S.kind, about: $('fAbout').value,
+        starts_at: new Date(w).toISOString(), minutes: parseInt($('fMin').value, 10) || 40, seats: parseInt($('fSeats').value, 10) || 5, fee: parseInt($('fFee').value, 10) || 0 });
+      const wasEdit = !!S.edit;
+      await loadTeacher(); go('tclasses'); toast(wasEdit ? 'Saved' : 'Class is open for booking');
+      if (!wasEdit) shareSheet();
+    } catch (e) { $('fGo').disabled = false; toast(e.message, true); }
+  };
+}
+function shareSheet() {
+  const link = location.origin + location.pathname;
+  const msg = 'New live class on Open Room — small group, 5 kids, live with ' + (INFO.teacher || 'me') + '. Book a seat here: ' + link;
+  sheet('<h2>Tell parents</h2><div class="sm">Send the booking link to your parents’ WhatsApp.</div>' +
+    '<a class="btn teal block" href="https://wa.me/?text=' + encodeURIComponent(msg) + '" target="_blank" rel="noopener">Share on WhatsApp</a>' +
+    '<button class="btn ghost block" id="shNo">Later</button>', () => { $('shNo').onclick = closeSheet; });
+}
+
+/* ----- teacher: payments to check ----- */
+function vTPay() {
+  if (ME.role !== 'teacher') return go('tlogin');
+  const rows = [];
+  (OV || []).forEach(c => (c.bookings || []).forEach(b => { if (b.status === 'pending') rows.push({ c: c, b: b }); }));
+  $('app').innerHTML = header(true) + '<main>' + tTabs('tpay') +
+    '<div class="sm">Open your UPI app, find each payment by its reference number, then confirm it here. The child can join only after you confirm.</div>' +
+    (rows.length ? rows.map(r => '<div class="card">' +
+      '<div class="row"><div class="grow"><div style="font-weight:800">' + esc(r.b.child) + (r.b.age ? ', ' + r.b.age : '') + '</div>' +
+      '<div class="sm">' + esc(r.c.title) + ' · ' + esc(when(r.c.starts_at)) + '</div></div><div style="font-weight:800">' + money(r.b.amount) + '</div></div>' +
+      '<div class="sm">Parent: ' + esc(r.b.parent) + ' · <a href="tel:' + esc(r.b.phone) + '">' + esc(r.b.phone) + '</a></div>' +
+      '<div class="row"><div class="sm">UPI ref:</div><div class="mono grow">' + esc(r.b.utr || '—') + '</div></div>' +
+      '<div class="row"><button class="btn teal small grow" data-ok="' + r.b.id + '">Payment received</button><button class="btn ghost small" data-no="' + r.b.id + '" style="color:var(--red)">Not found</button></div></div>').join('')
+      : '<div class="empty">No payments waiting. All caught up.</div>') +
+    '</main>';
+  wireTeacher();
+  const decide = async (id, status) => { try { await api({ action: 'decide', id: id, status: status }); await loadTeacher(); vTPay(); toast(status === 'confirmed' ? 'Seat confirmed' : 'Marked as not found'); } catch (e) { toast(e.message, true); } };
+  document.querySelectorAll('[data-ok]').forEach(b => b.onclick = () => decide(b.dataset.ok, 'confirmed'));
+  document.querySelectorAll('[data-no]').forEach(b => b.onclick = () => decide(b.dataset.no, 'rejected'));
+}
+
+/* ----- teacher: settings ----- */
+function vTSet() {
+  if (ME.role !== 'teacher') return go('tlogin');
+  $('app').innerHTML = header(true).replace('<button class="hbtn" id="hSet">Settings</button>', '<button class="hbtn" id="hBack">Back</button>') + '<main>' +
+    '<div class="ctitle">Settings</div>' +
+    '<div><label class="f" for="sName">Your name</label><input class="in" id="sName" value="' + esc(INFO.teacher) + '"></div>' +
+    '<div><label class="f" for="sIntro">About you and your classes</label><textarea class="in" id="sIntro">' + esc(INFO.intro) + '</textarea></div>' +
+    '<div><label class="f" for="sUpi">UPI ID</label><input class="in" id="sUpi" value="' + esc(INFO.upi) + '"></div>' +
+    '<div><label class="f" for="sUpiName">Name on the UPI account</label><input class="in" id="sUpiName" value="' + esc(INFO.upi_name) + '"></div>' +
+    '<div><label class="f" for="sPin">New teacher PIN (leave empty to keep)</label><input class="in" id="sPin" inputmode="numeric" type="password" autocomplete="new-password"></div>' +
+    '<button class="btn block" id="sGo">Save</button>' +
+    '<button class="btn ghost block" id="sOut">Sign out of teacher</button>' +
+    '<div class="sm">Booking link for parents: <span class="mono">' + esc(location.origin + location.pathname) + '</span></div>' +
+    '</main>';
+  $('hBack').onclick = () => go('tclasses');
+  $('sGo').onclick = async () => {
+    try { const j = await api({ action: 'settings', name: $('sName').value, intro: $('sIntro').value, upi: $('sUpi').value, upi_name: $('sUpiName').value, new_pin: $('sPin').value });
+      INFO = j.info || INFO; toast('Saved'); go('tclasses'); } catch (e) { toast(e.message, true); }
+  };
+  $('sOut').onclick = () => { ME = { tok: '', role: '' }; keep(); go('home'); };
+}
+
+/* ================= THE LIVE CLASS =================
+   The video itself is Daily's ready-made room (camera, microphone, everyone's
+   tiles, the teacher's mute and remove controls, chat). On top of it this
+   page adds two things of its own, sent to everyone in the room as small
+   messages: a TASK with a countdown, and a STAR for one child. */
+let FRAME = null, TASK_T = null, IS_HOST = false;
+function loadDaily() {
+  if (window.DailyIframe) return Promise.resolve();
+  return new Promise((ok, bad) => {
+    const s = document.createElement('script'); s.src = 'https://unpkg.com/@daily-co/daily-js';
+    s.onload = () => ok(); s.onerror = () => bad(new Error('Could not load the video'));
+    document.head.appendChild(s);
+  });
+}
+async function joinLive(c, host) {
+  IS_HOST = host;
+  toast('Opening the class…');
+  let pass;
+  try { pass = await roomPass(c.id); await loadDaily(); }
+  catch (e) { return toast(e.message, true); }
+  $('live').classList.remove('hide'); $('liveTitle').textContent = c.title;
+  $('liveCtl').innerHTML = host
+    ? '<button class="gold" id="lTask">Give a task</button><button id="lStar">Give a star</button><button id="lLeave" style="background:#E5484D">End</button>'
+    : '<button id="lLeave" style="background:#E5484D">Leave</button>';
+  const holder = $('liveFrame');
+  FRAME = window.DailyIframe.createFrame(holder, { showLeaveButton: false, iframeStyle: { position: 'absolute', inset: '0', width: '100%', height: '100%', border: '0' } });
+  FRAME.on('app-message', ev => onMsg(ev && ev.data));
+  FRAME.on('left-meeting', leaveLive);
+  try { await FRAME.join({ url: pass.url, token: pass.token }); }
+  catch (e) { toast('Could not join: ' + ((e && e.message) || e), true); return leaveLive(); }
+  $('lLeave').onclick = () => { if (FRAME) FRAME.leave(); else leaveLive(); };
+  if (host) {
+    $('lTask').onclick = taskSheet;
+    $('lStar').onclick = starSheet;
+  }
+}
+function leaveLive() {
+  if (FRAME) { try { FRAME.destroy(); } catch (e) {} FRAME = null; }
+  clearInterval(TASK_T); $('taskBanner').classList.add('hide'); $('starPop').classList.add('hide');
+  $('live').classList.add('hide');
+  closeSheet();
+}
+function send(msg) { onMsg(msg); try { FRAME.sendAppMessage(msg, '*'); } catch (e) {} }
+function onMsg(m) {
+  if (!m || typeof m !== 'object') return;
+  if (m.kind === 'task') {
+    clearInterval(TASK_T);
+    let left = Math.max(0, parseInt(m.secs, 10) || 0);
+    $('taskText').textContent = String(m.text || '').slice(0, 120);
+    const draw = () => { $('taskSecs').textContent = Math.floor(left / 60) + ':' + String(left % 60).padStart(2, '0'); };
+    draw(); $('taskBanner').classList.remove('hide');
+    TASK_T = setInterval(() => { left--; if (left < 0) { clearInterval(TASK_T); $('taskSecs').textContent = 'Time!'; setTimeout(() => $('taskBanner').classList.add('hide'), 4000); return; } draw(); }, 1000);
+  } else if (m.kind === 'endtask') {
+    clearInterval(TASK_T); $('taskBanner').classList.add('hide');
+  } else if (m.kind === 'star') {
+    $('starName').textContent = String(m.to || '').slice(0, 40) + ' got a star!';
+    const p = $('starPop'); p.classList.remove('hide');
+    setTimeout(() => p.classList.add('hide'), 3000);
+  }
+}
+function taskSheet() {
+  let secs = 60;
+  sheet('<h2>Give a task to everyone</h2>' +
+    '<div><label class="f" for="tkText">The task</label><input class="in" id="tkText" placeholder="Freeze in your best Bihu pose!"></div>' +
+    '<div><div class="f">Time</div><div class="chips" id="tkSecs">' + [30, 60, 120, 300].map(s => '<button class="chip' + (s === 60 ? ' on' : '') + '" data-s="' + s + '">' + (s < 60 ? s + ' sec' : (s / 60) + ' min') + '</button>').join('') + '</div></div>' +
+    '<button class="btn block" id="tkGo">Show it to everyone</button><button class="btn ghost block" id="tkEnd">End the current task</button>', () => {
+      document.querySelectorAll('#tkSecs [data-s]').forEach(b => b.onclick = () => {
+        secs = parseInt(b.dataset.s, 10); document.querySelectorAll('#tkSecs .chip').forEach(x => x.classList.toggle('on', x === b)); });
+      $('tkGo').onclick = () => { const t = $('tkText').value.trim(); if (!t) return toast('Type the task', true); send({ kind: 'task', text: t, secs: secs }); closeSheet(); };
+      $('tkEnd').onclick = () => { send({ kind: 'endtask' }); closeSheet(); };
+    });
+}
+function starSheet() {
+  let names = [];
+  try { const ps = FRAME.participants(); names = Object.keys(ps).filter(k => k !== 'local').map(k => ps[k].user_name).filter(Boolean); } catch (e) {}
+  sheet('<h2>Give a star</h2>' + (names.length
+      ? '<div class="chips">' + names.map((n, i) => '<button class="chip" data-n="' + i + '">' + esc(n) + '</button>').join('') + '</div>'
+      : '<div class="sm">No children in the room yet.</div>') +
+    '<button class="btn ghost block" id="stNo">Close</button>', () => {
+      $('stNo').onclick = closeSheet;
+      document.querySelectorAll('[data-n]').forEach(b => b.onclick = () => { send({ kind: 'star', to: names[+b.dataset.n] }); closeSheet(); });
+    });
+}
+
+/* ---------------- start ---------------- */
+(async function start() {
+  if (SUPA_URL.indexOf('http') !== 0) {
+    $('app').innerHTML = '<main><div class="card"><div class="ctitle">Almost ready</div><div>Put your Supabase address and key at the top of this file (SUPA_URL and SUPA_KEY).</div></div></main>';
+    return;
+  }
+  await loadPublic();
+  if (location.hash === '#teacher' || ME.role === 'teacher') {
+    if (ME.role === 'teacher') { await loadTeacher(); go('tclasses'); } else go('tlogin');
+  } else { await loadMine(); go('home'); }
+  /* keep the page fresh: new bookings, confirmations, the Join button opening */
+  setInterval(async () => {
+    if (!$('live').classList.contains('hide') || $('overlay').innerHTML) return;
+    if (S.screen === 'home') { await loadPublic(); await loadMine(); if (S.screen === 'home' && !$('overlay').innerHTML) vHome(); }
+    else if (S.screen === 'tclasses' || S.screen === 'tpay') { await loadTeacher(); if (!$('overlay').innerHTML) render(); }
+  }, 30000);
+})();
+</script>
+</body>
+</html>
