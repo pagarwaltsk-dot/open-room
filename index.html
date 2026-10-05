@@ -510,13 +510,42 @@ async function joinLive(c, host) {
   FRAME = window.DailyIframe.createFrame(holder, { showLeaveButton: false, iframeStyle: { position: 'absolute', inset: '0', width: '100%', height: '100%', border: '0' } });
   FRAME.on('app-message', ev => onMsg(ev && ev.data));
   FRAME.on('left-meeting', leaveLive);
+  FRAME.on('error', ev => toast('Video: ' + videoErr(ev), true));
+  FRAME.on('camera-error', ev => toast('Camera/mic: ' + videoErr(ev) + ' — allow camera and microphone for this site in the browser settings', true));
   try { await FRAME.join({ url: pass.url, token: pass.token }); }
-  catch (e) { toast('Could not join: ' + ((e && e.message) || e), true); return leaveLive(); }
+  catch (e) { const m = videoErr(e); leaveLive(); return showVideoErr(m); }
   $('lLeave').onclick = () => { if (FRAME) FRAME.leave(); else leaveLive(); };
   if (host) {
     $('lTask').onclick = taskSheet;
     $('lStar').onclick = starSheet;
   }
+}
+/* Daily sends errors as objects, not plain text — turn them into words a person can act on */
+function videoErr(e) {
+  if (!e) return 'unknown problem';
+  if (typeof e === 'string') return e;
+  const type = (e.error && (e.error.type || (e.error.details && e.error.details.type))) || e.type || '';
+  const msg = e.errorMsg || (e.error && (e.error.msg || e.error.message)) || e.message || '';
+  const plain = {
+    'account-missing-payment-method': 'the Daily account needs a card added (Daily dashboard → Billing). It stays free inside the free minutes.',
+    'exp-room': 'this class room has expired. Check the class date/time.',
+    'exp-token': 'the class pass has expired. Close and tap Join again.',
+    'nbf-room': 'the class room is not open yet.',
+    'nbf-token': 'the class pass is not valid yet. Check the phone\'s clock.',
+    'meeting-full': 'the class is full.',
+    'no-room': 'the class room was not found.',
+    'not-allowed': 'this pass is not allowed into the room.',
+    'connection-error': 'the internet connection dropped. Try again.',
+    'ejected': 'you were removed from the class.'
+  };
+  if (plain[type]) return plain[type] + ' [' + type + ']';
+  const t = [type, msg].filter(Boolean).join(': ');
+  if (t) return t;
+  try { return JSON.stringify(e).slice(0, 300); } catch (x) { return String(e); }
+}
+function showVideoErr(m) {
+  sheet('<h2>Could not join the video</h2><div style="word-break:break-word;margin:8px 0">' + esc(m) + '</div><div class="sm">Send a screenshot of this to whoever set up the app.</div><button class="btn" id="veOk" style="margin-top:12px">OK</button>',
+    () => { $('veOk').onclick = closeSheet; });
 }
 function leaveLive() {
   if (FRAME) { try { FRAME.destroy(); } catch (e) {} FRAME = null; }
