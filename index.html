@@ -74,12 +74,61 @@
   #live .dot{background:#E5484D;border-radius:999px;font-size:12px;font-weight:800;padding:4px 10px}
   #live .frame{flex:1;min-height:0;position:relative}
   #live .ctl{display:flex;gap:8px;padding:10px 12px calc(env(safe-area-inset-bottom,0px) + 12px);background:#0A0F1F}
-  #live .ctl button{flex:1;min-height:50px;border:0;border-radius:14px;font-weight:800;font-size:14px;background:#222A44;color:#fff}
+  #live .ctl button{flex:1;min-width:0;min-height:54px;border:0;border-radius:14px;font-weight:800;font-size:13px;background:#222A44;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;line-height:1.1;white-space:nowrap}
+  #live .ctl button b{font-size:18px;font-weight:400}
   #live .ctl button.gold{background:var(--gold);color:var(--ink)}
-  #taskBanner{position:absolute;left:12px;right:12px;top:12px;background:var(--gold);color:var(--ink);border-radius:16px;padding:12px 16px;display:flex;align-items:center;gap:12px;z-index:5;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+  #liveTop{position:absolute;left:8px;right:8px;top:8px;z-index:7;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+  #liveTop > *{pointer-events:auto}
+  #liveStrip{display:flex;flex-wrap:wrap;gap:6px}
+  #liveStrip:empty{display:none}
+  .schip{border:0;border-radius:999px;background:rgba(16,22,43,.85);color:#fff;font-weight:800;font-size:13.5px;min-height:38px;padding:0 13px;display:inline-flex;align-items:center;box-shadow:0 3px 10px rgba(0,0,0,.25)}
+  .schip.gold{background:var(--gold);color:var(--ink)}
+  #live .ctl button{padding:0 4px}
+  .pop{position:absolute;left:12px;right:12px;z-index:8;background:#fff;color:var(--ink);border-radius:20px;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:0 12px 34px rgba(0,0,0,.35);max-width:520px;margin:0 auto}
+  #quizCard{top:50%;transform:translateY(-50%);z-index:6}
+  #voiceCard{bottom:12px}
+  #speakPop{top:50%;transform:translateY(-50%);text-align:center;align-items:center}
+  .qhead{display:flex;align-items:center;justify-content:space-between;font-size:11.5px;font-weight:800;letter-spacing:.08em;color:var(--muted)}
+  .qx{border:0;background:#EEF1F7;border-radius:999px;width:36px;height:36px;font-weight:800}
+  .qq{font-family:var(--fd);font-weight:800;font-size:30px;line-height:1.1;text-align:center}
+  .qgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .qopt{border:0;border-radius:14px;min-height:64px;color:#fff;font-weight:800;font-size:22px;display:flex;align-items:center;justify-content:center;padding:6px;text-align:center;word-break:break-word}
+  .qopt.dim{opacity:.35}
+  .qopt.picked{outline:4px solid var(--ink);outline-offset:2px}
+  .qopt.right{outline:4px solid var(--teal);outline-offset:2px;opacity:1}
+  .qres{background:var(--gold-soft);border-radius:12px;padding:10px;font-weight:800;text-align:center;font-size:17px}
+  .recdot{width:16px;height:16px;border-radius:50%;background:var(--red)}
+  @media (prefers-reduced-motion:no-preference){ .recdot{animation:blink 1s infinite} @keyframes blink{50%{opacity:.25}} }
+  #board{position:absolute;inset:0;z-index:4;background:#0A0F1F;display:flex;flex-direction:column}
+  .btools{display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding:8px;flex:0 0 auto;padding-top:54px}
+  .bstage{flex:1;min-height:0;position:relative;display:flex;align-items:center;justify-content:center}
+  #bCanvas{background:#fff;border-radius:12px;touch-action:none;display:block}
+  .btitle{position:absolute;left:0;right:0;bottom:2px;text-align:center;color:#C9CEDD;font-size:12.5px;font-weight:700;pointer-events:none}
+  .sw{width:34px;height:34px;border-radius:50%;border:3px solid #2A3352;flex:0 0 auto}
+  .sw.on{border-color:#fff;box-shadow:0 0 0 2px var(--gold)}
+  .tb{border:0;border-radius:10px;min-height:38px;padding:0 10px;background:#222A44;color:#fff;font-weight:800;font-size:13px;white-space:nowrap;flex:0 0 auto}
+  .tb.on{background:#fff;color:var(--ink)}
+  .tb.gold{background:var(--gold);color:var(--ink)}
+  .thumb{border-radius:10px;border:1.5px solid var(--line);max-width:100%}
+  #liveWait{position:absolute;inset:0;z-index:9;background:var(--live);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:24px}
+  .door{font-size:64px}
+  @media (prefers-reduced-motion:no-preference){ .door{animation:bob 2s ease-in-out infinite} @keyframes bob{50%{transform:translateY(-8px)}} }
+  #game{position:absolute;inset:0;z-index:5;background:#0A0F1F;display:flex;flex-direction:column}
+  .gpanel{background:#fff;border-radius:18px 18px 0 0;padding:10px 12px;display:flex;flex-direction:column;gap:8px;flex:0 0 auto}
+  .gpl{display:flex;flex-wrap:wrap;gap:6px}
+  .gtag{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:800;background:#EEF1F7;border-radius:999px;padding:4px 10px}
+  .gtag.on{background:var(--gold)}
+  .gtag i{width:12px;height:12px;border-radius:50%;display:inline-block}
+  .gmsg{font-weight:700;font-size:15px}
+  .gwait{font-weight:800;color:var(--muted)}
+  .gpanel .tb{background:#EEF1F7;color:var(--ink)}
+  .mgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .mbtn{border:0;background:#fff;border-radius:16px;min-height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:26px;padding:8px}
+  .mbtn span{font-size:13.5px;font-weight:800;text-align:center}
+  #taskBanner{background:var(--gold);color:var(--ink);border-radius:16px;padding:12px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
   #taskBanner .t{flex:1;font-weight:800;font-size:16px}
   #taskBanner .s{font-family:var(--fd);font-weight:800;font-size:28px}
-  #starPop{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);background:#fff;color:var(--ink);border-radius:20px;padding:16px 22px;font-family:var(--fd);font-weight:800;font-size:24px;z-index:6;box-shadow:0 10px 30px rgba(0,0,0,.3);text-align:center}
+  #starPop{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);background:#fff;color:var(--ink);border-radius:20px;padding:16px 22px;font-family:var(--fd);font-weight:800;font-size:24px;z-index:9;box-shadow:0 10px 30px rgba(0,0,0,.3);text-align:center}
   #starPop .big{font-size:44px;color:var(--gold);line-height:1}
   .hide{display:none!important}
   @media (prefers-reduced-motion:no-preference){ #starPop{animation:pop .35s ease-out} @keyframes pop{from{transform:translate(-50%,-50%) scale(.6);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}} }
@@ -93,8 +142,16 @@
 <div id="live" class="hide">
   <div class="bar"><span class="dot">● LIVE</span><span class="grow" id="liveTitle" style="font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></span></div>
   <div class="frame" id="liveFrame">
-    <div id="taskBanner" class="hide"><div class="grow"><div style="font-size:11.5px;font-weight:800;letter-spacing:.08em">TASK FOR EVERYONE</div><div class="t" id="taskText"></div></div><div class="s" id="taskSecs"></div></div>
+    <div id="board" class="hide"><div class="btools" id="bTools"></div><div class="bstage" id="bStage"><canvas id="bCanvas"></canvas><div class="btitle" id="bTitle"></div></div></div>
+    <div id="game" class="hide"><div class="bstage" id="gStage" style="padding-top:50px"><canvas id="gCanvas" style="border-radius:10px;display:block"></canvas></div><div id="gPanel" class="gpanel"></div></div>
+    <div id="liveTop"><div id="liveStrip"></div>
+      <div id="taskBanner" class="hide"><div class="grow"><div style="font-size:11.5px;font-weight:800;letter-spacing:.08em">TASK FOR EVERYONE</div><div class="t" id="taskText"></div></div><div class="s" id="taskSecs"></div></div>
+    </div>
     <div id="starPop" class="hide"><div class="big">★</div><div id="starName"></div></div>
+    <div id="quizCard" class="pop hide" role="dialog" aria-label="Quiz"></div>
+    <div id="voiceCard" class="pop hide" role="dialog" aria-label="Voice answer"></div>
+    <div id="speakPop" class="pop hide" role="dialog" aria-label="Your turn to talk"></div>
+    <div id="liveWait" class="hide"></div>
   </div>
   <div class="ctl" id="liveCtl"></div>
 </div>
@@ -167,7 +224,7 @@ function go(screen, extra) { S = Object.assign({ screen: screen }, extra || {});
 function render() {
   const v = { home: vHome, book: vBook, tlogin: vTLogin, tclasses: vTClasses, tclass: vTClass, tpay: vTPay, tset: vTSet }[S.screen] || vHome;
   v();
-  if ($('app') && !$('verTag')) $('app').insertAdjacentHTML('beforeend', '<div id="verTag" class="sm" style="text-align:center;opacity:.5;padding:18px 0 28px">Open Room · version 5-Oct-C</div>');
+  if ($('app') && !$('verTag')) $('app').insertAdjacentHTML('beforeend', '<div id="verTag" class="sm" style="text-align:center;opacity:.5;padding:18px 0 28px">Open Room · version 5-Oct-D</div>');
 }
 async function loadPublic() {
   try { INFO = await api({ action: 'info' }); } catch (e) {}
@@ -182,6 +239,15 @@ async function loadTeacher() {
 }
 
 /* ----- parent: home ----- */
+function starCards() {
+  const all = certs(), ids = Object.keys(all).sort((a, b) => new Date(all[b].at) - new Date(all[a].at)).slice(0, 6);
+  if (!ids.length) return '';
+  return '<div class="lbl">Star cards</div><div class="card" style="gap:6px">' + ids.map(id => {
+    const c = all[id];
+    return '<div class="row"><div class="grow"><div style="font-weight:800">⭐ ' + (c.stars || 0) + ' · ' + esc(c.name) + '</div><div class="sm">' + esc(c.title) + ' · ' + esc(when(c.at)) + '</div></div>' +
+      '<button class="btn ghost small" data-cert="' + esc(id) + '">View</button></div>';
+  }).join('') + '</div>';
+}
 function header(teacher) {
   return '<header class="top' + (teacher ? ' teacher' : '') + '"><div class="logo">OR</div><div class="ttl">' +
     '<div class="a">' + (teacher ? 'Teacher' : 'Open Room') + '</div>' +
@@ -224,11 +290,13 @@ function vHome() {
           (b.status === 'pending' ? '<div class="sm">The teacher checks the payment and confirms your seat. Usually within a few hours.</div>' : '') +
           '</div>';
       }).join('') : '') +
+    starCards() +
     '<div class="lbl">Classes this week</div>' +
     (CLASSES.length ? CLASSES.map(c => classCard(c, byClass[c.id] ? 'Booked for ' + byClass[c.id].join(', ') : '')).join('')
                     : '<div class="empty">No classes open right now. Check back soon.</div>') +
     '<div class="sm" style="text-align:center;padding:4px 10px">Every class is live, with the teacher and at most a few children, so each child is seen and heard.</div>' +
     '</main><div class="foot"><button id="iAmT">I’m the teacher</button></div>';
+  document.querySelectorAll('[data-cert]').forEach(b => b.onclick = () => showCert(b.dataset.cert, false));
   if ($('hIn')) $('hIn').onclick = () => authSheet(null);
   if ($('hOut')) $('hOut').onclick = () => { ME = { tok: '', role: '' }; keep(); MINE = null; vHome(); toast('Signed out'); };
   $('iAmT').onclick = () => go('tlogin');
@@ -382,6 +450,7 @@ function wireTeacher() {
 function vTClasses() {
   if (ME.role !== 'teacher') return go('tlogin');
   const list = (OV || []).filter(c => c.status === 'open' && startMs(c) + (c.minutes + 30) * 60000 > Date.now());
+  const done = (OV || []).filter(c => c.status === 'open' && startMs(c) + (c.minutes + 30) * 60000 <= Date.now()).reverse();
   $('app').innerHTML = header(true) + '<main>' + tTabs('tclasses') +
     '<button class="btn block" id="tNew">+ Open a new class</button>' +
     (list.length ? list.map(c => {
@@ -396,11 +465,16 @@ function vTClasses() {
           '<button class="btn ghost small" data-edit="' + c.id + '">Edit</button>' +
           '<button class="btn ghost small" data-cancel="' + c.id + '" style="color:var(--red)">Cancel</button></div></div>';
     }).join('') : '<div class="empty">No classes open. Tap “Open a new class” to start.</div>') +
+    (done.length ? '<div class="lbl">Finished (last 3 days)</div>' + done.map(c =>
+      '<div class="card"><div class="row"><div class="grow"><div style="font-weight:800">' + esc(c.title) + '</div>' +
+      '<div class="sm">' + esc(when(c.starts_at)) + ' · ' + c.bookings.filter(b => b.status === 'confirmed').length + ' children</div></div>' +
+      (c.voices ? '<button class="btn teal small" data-voices="' + c.id + '">🎧 ' + c.voices + '</button>' : '') + '</div></div>').join('') : '') +
     '</main>';
   wireTeacher();
   $('tNew').onclick = () => go('tclass', { edit: null });
   document.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => go('tclass', { edit: OV.find(c => c.id === b.dataset.edit) }));
   document.querySelectorAll('[data-start]').forEach(b => b.onclick = () => joinLive(OV.find(c => c.id === b.dataset.start), true));
+  document.querySelectorAll('[data-voices]').forEach(b => b.onclick = () => voiceSheet(b.dataset.voices, false));
   document.querySelectorAll('[data-cancel]').forEach(b => b.onclick = () => {
     const c = OV.find(x => x.id === b.dataset.cancel);
     sheet('<h2>Cancel this class?</h2><div>' + esc(c.title) + '</div><div class="sm">It disappears for parents. Message the booked families and refund or move them to another class.</div>' +
@@ -503,10 +577,16 @@ function vTSet() {
 
 /* ================= THE LIVE CLASS =================
    The video itself is Daily's ready-made room (camera, microphone, everyone's
-   tiles, the teacher's mute and remove controls, chat). On top of it this
-   page adds two things of its own, sent to everyone in the room as small
-   messages: a TASK with a countdown, and a STAR for one child. */
-let FRAME = null, TASK_T = null, IS_HOST = false;
+   tiles, chat; the teacher can also share her screen from a laptop). On top of
+   it this page adds its own classroom tools. They travel as small messages
+   inside the video room, so they cost nothing extra:
+     task with a countdown · star · quiz race · drawing board · kids' drawing pads
+     raise hand · ask to speak · mute all · voice answers · end class + star card
+   The waiting room and voice answers also use the database (or_call). */
+let FRAME = null, TASK_T = null, IS_HOST = false, LIVE = null;
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const rid = () => Math.random().toString(36).slice(2, 9);
+
 function loadDaily() {
   if (window.DailyIframe) return Promise.resolve();
   return new Promise((ok, bad) => {
@@ -515,30 +595,924 @@ function loadDaily() {
     document.head.appendChild(s);
   });
 }
+
+/* ---------- who is in the room ---------- */
+function roster() { try { return FRAME ? (FRAME.participants() || {}) : {}; } catch (e) { return {}; } }
+function others() { const ps = roster(); return Object.keys(ps).filter(k => k !== 'local').map(k => Object.assign({ sid: ps[k].session_id || k }, ps[k])); }
+function teacherSid() { const t = others().find(p => p.owner); return t ? t.sid : '*'; }
+function sidOf(name) { const p = others().find(x => x.user_name === name); return p ? p.sid : null; }
+function nameOf(sid) { const p = others().find(x => x.sid === sid); return p ? p.user_name : ''; }
+function kidNames() { return others().filter(p => !p.owner).map(p => p.user_name).filter(Boolean); }
+
+/* ---------- messages ---------- */
+function post(msg, to) { try { if (FRAME) FRAME.sendAppMessage(msg, to || '*'); } catch (e) {} }
+function send(msg) { onMsg(msg, 'local'); post(msg); }            // to everyone, me included
+/* long things (a whole drawing) go in small parts, a little apart */
+function packStrokes(strokes) {
+  const pieces = [];
+  strokes.forEach(s => {
+    const p = s.p || [];
+    if (p.length <= 400) pieces.push(s);
+    else for (let i = 0; i < p.length - 2; i += 398) pieces.push({ id: s.id + '_' + i, c: s.c, w: s.w, p: p.slice(i, i + 400) });
+  });
+  const parts = []; let cur = [], size = 0;
+  pieces.forEach(s => { const n = JSON.stringify(s).length; if (size + n > 2800 && cur.length) { parts.push(cur); cur = []; size = 0; } cur.push(s); size += n; });
+  if (cur.length || !parts.length) parts.push(cur);
+  return parts;
+}
+async function sendChunks(kind, strokes, to, extra) {
+  const parts = packStrokes(strokes), k = rid();
+  for (let i = 0; i < parts.length; i++) {
+    post(Object.assign({ kind: kind, k: k, i: i, n: parts.length, s: parts[i] }, extra || {}), to);
+    if (parts.length > 1) await sleep(70);
+  }
+}
+const CHUNKS = {};
+function gotChunk(m, done) {
+  const c = CHUNKS[m.k] = CHUNKS[m.k] || { n: m.n, parts: {}, at: Date.now() };
+  c.parts[m.i] = m.s || [];
+  if (Object.keys(c.parts).length >= c.n) {
+    delete CHUNKS[m.k];
+    let all = []; for (let i = 0; i < c.n; i++) all = all.concat(c.parts[i] || []);
+    done(all);
+  }
+}
+
+/* ---------- opening and closing the room ---------- */
+function liveReset(c, host) {
+  return { cls: c, host: host, name: host ? (INFO.teacher || 'Teacher') : '', tag: rid().slice(0, 4), joined: false,
+    hand: false, hands: [], waiting: [], openDoor: false, voicesNew: 0, scores: {}, quiz: null, kq: null, task: null,
+    pads: {}, padsNew: 0, rec: null, ended: false, pollT: null, boardHidden: false };
+}
 async function joinLive(c, host) {
-  IS_HOST = host;
+  if (LIVE) return;
+  IS_HOST = host; LIVE = liveReset(c, host);
+  BOARD = { on: false, all: false, title: '', strokes: [] }; MYPAD = { strokes: [] }; VIEW = null; GAME = null; GSHOW = { pos: {}, busy: false, hidden: false };
+  $('live').classList.remove('hide'); $('liveTitle').textContent = c.title;
+  $('liveCtl').innerHTML = '<button id="lLeave" style="background:#E5484D">Leave</button>';
+  $('lLeave').onclick = () => leaveLive();
+  if (!host && !(await waitAtDoor(c))) return;
   toast('Opening the class…');
   let pass;
   try { pass = await roomPass(c.id); await loadDaily(); }
-  catch (e) { return toast(e.message, true); }
-  $('live').classList.remove('hide'); $('liveTitle').textContent = c.title;
+  catch (e) { leaveLive(true); return toast(e.message, true); }
+  if (!LIVE || LIVE.cls !== c) return;
+  LIVE.name = pass.name || LIVE.name;
   $('liveCtl').innerHTML = host
-    ? '<button class="gold" id="lTask">Give a task</button><button id="lStar">Give a star</button><button id="lLeave" style="background:#E5484D">End</button>'
-    : '<button id="lLeave" style="background:#E5484D">Leave</button>';
-  const holder = $('liveFrame');
-  FRAME = window.DailyIframe.createFrame(holder, { showLeaveButton: false, iframeStyle: { position: 'absolute', inset: '0', width: '100%', height: '100%', border: '0' } });
-  FRAME.on('app-message', ev => onMsg(ev && ev.data));
-  FRAME.on('left-meeting', leaveLive);
+    ? '<button class="gold" id="lQuiz"><b>❓</b>Quiz</button><button id="lBoard"><b>✏️</b>Board</button><button id="lTask"><b>⏱</b>Task</button><button id="lMore"><b>⋯</b>More</button><button id="lLeave" style="background:#E5484D"><b>■</b>End</button>'
+    : '<button id="lHand"><b>✋</b>Hand</button><button id="lDraw"><b>✏️</b>Draw</button><button id="lLeave" style="background:#E5484D"><b>👋</b>Leave</button>';
+  FRAME = window.DailyIframe.createFrame($('liveFrame'), { showLeaveButton: false, iframeStyle: { position: 'absolute', inset: '0', width: '100%', height: '100%', border: '0' } });
+  FRAME.on('app-message', ev => onMsg(ev && ev.data, ev && ev.fromId));
+  FRAME.on('left-meeting', () => leaveLive());
   FRAME.on('error', ev => toast('Video: ' + videoErr(ev), true));
   FRAME.on('camera-error', ev => toast('Camera/mic: ' + videoErr(ev) + ' — allow camera and microphone for this site in the browser settings', true));
+  if (host) FRAME.on('participant-joined', ev => { const sid = ev && ev.participant && ev.participant.session_id; if (sid) setTimeout(() => syncTo(sid), 1500); });
   try { await FRAME.join({ url: pass.url, token: pass.token }); }
-  catch (e) { const m = videoErr(e); leaveLive(); return showVideoErr(m); }
-  $('lLeave').onclick = () => { if (FRAME) FRAME.leave(); else leaveLive(); };
+  catch (e) { const m = videoErr(e); leaveLive(true); return showVideoErr(m); }
+  if (!LIVE) return;
+  LIVE.joined = true;
+  $('lLeave').onclick = host ? endSheet : () => leaveLive();
   if (host) {
-    $('lTask').onclick = taskSheet;
-    $('lStar').onclick = starSheet;
+    $('lQuiz').onclick = quizSheet; $('lBoard').onclick = toggleBoard; $('lTask').onclick = taskSheet; $('lMore').onclick = moreSheet;
+    pollRoom(); LIVE.pollT = setInterval(pollRoom, 4000);
+  } else {
+    $('lHand').onclick = toggleHand; $('lDraw').onclick = openMyPad;
+    certFor(c);                        // a star card starts the moment the child is in
+  }
+  renderStrip();
+}
+/* the waiting room: ask every 3 seconds until the teacher lets this child in */
+async function waitAtDoor(c) {
+  while (LIVE && LIVE.cls === c) {
+    let r;
+    try { r = await api({ action: 'roomcheck', class_id: c.id }); }
+    catch (e) { leaveLive(true); toast(e.message, true); return false; }
+    if (!LIVE || LIVE.cls !== c) return false;
+    if (r && r.ok) { $('liveWait').classList.add('hide'); return true; }
+    $('liveWait').innerHTML = '<div class="door">🚪</div><div class="ctitle" style="color:#fff">' + esc((r && r.msg) || 'Waiting for the teacher') + '…</div>' +
+      '<div class="sm" style="color:#C9CEDD">' + esc(r && r.name ? 'Hello ' + r.name + '! ' : '') + 'The class starts at ' + esc(when(c.starts_at).split(', ').pop()) + '. Keep this screen open.</div>';
+    $('liveWait').classList.remove('hide');
+    await sleep(3000);
+  }
+  return false;
+}
+function leaveLive(quiet) {
+  if (!LIVE && !FRAME) { $('live').classList.add('hide'); return; }
+  const was = LIVE; LIVE = null;
+  if (was && was.pollT) clearInterval(was.pollT);
+  if (was && was.rec && was.rec.mr && was.rec.mr.state === 'recording') { try { was.rec.mr.stop(); } catch (e) {} }
+  const f = FRAME; FRAME = null;
+  if (f) { try { f.destroy(); } catch (e) {} }
+  clearInterval(TASK_T);
+  ['taskBanner', 'starPop', 'quizCard', 'voiceCard', 'speakPop', 'board', 'game', 'liveWait'].forEach(id => $(id).classList.add('hide'));
+  $('liveStrip').innerHTML = '';
+  $('live').classList.add('hide');
+  closeSheet();
+  if (was && !was.host && S.screen === 'home') vHome();      // the new star card shows on the home screen
+  if (!quiet && was && !was.host && was.joined) showCert(was.cls.id, was.ended);
+}
+function endSheet() {
+  sheet('<h2>End the class?</h2>' +
+    '<button class="btn red block" id="enAll">End the class for everyone</button>' +
+    '<button class="btn ghost block" id="enMe">Leave — the class carries on</button>' +
+    '<button class="btn ghost block" id="enNo">Stay</button>', () => {
+      $('enNo').onclick = closeSheet;
+      $('enMe').onclick = () => { closeSheet(); if (FRAME) FRAME.leave(); else leaveLive(); };
+      $('enAll').onclick = async () => {
+        closeSheet(); post({ kind: 'end' }); await sleep(900);
+        try { FRAME && FRAME.updateParticipants({ '*': { eject: true } }); } catch (e) {}
+        await sleep(300); if (FRAME) FRAME.leave(); else leaveLive();
+      };
+    });
+}
+/* someone came in late: give them what is on screen now */
+function syncTo(sid) {
+  if (!LIVE || !LIVE.host) return;
+  if (LIVE.task && LIVE.task.end > Date.now()) post({ kind: 'task', text: LIVE.task.text, secs: Math.round((LIVE.task.end - Date.now()) / 1000) }, sid);
+  post({ kind: 'score', s: LIVE.scores }, sid);
+  if (LIVE.quiz && !LIVE.quiz.done) post({ kind: 'quiz', id: LIVE.quiz.id, q: LIVE.quiz.q, o: LIVE.quiz.o }, sid);
+  if (BOARD.on) { post({ kind: 'board', on: true, all: BOARD.all, title: BOARD.title }, sid); sendChunks('bload', BOARD.strokes, sid); }
+  if (GAME) post({ kind: 'game', g: GAME }, sid);
+}
+
+/* ---------- every message that arrives ---------- */
+function onMsg(m, from) {
+  if (!m || typeof m !== 'object' || !LIVE) return;
+  const mine = from === 'local';
+  const sender = mine ? LIVE.name : (nameOf(from) || m.from || '');
+  switch (m.kind) {
+    case 'task': {
+      clearInterval(TASK_T);
+      let left = Math.max(0, parseInt(m.secs, 10) || 0);
+      LIVE.task = { text: String(m.text || '').slice(0, 120), end: Date.now() + left * 1000 };
+      $('taskText').textContent = LIVE.task.text;
+      const draw = () => { $('taskSecs').textContent = Math.floor(left / 60) + ':' + String(left % 60).padStart(2, '0'); };
+      draw(); $('taskBanner').classList.remove('hide');
+      TASK_T = setInterval(() => { left--; if (left < 0) { clearInterval(TASK_T); $('taskSecs').textContent = 'Time!'; setTimeout(() => $('taskBanner').classList.add('hide'), 4000); return; } draw(); }, 1000);
+      break;
+    }
+    case 'endtask': clearInterval(TASK_T); LIVE.task = null; $('taskBanner').classList.add('hide'); break;
+    case 'star': {
+      $('starName').textContent = String(m.to || '').slice(0, 40) + ' got a star!';
+      const p = $('starPop'); p.classList.remove('hide'); setTimeout(() => p.classList.add('hide'), 3000);
+      if (!LIVE.host && m.to === LIVE.name) certAdd('stars', 1);
+      break;
+    }
+    case 'end': if (!LIVE.host) { LIVE.ended = true; if (FRAME) FRAME.leave(); else leaveLive(); } break;
+    /* drawing board */
+    case 'board': if (!LIVE.host) { BOARD.on = !!m.on; BOARD.all = !!m.all; BOARD.title = String(m.title || '').slice(0, 60);
+        if (BOARD.on) { LIVE.boardHidden = false; if (VIEW !== 'mine') VIEW = 'shared'; else toast('The teacher opened the board — tap “Show board” to see it'); }
+        else if (VIEW === 'shared') VIEW = null;
+        renderBoard(); renderStrip(); } break;
+    case 'st': if (!mine) boardStroke(m); break;
+    case 'bundo': if (!mine) { BOARD.strokes = BOARD.strokes.filter(s => s.id !== m.id && s.id.indexOf(m.id + '_') !== 0); drawAll(); } break;
+    case 'bclear': if (!mine) { BOARD.strokes = []; drawAll(); } break;
+    case 'bload': gotChunk(m, all => { BOARD.strokes = all; drawAll(); }); break;
+    /* quiz race */
+    case 'quiz': if (!LIVE.host) { LIVE.kq = { id: m.id, q: String(m.q || ''), o: (m.o || []).slice(0, 4).map(String), picked: null, res: null }; renderQuizKid(); } break;
+    case 'qa': if (LIVE.host) judge(m, sender); break;
+    case 'qwin':
+      if (LIVE.host) renderQuizHost();
+      else if (LIVE.kq && LIVE.kq.id === m.id) { LIVE.kq.res = m; renderQuizKid(); const id = m.id; setTimeout(() => { if (LIVE && LIVE.kq && LIVE.kq.id === id) { LIVE.kq = null; renderQuizKid(); } }, 4500); }
+      break;
+    case 'qclose': if (!LIVE.host && LIVE.kq && LIVE.kq.id === m.id) { LIVE.kq = null; renderQuizKid(); } break;
+    case 'score': LIVE.scores = m.s || {}; if (!LIVE.host) { certSet('points', LIVE.scores[LIVE.name] || 0); renderStrip(); } break;
+    /* hands and talking */
+    case 'hand': if (LIVE.host && sender) {
+        LIVE.hands = LIVE.hands.filter(n => n !== sender); if (m.up) { LIVE.hands.push(sender); toast('✋ ' + sender + ' raised a hand'); }
+        renderStrip(); } break;
+    case 'handdown': if (!LIVE.host) { LIVE.hand = false; renderHandBtn(); } break;
+    case 'speak': if (!LIVE.host) { LIVE.hand = false; renderHandBtn(); showSpeak(); } break;
+    /* voice answers and drawings sent to the teacher */
+    case 'voice': if (!LIVE.host) openVoiceCard(m); break;
+    case 'vnew': if (LIVE.host) { LIVE.voicesNew++; toast('🎙 ' + (sender || 'A child') + ' sent a voice answer'); renderStrip(); } break;
+    case 'game': gotGame(m.g || null); break;
+    case 'roll': if (LIVE.host && GAME && m.id === GAME.id && m.seq === GAME.seq) hostRoll(sender); break;
+    case 'pad': if (LIVE.host) gotChunk(m, all => { const who = m.from || sender || 'A child'; LIVE.pads[who] = { strokes: all, at: Date.now() }; LIVE.padsNew++; toast('🎨 ' + who + ' sent a drawing'); renderStrip(); }); break;
   }
 }
+
+/* ---------- the strip of little buttons at the top of the video ---------- */
+function renderStrip() {
+  if (!LIVE) return;
+  const ch = [];
+  if (LIVE.host) {
+    if (LIVE.waiting.length === 1) ch.push('<button class="schip gold" data-s="let1">🚪 Let ' + esc(LIVE.waiting[0].name) + ' in</button>');
+    else if (LIVE.waiting.length > 1) ch.push('<button class="schip gold" data-s="door">🚪 ' + LIVE.waiting.length + ' at the door</button>');
+    LIVE.hands.forEach((n, i) => ch.push('<button class="schip" data-hand="' + i + '">✋ ' + esc(n) + '</button>'));
+    if (LIVE.voicesNew) ch.push('<button class="schip" data-s="voices">🎙 ' + LIVE.voicesNew + ' new</button>');
+    if (LIVE.padsNew) ch.push('<button class="schip" data-s="pads">🎨 ' + LIVE.padsNew + ' new</button>');
+  } else {
+    const pts = LIVE.scores[LIVE.name] || 0;
+    if (pts) ch.push('<span class="schip">🏆 ' + pts + '</span>');
+    if (BOARD.on && (LIVE.boardHidden || VIEW === 'mine')) ch.push('<button class="schip gold" data-s="board">✏️ Show board</button>');
+    if (GAME && GSHOW.hidden) ch.push('<button class="schip gold" data-s="game">🎲 Show game</button>');
+    if (LIVE.rec && LIVE.rec.min) ch.push('<button class="schip gold" data-s="voice">🎙 Record answer</button>');
+  }
+  $('liveStrip').innerHTML = ch.join('');
+  $('liveStrip').querySelectorAll('[data-s]').forEach(b => b.onclick = () => {
+    const s = b.dataset.s;
+    if (s === 'let1') admit(LIVE.waiting[0].parent_id);
+    else if (s === 'door') doorSheet();
+    else if (s === 'voices') voiceSheet(LIVE.cls.id, true);
+    else if (s === 'pads') padsSheet();
+    else if (s === 'voice') { if (LIVE.rec) { LIVE.rec.min = false; renderVoiceCard(); } }
+    else if (s === 'game') { GSHOW.hidden = false; renderGame(); renderStrip(); }
+    else if (s === 'board') { LIVE.boardHidden = false; VIEW = 'shared'; renderBoard(); renderStrip(); }
+  });
+  $('liveStrip').querySelectorAll('[data-hand]').forEach(b => b.onclick = () => handSheet(LIVE.hands[+b.dataset.hand]));
+}
+
+/* ---------- waiting room (teacher) ---------- */
+async function pollRoom() {
+  if (!LIVE || !LIVE.host) return;
+  try {
+    const r = await api({ action: 'room_state', class_id: LIVE.cls.id });
+    if (!LIVE) return;
+    const before = LIVE.waiting.map(w => w.parent_id).join();
+    LIVE.waiting = r.waiting || []; LIVE.openDoor = !!r.open_door;
+    if (LIVE.waiting.length && LIVE.waiting.map(w => w.parent_id).join() !== before) toast('🚪 ' + LIVE.waiting.map(w => w.name).join(', ') + ' at the door');
+    if ((r.unheard || 0) > LIVE.voicesNew) LIVE.voicesNew = r.unheard;
+    renderStrip();
+  } catch (e) {}
+}
+async function admit(parentId, all) {
+  try { await api({ action: 'admit', class_id: LIVE.cls.id, parent_id: parentId || null, all: !!all }); toast('Letting in…'); } catch (e) { toast(e.message, true); }
+  closeSheet(); pollRoom();
+}
+function doorSheet() {
+  sheet('<h2>Waiting room</h2>' +
+    (LIVE.waiting.length ? LIVE.waiting.map((w, i) => '<div class="card row"><div class="grow" style="font-weight:800">🚪 ' + esc(w.name) + '</div><button class="btn teal small" data-in="' + i + '">Let in</button></div>').join('') +
+      '<button class="btn teal block" id="dAll">Let everyone in</button>' : '<div class="empty">Nobody is waiting.</div>') +
+    '<label class="card row" style="cursor:pointer"><input type="checkbox" id="dOpen"' + (LIVE.openDoor ? ' checked' : '') + ' style="width:22px;height:22px"><span class="grow">Let children in without asking, for the rest of this class</span></label>' +
+    '<button class="btn ghost block" id="dNo">Close</button>', () => {
+      $('dNo').onclick = closeSheet;
+      document.querySelectorAll('[data-in]').forEach(b => b.onclick = () => admit(LIVE.waiting[+b.dataset.in].parent_id));
+      if ($('dAll')) $('dAll').onclick = () => admit(null, true);
+      $('dOpen').onchange = async () => { try { await api({ action: 'open_door', class_id: LIVE.cls.id, on: $('dOpen').checked }); LIVE.openDoor = $('dOpen').checked; toast(LIVE.openDoor ? 'Door open: children come straight in' : 'Waiting room on'); pollRoom(); } catch (e) { toast(e.message, true); } };
+    });
+}
+
+/* ---------- raise hand, ask to speak, mute ---------- */
+function renderHandBtn() { const b = $('lHand'); if (!b || !LIVE) return; b.classList.toggle('gold', LIVE.hand); b.innerHTML = '<b>✋</b>' + (LIVE.hand ? 'Hand up' : 'Hand'); }
+function toggleHand() { LIVE.hand = !LIVE.hand; post({ kind: 'hand', up: LIVE.hand, from: LIVE.name }, teacherSid()); renderHandBtn(); if (LIVE.hand) toast('Hand up — the teacher can see it'); }
+function handSheet(name) {
+  if (!name) return;
+  const lower = () => { LIVE.hands = LIVE.hands.filter(n => n !== name); const sid = sidOf(name); if (sid) post({ kind: 'handdown' }, sid); renderStrip(); };
+  sheet('<h2>✋ ' + esc(name) + '</h2>' +
+    '<button class="btn teal block" id="hSpeak">🎤 Ask ' + esc(name) + ' to speak</button>' +
+    '<button class="btn block" id="hStar">⭐ Give a star</button>' +
+    '<button class="btn ghost block" id="hDown">Lower the hand</button>', () => {
+      $('hSpeak').onclick = () => { const sid = sidOf(name); if (sid) post({ kind: 'speak' }, sid); lower(); closeSheet(); toast(name + ' is asked to unmute'); };
+      $('hStar').onclick = () => { send({ kind: 'star', to: name }); lower(); closeSheet(); };
+      $('hDown').onclick = () => { lower(); closeSheet(); };
+    });
+}
+function showSpeak() {
+  const p = $('speakPop');
+  p.innerHTML = '<div style="font-size:40px">🎤</div><div class="ctitle">Your turn to talk!</div><button class="btn teal block" id="spGo">Turn my microphone on</button><button class="btn ghost block" id="spNo" style="min-height:42px">Not now</button>';
+  p.classList.remove('hide');
+  const hide = () => p.classList.add('hide');
+  $('spGo').onclick = () => { try { FRAME.setLocalAudio(true); } catch (e) {} hide(); };
+  $('spNo').onclick = hide; setTimeout(hide, 25000);
+}
+function muteAll() {
+  try { FRAME.updateParticipants({ '*': { setAudio: false } }); toast('🔇 All children muted. Tap a raised hand to let one speak.'); }
+  catch (e) { toast('Could not mute: ' + videoErr(e), true); }
+  closeSheet();
+}
+
+/* ---------- teacher's “More” ---------- */
+function moreSheet() {
+  const pads = Object.keys(LIVE.pads).length;
+  sheet('<h2>More</h2><div class="mgrid">' +
+    '<button class="mbtn" id="mStar">⭐<span>Give a star</span></button>' +
+    '<button class="mbtn" id="mMute">🔇<span>Mute all children</span></button>' +
+    '<button class="mbtn" id="mVoice">🎙<span>Ask for voice answers</span></button>' +
+    '<button class="mbtn" id="mHear">🎧<span>Voice answers' + (LIVE.voicesNew ? ' (' + LIVE.voicesNew + ' new)' : '') + '</span></button>' +
+    '<button class="mbtn" id="mPads">🎨<span>Children’s drawings' + (pads ? ' (' + pads + ')' : '') + '</span></button>' +
+    '<button class="mbtn" id="mPts">🏆<span>Quiz points</span></button>' +
+    '<button class="mbtn" id="mDoor">🚪<span>Waiting room' + (LIVE.openDoor ? ' (door open)' : '') + '</span></button>' +
+    '<button class="mbtn" id="mGame">🎲<span>Snakes &amp; Ladders</span></button>' +
+    '<button class="mbtn" id="mScr">🖥<span>Share screen</span></button>' +
+    '</div><button class="btn ghost block" id="mNo">Close</button>', () => {
+      $('mNo').onclick = closeSheet;
+      $('mStar').onclick = starSheet; $('mMute').onclick = muteAll; $('mVoice').onclick = askVoiceSheet;
+      $('mHear').onclick = () => voiceSheet(LIVE.cls.id, true); $('mPads').onclick = padsSheet; $('mPts').onclick = pointsSheet;
+      $('mDoor').onclick = doorSheet; $('mGame').onclick = gameSheet;
+      $('mScr').onclick = () => sheet('<h2>🖥 Share your screen</h2><div>Use a <b>laptop or computer</b> for this — phones cannot share their screen.</div>' +
+        '<div class="sm">Open the class on the laptop, then tap the <b>Share</b> button at the bottom of the video. Only you can share; children cannot.</div>' +
+        '<button class="btn ghost block" id="scOk">OK</button>', () => { $('scOk').onclick = closeSheet; });
+    });
+}
+function taskSheet() {
+  let secs = 60;
+  sheet('<h2>Give a task to everyone</h2>' +
+    '<div><label class="f" for="tkText">The task</label><input class="in" id="tkText" placeholder="Freeze in your best Bihu pose!"></div>' +
+    '<div><div class="f">Time</div><div class="chips" id="tkSecs">' + [30, 60, 120, 300].map(s => '<button class="chip' + (s === 60 ? ' on' : '') + '" data-s="' + s + '">' + (s < 60 ? s + ' sec' : (s / 60) + ' min') + '</button>').join('') + '</div></div>' +
+    '<button class="btn block" id="tkGo">Show it to everyone</button><button class="btn ghost block" id="tkEnd">End the current task</button>', () => {
+      document.querySelectorAll('#tkSecs [data-s]').forEach(b => b.onclick = () => {
+        secs = parseInt(b.dataset.s, 10); document.querySelectorAll('#tkSecs .chip').forEach(x => x.classList.toggle('on', x === b)); });
+      $('tkGo').onclick = () => { const t = $('tkText').value.trim(); if (!t) return toast('Type the task', true); send({ kind: 'task', text: t, secs: secs }); closeSheet(); };
+      $('tkEnd').onclick = () => { send({ kind: 'endtask' }); closeSheet(); };
+    });
+}
+function starSheet() {
+  const names = kidNames();
+  sheet('<h2>Give a star</h2>' + (names.length
+      ? '<div class="chips">' + names.map((n, i) => '<button class="chip" data-n="' + i + '">⭐ ' + esc(n) + '</button>').join('') + '</div>'
+      : '<div class="sm">No children in the room yet.</div>') +
+    '<button class="btn ghost block" id="stNo">Close</button>', () => {
+      $('stNo').onclick = closeSheet;
+      document.querySelectorAll('[data-n]').forEach(b => b.onclick = () => { send({ kind: 'star', to: names[+b.dataset.n] }); closeSheet(); });
+    });
+}
+
+/* ================= QUIZ RACE =================
+   The teacher asks; each child gets ONE try; the first right answer to reach
+   the teacher's phone wins the point and the question vanishes for everyone. */
+const QCOL = ['#E5484D', '#1F6FEB', '#C98A00', '#2DA44E'], QSHAPE = ['▲', '●', '■', '◆'];
+let QGEN = { op: '+', lvl: 1 };
+function mathQ(g) {
+  const ops = g.op === 'mix' ? ['+', '−', '×'] : [g.op];
+  const op = ops[Math.floor(Math.random() * ops.length)];
+  const R = n => Math.floor(Math.random() * (n + 1));
+  const top = [10, 20, 50][g.lvl] || 10, mtop = [5, 10, 12][g.lvl] || 5;
+  let a, b, ans;
+  if (op === '+') { a = R(top - 1) + 1; b = R(top - a); ans = a + b; }
+  else if (op === '−') { a = R(top - 1) + 1; b = R(a); ans = a - b; }
+  else { a = R(mtop - 1) + 1; b = R(mtop - 1) + 1; ans = a * b; }
+  const set = new Set([ans]);
+  const near = [1, -1, 2, -2, 10, -10, 3, -3, a, -a];
+  for (const d of near.sort(() => Math.random() - .5)) { if (set.size >= 4) break; const v = ans + d; if (v >= 0 && v !== ans) set.add(v); }
+  for (let v = ans + 4; set.size < 4; v++) set.add(v);
+  const o = Array.from(set).sort(() => Math.random() - .5);
+  return { q: a + ' ' + op + ' ' + b + ' = ?', o: o.map(String), a: o.indexOf(ans) };
+}
+function askQuiz(q, o, a, gen) {
+  LIVE.quiz = { id: rid(), q: q, o: o, a: a, gen: gen || null, answered: [], done: false, winner: '' };
+  post({ kind: 'quiz', id: LIVE.quiz.id, q: q, o: o });
+  closeSheet(); renderQuizHost();
+}
+function judge(m, who) {
+  const z = LIVE.quiz;
+  if (!z || z.id !== m.id || z.done || !who || z.answered.some(x => x.who === who)) return;
+  const i = parseInt(m.i, 10), right = i === z.a;
+  z.answered.push({ who: who, i: i, right: right });
+  if (right) {
+    z.done = true; z.winner = who;
+    LIVE.scores[who] = (LIVE.scores[who] || 0) + 1;
+    send({ kind: 'qwin', id: z.id, name: who, a: z.a, ans: z.o[z.a] });
+    send({ kind: 'score', s: LIVE.scores });
+  } else {
+    const kids = kidNames();
+    if (kids.length && kids.every(k => z.answered.some(x => x.who === k))) reveal(); else renderQuizHost();
+  }
+}
+function reveal() { const z = LIVE.quiz; if (!z || z.done) return; z.done = true; send({ kind: 'qwin', id: z.id, name: '', a: z.a, ans: z.o[z.a] }); }
+function renderQuizHost() {
+  const z = LIVE && LIVE.quiz, card = $('quizCard');
+  if (!z) { card.classList.add('hide'); return; }
+  card.innerHTML = '<div class="qhead"><span>QUIZ RACE</span><button class="qx" id="qClose" aria-label="Close quiz">✕</button></div>' +
+    '<div class="qq">' + esc(z.q) + '</div><div class="qgrid">' +
+    z.o.map((t, i) => '<div class="qopt' + (i === z.a ? ' right' : ' dim') + '" style="background:' + QCOL[i] + '">' + QSHAPE[i] + ' ' + esc(t) + (i === z.a ? ' ✓' : '') + '</div>').join('') + '</div>' +
+    (z.done ? '<div class="qres">' + (z.winner ? '🏆 ' + esc(z.winner) + ' got it first!' : 'Nobody got it — answer: ' + esc(z.o[z.a])) + '</div>' : '') +
+    '<div class="sm">' + (z.answered.length ? z.answered.map(x => esc(x.who) + (x.right ? ' ✓' : ' ✗')).join(' · ') : 'Waiting for answers…') + '</div>' +
+    '<div class="row">' + (z.done
+      ? (z.gen ? '<button class="btn small grow" id="qNext">Next maths ➜</button>' : '') + '<button class="btn ghost small grow" id="qNew">New question</button>'
+      : '<button class="btn ghost small grow" id="qReveal">Show the answer</button>') + '</div>';
+  card.classList.remove('hide');
+  $('qClose').onclick = () => { post({ kind: 'qclose', id: z.id }); LIVE.quiz = null; renderQuizHost(); };
+  if ($('qReveal')) $('qReveal').onclick = reveal;
+  if ($('qNext')) $('qNext').onclick = () => { const g = mathQ(z.gen); askQuiz(g.q, g.o, g.a, z.gen); };
+  if ($('qNew')) $('qNew').onclick = quizSheet;
+}
+function renderQuizKid() {
+  const z = LIVE && LIVE.kq, card = $('quizCard');
+  if (!z) { card.classList.add('hide'); return; }
+  const r = z.res, me = r && r.name && r.name === LIVE.name;
+  card.innerHTML = '<div class="qhead"><span>QUIZ RACE · first right answer wins!</span></div><div class="qq">' + esc(z.q) + '</div><div class="qgrid">' +
+    z.o.map((t, i) => {
+      let cls = 'qopt';
+      if (r) cls += i === r.a ? ' right' : ' dim'; else if (z.picked !== null) cls += i === z.picked ? ' picked' : ' dim';
+      return '<button class="' + cls + '" data-q="' + i + '" style="background:' + QCOL[i] + '"' + (z.picked !== null || r ? ' disabled' : '') + '>' + QSHAPE[i] + ' ' + esc(t) + '</button>';
+    }).join('') + '</div>' +
+    (r ? '<div class="qres">' + (me ? '🎉 You got it first! +1 point' : r.name ? '🏆 ' + esc(r.name) + ' got it first!' : 'The answer is ' + esc(r.ans)) + '</div>'
+       : z.picked !== null ? '<div class="qres" style="background:#EEF1F7">Sent! Wait and see…</div>' : '');
+  card.classList.remove('hide');
+  card.querySelectorAll('[data-q]').forEach(b => b.onclick = () => {
+    if (z.picked !== null || z.res) return;
+    z.picked = +b.dataset.q; post({ kind: 'qa', id: z.id, i: z.picked, from: LIVE.name }, teacherSid()); renderQuizKid();
+  });
+}
+function quizSheet() {
+  let mode = 'maths', right = 0;
+  const draw = () => {
+    sheet('<h2>❓ Quiz race</h2><div class="tabs"><button id="qzM" class="' + (mode === 'maths' ? 'on' : '') + '">Quick maths</button><button id="qzO" class="' + (mode === 'own' ? 'on' : '') + '">My question</button></div>' +
+      (mode === 'maths'
+        ? '<div><div class="f">Sums</div><div class="chips" id="qzOp">' + [['+', '+ Add'], ['−', '− Take away'], ['×', '× Times'], ['mix', 'Mix']].map(x => '<button class="chip' + (QGEN.op === x[0] ? ' on' : '') + '" data-op="' + x[0] + '">' + x[1] + '</button>').join('') + '</div></div>' +
+          '<div><div class="f">Level</div><div class="chips" id="qzLv">' + ['Easy', 'Medium', 'Hard'].map((x, i) => '<button class="chip' + (QGEN.lvl === i ? ' on' : '') + '" data-lv="' + i + '">' + x + '</button>').join('') + '</div></div>' +
+          '<div class="sm">Each question is made for you. After someone wins, tap “Next maths” for the next one.</div>' +
+          '<button class="btn block" id="qzGo">Ask a maths question</button>'
+        : '<div><label class="f" for="qzQ">Question</label><input class="in" id="qzQ" placeholder="Which animal says moo?"></div>' +
+          '<div class="f">Answers — tap ✓ next to the right one</div>' +
+          [0, 1, 2, 3].map(i => '<div class="row"><span style="color:' + QCOL[i] + ';font-size:20px;width:22px">' + QSHAPE[i] + '</span><input class="in grow" id="qzA' + i + '" placeholder="' + (i < 2 ? 'Answer ' + (i + 1) : 'Answer ' + (i + 1) + ' (optional)') + '"><button class="chip' + (i === right ? ' on' : '') + '" data-r="' + i + '">✓</button></div>').join('') +
+          '<button class="btn block" id="qzAsk">Ask everyone</button>') +
+      '<button class="btn ghost block" id="qzNo">Close</button>', () => {
+        $('qzNo').onclick = closeSheet;
+        $('qzM').onclick = () => { mode = 'maths'; draw(); };
+        $('qzO').onclick = () => { mode = 'own'; draw(); };
+        if (mode === 'maths') {
+          document.querySelectorAll('[data-op]').forEach(b => b.onclick = () => { QGEN.op = b.dataset.op; draw(); });
+          document.querySelectorAll('[data-lv]').forEach(b => b.onclick = () => { QGEN.lvl = +b.dataset.lv; draw(); });
+          $('qzGo').onclick = () => { const g = mathQ(QGEN); askQuiz(g.q, g.o, g.a, Object.assign({}, QGEN)); };
+        } else {
+          document.querySelectorAll('[data-r]').forEach(b => b.onclick = () => {
+            right = +b.dataset.r; document.querySelectorAll('[data-r]').forEach(x => x.classList.toggle('on', x === b)); });
+          $('qzAsk').onclick = () => {
+            const q = $('qzQ').value.trim(); if (!q) return toast('Type the question', true);
+            const opts = [], idx = {};
+            [0, 1, 2, 3].forEach(i => { const v = $('qzA' + i).value.trim(); if (v) { idx[i] = opts.length; opts.push(v); } });
+            if (opts.length < 2) return toast('Type at least 2 answers', true);
+            if (!(right in idx)) return toast('Tap ✓ next to the right answer', true);
+            askQuiz(q, opts, idx[right], null);
+          };
+        }
+      });
+  };
+  draw();
+}
+function pointsSheet() {
+  const rows = Object.keys(LIVE.scores).sort((a, b) => LIVE.scores[b] - LIVE.scores[a]);
+  sheet('<h2>🏆 Quiz points</h2>' + (rows.length ? rows.map(n => '<div class="card row"><div class="grow" style="font-weight:800">' + esc(n) + '</div><div class="ctitle">' + LIVE.scores[n] + '</div></div>').join('')
+      : '<div class="empty">No points yet. Ask a quiz question!</div>') +
+    (rows.length ? '<button class="btn ghost block" id="ptZero">Start points again from 0</button>' : '') +
+    '<button class="btn ghost block" id="ptNo">Close</button>', () => {
+      $('ptNo').onclick = closeSheet;
+      if ($('ptZero')) $('ptZero').onclick = () => { LIVE.scores = {}; send({ kind: 'score', s: {} }); closeSheet(); };
+    });
+}
+
+/* ================= DRAWING BOARD =================
+   One shared board (the teacher's — children can draw on it too when she
+   allows) and each child's own pad, which they can send to the teacher.
+   A drawing is a list of strokes; points are on a 1000 × 700 sheet. */
+const BW = 1000, BH = 700;
+const COLORS = ['#1B2340', '#E5484D', '#1F6FEB', '#2DA44E', '#F2A900', '#8250DF', '#FFFFFF'];
+const WIDTHS = [5, 12, 30, 44];
+let BOARD = { on: false, all: false, title: '', strokes: [] }, MYPAD = { strokes: [] }, VIEW = null;
+let TOOL = { c: 0, w: 1 }, DRAWING = null, PENDING = [], FLUSH_T = null, SEQ = 0, MYIDS = [];
+function canEdit() { return VIEW === 'mine' || (VIEW === 'shared' && (IS_HOST || BOARD.all)); }
+function curStrokes() { return VIEW === 'mine' ? MYPAD.strokes : BOARD.strokes; }
+function toggleBoard() {
+  if (BOARD.on && VIEW === 'shared') return closeBoard();
+  BOARD.on = true; VIEW = 'shared';
+  post({ kind: 'board', on: true, all: BOARD.all, title: BOARD.title });
+  if (BOARD.strokes.length) sendChunks('bload', BOARD.strokes, '*');
+  renderBoard();
+}
+function closeBoard() { BOARD.on = false; VIEW = null; post({ kind: 'board', on: false }); renderBoard(); }
+function openMyPad() { VIEW = VIEW === 'mine' ? (BOARD.on && !LIVE.boardHidden ? 'shared' : null) : 'mine'; renderBoard(); renderStrip(); }
+function renderBoard() {
+  const el = $('board');
+  if (!LIVE || !VIEW || (VIEW === 'shared' && (!BOARD.on || (!IS_HOST && LIVE.boardHidden)))) { el.classList.add('hide'); return; }
+  el.classList.remove('hide');
+  const edit = canEdit();
+  const sw = COLORS.slice(0, 6).map((c, i) => '<button class="sw' + (TOOL.c === i && TOOL.w < 3 ? ' on' : '') + '" data-c="' + i + '" style="background:' + c + '" aria-label="Colour ' + (i + 1) + '"></button>').join('');
+  const sizes = [0, 1, 2].map(i => '<button class="tb' + (TOOL.w === i ? ' on' : '') + '" data-w="' + i + '" aria-label="Line size ' + (i + 1) + '"><span style="display:inline-block;border-radius:50%;background:currentColor;width:' + (6 + i * 6) + 'px;height:' + (6 + i * 6) + 'px"></span></button>').join('');
+  const tools = edit ? sw + sizes + '<button class="tb' + (TOOL.w === 3 ? ' on' : '') + '" id="bEr">Eraser</button><button class="tb" id="bUndo">↶ Undo</button>' : '';
+  let right = '';
+  if (VIEW === 'mine') right = '<button class="tb" id="bClr">Clear</button><button class="tb gold" id="bSend">Send to teacher</button><button class="tb" id="bClose">✕</button>';
+  else if (IS_HOST) right = '<button class="tb" id="bClr">Clear</button><button class="tb' + (BOARD.all ? ' gold' : '') + '" id="bAll">' + (BOARD.all ? 'Kids drawing: ON' : 'Let kids draw') + '</button><button class="tb" id="bClose">Close board</button>';
+  else right = (BOARD.all ? '' : '<span class="sm" style="color:#C9CEDD;padding:0 6px">' + esc(BOARD.title || 'Teacher’s board') + '</span>') + '<button class="tb" id="bHide">See video</button>';
+  $('bTools').innerHTML = tools + '<span class="grow"></span>' + right;
+  $('bTitle').textContent = VIEW === 'mine' ? 'My drawing pad' : (BOARD.title || (IS_HOST ? 'Board — everyone sees this' : ''));
+  $('bTools').querySelectorAll('[data-c]').forEach(b => b.onclick = () => { TOOL.c = +b.dataset.c; if (TOOL.w === 3) TOOL.w = 1; renderBoard(); });
+  $('bTools').querySelectorAll('[data-w]').forEach(b => b.onclick = () => { TOOL.w = +b.dataset.w; renderBoard(); });
+  if ($('bEr')) $('bEr').onclick = () => { TOOL.w = 3; renderBoard(); };
+  if ($('bUndo')) $('bUndo').onclick = undo;
+  if ($('bClr')) $('bClr').onclick = () => { if (VIEW === 'mine') MYPAD.strokes = []; else { BOARD.strokes = []; post({ kind: 'bclear' }); } drawAll(); };
+  if ($('bSend')) $('bSend').onclick = async () => {
+    if (!MYPAD.strokes.length) return toast('Draw something first', true);
+    await sendChunks('pad', MYPAD.strokes, teacherSid(), { from: LIVE.name }); toast('Sent to the teacher! 🎨');
+  };
+  if ($('bClose')) $('bClose').onclick = () => { if (VIEW === 'mine') openMyPad(); else closeBoard(); };
+  if ($('bAll')) $('bAll').onclick = () => { BOARD.all = !BOARD.all; post({ kind: 'board', on: true, all: BOARD.all, title: BOARD.title }); renderBoard(); };
+  if ($('bHide')) $('bHide').onclick = () => { LIVE.boardHidden = true; VIEW = null; renderBoard(); renderStrip(); };
+  fitBoard();
+}
+function fitBoard() {
+  const st = $('bStage'), cv = $('bCanvas');
+  const w = st.clientWidth - 16, h = st.clientHeight - 16; if (w <= 0 || h <= 0) return;
+  const sc = Math.min(w / BW, h / BH), dpr = window.devicePixelRatio || 1;
+  cv.style.width = Math.floor(BW * sc) + 'px'; cv.style.height = Math.floor(BH * sc) + 'px';
+  cv.width = Math.floor(BW * sc * dpr); cv.height = Math.floor(BH * sc * dpr);
+  cv._sc = sc * dpr; drawAll();
+}
+function ctx2() { const cv = $('bCanvas'), x = cv.getContext('2d'); x.setTransform(cv._sc || 1, 0, 0, cv._sc || 1, 0, 0); x.lineCap = 'round'; x.lineJoin = 'round'; return x; }
+function paint(x, s, from) {
+  const p = s.p; if (!p || p.length < 2) return;
+  x.strokeStyle = x.fillStyle = COLORS[s.c] || COLORS[0]; x.lineWidth = WIDTHS[s.w] || 12;
+  if (p.length === 2) { x.beginPath(); x.arc(p[0], p[1], x.lineWidth / 2, 0, Math.PI * 2); x.fill(); return; }
+  const f = Math.max(0, (from || 0) - 2);
+  x.beginPath(); x.moveTo(p[f], p[f + 1]); for (let i = f + 2; i < p.length; i += 2) x.lineTo(p[i], p[i + 1]); x.stroke();
+}
+function drawAll() {
+  if ($('board').classList.contains('hide')) return;
+  const cv = $('bCanvas'), x = ctx2();
+  x.save(); x.setTransform(1, 0, 0, 1, 0, 0); x.fillStyle = '#fff'; x.fillRect(0, 0, cv.width, cv.height); x.restore();
+  curStrokes().forEach(s => paint(x, s, 0));
+}
+function boardStroke(m) {
+  let s = BOARD.strokes.find(z => z.id === m.id);
+  if (!s) { s = { id: String(m.id), c: +m.c || 0, w: +m.w || 1, p: [] }; BOARD.strokes.push(s); }
+  const from = s.p.length; s.p = s.p.concat((m.p || []).map(Number));
+  if (VIEW === 'shared' && !$('board').classList.contains('hide')) paint(ctx2(), s, from);
+}
+function flush() {
+  FLUSH_T = null;
+  if (!DRAWING || !PENDING.length || VIEW !== 'shared') { PENDING = []; return; }
+  post({ kind: 'st', id: DRAWING.id, c: DRAWING.c, w: DRAWING.w, p: PENDING }); PENDING = [];
+}
+function undo() {
+  if (VIEW === 'mine') { MYPAD.strokes.pop(); return drawAll(); }
+  const id = MYIDS.pop(); if (!id) return;
+  BOARD.strokes = BOARD.strokes.filter(s => s.id !== id); post({ kind: 'bundo', id: id }); drawAll();
+}
+function boardPoint(e) { const r = $('bCanvas').getBoundingClientRect(); return [Math.round((e.clientX - r.left) / r.width * BW), Math.round((e.clientY - r.top) / r.height * BH)]; }
+function wireCanvas() {
+  const cv = $('bCanvas');
+  cv.addEventListener('pointerdown', e => {
+    if (!canEdit()) return; e.preventDefault(); cv.setPointerCapture(e.pointerId);
+    const pt = boardPoint(e), w = TOOL.w, c = w === 3 ? 6 : TOOL.c;
+    DRAWING = { id: (LIVE ? LIVE.tag : 'x') + (++SEQ), c: c, w: w, p: pt.slice() };
+    curStrokes().push(DRAWING); paint(ctx2(), DRAWING, 0);
+    if (VIEW === 'shared') { MYIDS.push(DRAWING.id); post({ kind: 'st', id: DRAWING.id, c: c, w: w, p: pt }); }
+  });
+  cv.addEventListener('pointermove', e => {
+    if (!DRAWING) return; e.preventDefault();
+    const pt = boardPoint(e), p = DRAWING.p;
+    if (Math.abs(pt[0] - p[p.length - 2]) + Math.abs(pt[1] - p[p.length - 1]) < 3) return;
+    const from = p.length; p.push(pt[0], pt[1]); paint(ctx2(), DRAWING, from);
+    if (VIEW === 'shared') { PENDING.push(pt[0], pt[1]); if (!FLUSH_T) FLUSH_T = setTimeout(flush, 90); }
+  });
+  const end = () => { if (!DRAWING) return; if (FLUSH_T) { clearTimeout(FLUSH_T); } flush(); DRAWING = null; };
+  cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
+  window.addEventListener('resize', () => { if (!$('board').classList.contains('hide')) fitBoard(); if (!$('game').classList.contains('hide')) fitGame(); });
+}
+function thumb(strokes, w) {
+  const cv = document.createElement('canvas'), h = Math.round(w * BH / BW), dpr = window.devicePixelRatio || 1;
+  cv.width = w * dpr; cv.height = h * dpr; cv.style.width = w + 'px'; cv.style.height = h + 'px'; cv.className = 'thumb';
+  const x = cv.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, cv.width, cv.height);
+  x.setTransform(w * dpr / BW, 0, 0, w * dpr / BW, 0, 0); x.lineCap = 'round'; x.lineJoin = 'round';
+  strokes.forEach(s => paint(x, s, 0)); return cv;
+}
+function padsSheet() {
+  LIVE.padsNew = 0; renderStrip();
+  const names = Object.keys(LIVE.pads).sort((a, b) => LIVE.pads[b].at - LIVE.pads[a].at);
+  sheet('<h2>🎨 Children’s drawings</h2>' + (names.length ? names.map((n, i) =>
+      '<div class="card"><div style="font-weight:800">' + esc(n) + '</div><div id="pth' + i + '"></div>' +
+      '<div class="row"><button class="btn teal small grow" data-show="' + i + '">Show everyone</button><button class="btn small" data-pst="' + i + '">⭐ Star</button></div></div>').join('')
+      : '<div class="empty">No drawings yet. Children tap “✏️ Draw”, draw, then “Send to teacher”.</div>') +
+    '<button class="btn ghost block" id="pdNo">Close</button>', () => {
+      $('pdNo').onclick = closeSheet;
+      names.forEach((n, i) => $('pth' + i).appendChild(thumb(LIVE.pads[n].strokes, Math.min(320, window.innerWidth - 64))));
+      document.querySelectorAll('[data-show]').forEach(b => b.onclick = () => {
+        const n = names[+b.dataset.show];
+        BOARD.strokes = LIVE.pads[n].strokes.map((s, j) => ({ id: 'p' + rid() + j, c: s.c, w: s.w, p: s.p.slice() }));
+        BOARD.on = true; BOARD.all = false; BOARD.title = n + '’s drawing'; VIEW = 'shared'; MYIDS = [];
+        post({ kind: 'board', on: true, all: false, title: BOARD.title }); sendChunks('bload', BOARD.strokes, '*');
+        closeSheet(); renderBoard();
+      });
+      document.querySelectorAll('[data-pst]').forEach(b => b.onclick = () => { send({ kind: 'star', to: names[+b.dataset.pst] }); toast('⭐ sent'); });
+    });
+}
+
+/* ================= VOICE ANSWERS =================
+   The teacher asks (“Sing the first line”); each child records on their own
+   phone and sends it. Recordings are kept for 30 days, then deleted. */
+function askVoiceSheet() {
+  let secs = 30;
+  sheet('<h2>🎙 Ask for voice answers</h2>' +
+    '<div><label class="f" for="vaT">What should they say or sing?</label><input class="in" id="vaT" placeholder="Tell us your favourite animal and why"></div>' +
+    '<div><div class="f">Longest recording</div><div class="chips" id="vaS">' + [15, 30, 60].map(s => '<button class="chip' + (s === 30 ? ' on' : '') + '" data-s="' + s + '">' + s + ' sec</button>').join('') + '</div></div>' +
+    '<button class="btn block" id="vaGo">Ask everyone</button><button class="btn ghost block" id="vaNo">Close</button>', () => {
+      document.querySelectorAll('#vaS [data-s]').forEach(b => b.onclick = () => { secs = +b.dataset.s; document.querySelectorAll('#vaS .chip').forEach(x => x.classList.toggle('on', x === b)); });
+      $('vaNo').onclick = closeSheet;
+      $('vaGo').onclick = () => { const t = $('vaT').value.trim(); if (!t) return toast('Type what to say', true); post({ kind: 'voice', id: rid(), text: t, secs: secs }); closeSheet(); toast('Asked! Answers appear under 🎙'); };
+    });
+}
+function pickMime() {
+  if (!window.MediaRecorder) return null;
+  for (const t of ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus']) { try { if (MediaRecorder.isTypeSupported(t)) return t; } catch (e) {} }
+  return '';
+}
+function openVoiceCard(m) {
+  if (!LIVE) return;
+  LIVE.rec = { id: m.id, text: String(m.text || '').slice(0, 200), secs: Math.min(60, Math.max(5, +m.secs || 30)), state: 'idle', blob: null, url: '', took: 0 };
+  renderVoiceCard();
+}
+function renderVoiceCard() {
+  const r = LIVE && LIVE.rec, el = $('voiceCard');
+  if (!r || r.min) { el.classList.add('hide'); renderStrip(); return; }
+  let body = '';
+  if (r.state === 'idle') body = '<button class="btn block" id="vcRec" style="min-height:58px;font-size:17px">🎙 Tap to record (up to ' + r.secs + ' sec)</button><button class="btn ghost block" id="vcNo" style="min-height:42px">Not now</button>';
+  else if (r.state === 'rec') body = '<div class="row"><div class="recdot"></div><div class="grow" style="font-weight:800">Recording… <span id="vcLeft">' + r.left + '</span> sec left</div></div><button class="btn red block" id="vcStop">■ Stop</button>';
+  else if (r.state === 'done') body = '<audio controls src="' + r.url + '" style="width:100%"></audio><div class="row"><button class="btn ghost small grow" id="vcAgain">Record again</button><button class="btn teal small grow" id="vcSend">Send to teacher</button></div>';
+  else if (r.state === 'sending') body = '<div class="sm">Sending…</div>';
+  else if (r.state === 'sent') body = '<div class="qres">✓ Sent to the teacher!</div>';
+  el.innerHTML = '<div class="qhead"><span>🎙 VOICE ANSWER</span><span>' + (r.state === 'idle' || r.state === 'done' ? '<button class="qx" id="vcMin" aria-label="Later">–</button> ' : '') + '<button class="qx" id="vcX" aria-label="Close">✕</button></span></div><div style="font-weight:800;font-size:17px">' + esc(r.text) + '</div>' + body;
+  el.classList.remove('hide');
+  const close = () => { if (r.mr && r.mr.state === 'recording') { r.cancel = true; r.mr.stop(); } LIVE.rec = null; renderVoiceCard(); };
+  $('vcX').onclick = close; if ($('vcNo')) $('vcNo').onclick = close;
+  if ($('vcMin')) $('vcMin').onclick = () => { r.min = true; renderVoiceCard(); };
+  renderStrip();
+  if ($('vcRec')) $('vcRec').onclick = startRec;
+  if ($('vcAgain')) $('vcAgain').onclick = startRec;
+  if ($('vcStop')) $('vcStop').onclick = () => { if (r.mr && r.mr.state === 'recording') r.mr.stop(); };
+  if ($('vcSend')) $('vcSend').onclick = sendRec;
+}
+async function startRec() {
+  const r = LIVE.rec, mime = pickMime();
+  if (mime === null) return toast('This phone cannot record here. Try Chrome.', true);
+  let stream;
+  try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }); }
+  catch (e) { return toast('Allow the microphone to record', true); }
+  const chunks = [];
+  const mr = new MediaRecorder(stream, Object.assign(mime ? { mimeType: mime } : {}, { audioBitsPerSecond: 32000 }));
+  r.mr = mr; r.cancel = false; r.state = 'rec'; r.left = r.secs; const t0 = Date.now();
+  mr.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+  mr.onstop = () => {
+    stream.getTracks().forEach(t => t.stop()); clearInterval(r.t);
+    if (r.cancel || !LIVE || LIVE.rec !== r) return;
+    r.blob = new Blob(chunks, { type: mr.mimeType || mime || 'audio/webm' }); r.took = Math.round((Date.now() - t0) / 1000);
+    if (r.url) URL.revokeObjectURL(r.url); r.url = URL.createObjectURL(r.blob); r.state = 'done'; renderVoiceCard();
+  };
+  mr.start(500); renderVoiceCard();
+  r.t = setInterval(() => { r.left--; if ($('vcLeft')) $('vcLeft').textContent = Math.max(0, r.left); if (r.left <= 0 && mr.state === 'recording') mr.stop(); }, 1000);
+}
+async function sendRec() {
+  const r = LIVE.rec; if (!r || !r.blob) return;
+  r.state = 'sending'; renderVoiceCard();
+  try {
+    const b64 = await new Promise((ok, bad) => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result).split(',')[1] || ''); fr.onerror = bad; fr.readAsDataURL(r.blob); });
+    await api({ action: 'voice_add', class_id: LIVE.cls.id, data: b64, mime: r.blob.type, secs: r.took, prompt: r.text });
+    post({ kind: 'vnew', from: LIVE.name }, teacherSid());
+    r.state = 'sent'; renderVoiceCard(); setTimeout(() => { if (LIVE && LIVE.rec === r) { LIVE.rec = null; renderVoiceCard(); } }, 2500);
+  } catch (e) { r.state = 'done'; renderVoiceCard(); toast(e.message, true); }
+}
+/* the teacher listens — during the class, or later from the Classes page */
+async function voiceSheet(classId, live) {
+  if (live && LIVE) { LIVE.voicesNew = 0; renderStrip(); }
+  let list = [];
+  try { list = (await api({ action: 'voices', class_id: classId })).voices || []; } catch (e) { return toast(e.message, true); }
+  sheet('<h2>🎧 Voice answers</h2>' + (list.length ? list.map((v, i) =>
+      '<div class="card"><div class="row"><div class="grow"><div style="font-weight:800">' + esc(v.child) + (v.heard ? '' : ' <span class="tag wait">new</span>') + '</div>' +
+      '<div class="sm">' + esc(v.prompt || '') + ' · ' + v.secs + ' sec</div></div></div>' +
+      '<div id="vp' + i + '"></div><div class="row"><button class="btn teal small grow" data-play="' + i + '">▶ Play</button>' +
+      (live ? '<button class="btn small" data-vst="' + i + '">⭐</button>' : '') + '<button class="btn ghost small" data-vdel="' + i + '" aria-label="Delete">🗑</button></div></div>').join('')
+      : '<div class="empty">No voice answers yet.</div>') +
+    '<div class="sm">Recordings are deleted by themselves after 30 days.</div><button class="btn ghost block" id="vlNo">Close</button>', () => {
+      $('vlNo').onclick = closeSheet;
+      document.querySelectorAll('[data-play]').forEach(b => b.onclick = async () => {
+        const i = +b.dataset.play, v = list[i]; b.disabled = true; b.textContent = 'Loading…';
+        try {
+          const g = await api({ action: 'voice_get', id: v.id });
+          const bin = atob(g.data), arr = new Uint8Array(bin.length); for (let k = 0; k < bin.length; k++) arr[k] = bin.charCodeAt(k);
+          const url = URL.createObjectURL(new Blob([arr], { type: g.mime || 'audio/webm' }));
+          $('vp' + i).innerHTML = '<audio controls autoplay src="' + url + '" style="width:100%"></audio>'; b.remove();
+        } catch (e) { b.disabled = false; b.textContent = '▶ Play'; toast(e.message, true); }
+      });
+      document.querySelectorAll('[data-vst]').forEach(b => b.onclick = () => { send({ kind: 'star', to: list[+b.dataset.vst].child }); toast('⭐ sent'); });
+      document.querySelectorAll('[data-vdel]').forEach(b => b.onclick = async () => {
+        if (!confirm('Delete this recording?')) return;
+        try { await api({ action: 'voice_del', id: list[+b.dataset.vdel].id }); voiceSheet(classId, live); } catch (e) { toast(e.message, true); }
+      });
+    });
+}
+
+/* ================= SNAKES & LADDERS =================
+   Everyone sees one board. On their turn a child taps Roll; the teacher's phone
+   throws the dice (so nobody can cheat) and tells everyone where the piece goes.
+   Overshooting 100 bounces back. Up to 7 players. */
+const SNAKES = { 18: 4, 32: 11, 46: 25, 59: 39, 69: 50, 76: 55, 89: 70, 97: 77 };
+const LADDERS = { 3: 23, 8: 29, 15: 36, 28: 48, 42: 63, 51: 73, 66: 87, 79: 99 };
+const PCOL = ['#E5484D', '#1F6FEB', '#2DA44E', '#C98A00', '#8250DF', '#DB2777', '#0F6E70'];
+let GAME = null, GSHOW = { pos: {}, busy: false, hidden: false };
+function gameSheet() {
+  const kids = kidNames();
+  const picked = new Set(kids);
+  let me = false;
+  const draw = () => sheet('<h2>🎲 Snakes & Ladders</h2>' +
+    (kids.length ? '<div class="f">Who plays? (up to 7)</div><div class="chips">' + kids.map((n, i) => '<button class="chip' + (picked.has(n) ? ' on' : '') + '" data-pk="' + i + '">' + esc(n) + '</button>').join('') +
+      '<button class="chip' + (me ? ' on' : '') + '" id="gMe">Me too</button></div>' : '<div class="sm">No children in the room yet. You can still try it alone.</div>') +
+    '<button class="btn block" id="gGo">Start the game</button>' + (GAME ? '<button class="btn ghost block" id="gEnd">End the current game</button>' : '') +
+    '<button class="btn ghost block" id="gNo">Close</button>', () => {
+      $('gNo').onclick = closeSheet;
+      document.querySelectorAll('[data-pk]').forEach(b => b.onclick = () => { const n = kids[+b.dataset.pk]; picked.has(n) ? picked.delete(n) : picked.add(n); draw(); });
+      if ($('gMe')) $('gMe').onclick = () => { me = !me; draw(); };
+      if ($('gEnd')) $('gEnd').onclick = () => { send({ kind: 'game', g: null }); closeSheet(); };
+      $('gGo').onclick = () => {
+        let names = Array.from(picked); if (me || !names.length) names.push(LIVE.name);
+        names = names.slice(0, 7);
+        send({ kind: 'game', g: { id: rid(), pl: names.map((n, i) => ({ n: n, p: 0, c: i })), t: 0, w: '', seq: 0, last: null } });
+        closeSheet();
+      };
+    });
+  draw();
+}
+function rollDice() { const a = new Uint8Array(1); crypto.getRandomValues(a); return (a[0] % 6) + 1; }
+function hostRoll(asked) {
+  const g = GAME; if (!g || g.w || !LIVE || !LIVE.host) return;
+  if (asked && asked !== g.pl[g.t].n) return;
+  const n = JSON.parse(JSON.stringify(g));
+  const pl = n.pl[n.t], r = rollDice(), from = pl.p;
+  let x = from + r; if (x > 100) x = 200 - x;             // bounce back from 100
+  const to = SNAKES[x] || LADDERS[x] || x;
+  pl.p = to;
+  n.seq = g.seq + 1; n.last = { n: pl.n, r: r, f: from, x: x, to: to };
+  if (to === 100) n.w = pl.n; else n.t = (g.t + 1) % g.pl.length;
+  send({ kind: 'game', g: n });
+  if (to === 100 && pl.n !== LIVE.name) send({ kind: 'star', to: pl.n });
+}
+function hostSkip() { const g = GAME; if (!g || g.w) return; const n = JSON.parse(JSON.stringify(g)); n.seq++; n.t = (g.t + 1) % g.pl.length; n.last = { n: g.pl[g.t].n, skip: true }; send({ kind: 'game', g: n }); }
+function gotGame(g) {
+  const old = GAME; GAME = g;
+  if (!g) { $('game').classList.add('hide'); GSHOW = { pos: {}, busy: false, hidden: false }; renderStrip(); return; }
+  if (!old || old.id !== g.id) { GSHOW = { pos: {}, busy: false, hidden: false }; g.pl.forEach(p => GSHOW.pos[p.n] = p.p); }
+  const myTurn = !g.w && g.pl[g.t] && g.pl[g.t].n === (LIVE && LIVE.name);
+  if (myTurn) GSHOW.hidden = false;
+  if (!GSHOW.hidden && LIVE && LIVE.rec && (LIVE.rec.state === 'idle' || LIVE.rec.state === 'done')) { LIVE.rec.min = true; renderVoiceCard(); }
+  renderGame();
+  if (old && old.id === g.id && g.last && !g.last.skip && g.seq > old.seq) animateMove(g.last); else { g.pl.forEach(p => GSHOW.pos[p.n] = p.p); drawGame(); }
+  renderStrip();
+}
+async function animateMove(m) {
+  GSHOW.busy = true; renderGamePanel();
+  let p = m.f;
+  const path = []; let up = true;
+  for (let i = 0; i < m.r; i++) { if (up && p === 100) up = false; p += up ? 1 : -1; path.push(p); }
+  for (const s of path) { GSHOW.pos[m.n] = s; drawGame(); await sleep(220); }
+  if (m.to !== m.x) { await sleep(250); GSHOW.pos[m.n] = m.to; drawGame(); }
+  GSHOW.busy = false; renderGamePanel();
+}
+function gameMsg(m) {
+  if (!m) return 'Tap Roll to start!';
+  if (m.skip) return esc(m.n) + ' was skipped';
+  let t = esc(m.n) + ' rolled <b>' + m.r + '</b>';
+  if (LADDERS[m.x]) t += ' — 🪜 up the ladder to ' + m.to + '!';
+  else if (SNAKES[m.x]) t += ' — 🐍 down the snake to ' + m.to + '!';
+  else t += ' → ' + m.to;
+  return t;
+}
+function renderGame() {
+  const el = $('game');
+  if (!GAME || !LIVE || GSHOW.hidden) { el.classList.add('hide'); return; }
+  el.classList.remove('hide'); fitGame(); renderGamePanel();
+}
+function renderGamePanel() {
+  const g = GAME; if (!g || !LIVE) return;
+  const cur = g.pl[g.t], myTurn = !g.w && cur && cur.n === LIVE.name;
+  const host = LIVE.host;
+  $('gPanel').innerHTML =
+    '<div class="gpl">' + g.pl.map(p => '<span class="gtag' + (!g.w && p === cur ? ' on' : '') + '"><i style="background:' + PCOL[p.c % 7] + '"></i>' + esc(p.n) + ' · ' + p.p + '</span>').join('') + '</div>' +
+    (g.w ? '<div class="qres">🏆 ' + esc(g.w) + ' wins! 🎉</div>'
+         : '<div class="gmsg">' + gameMsg(g.last) + '</div>') +
+    '<div class="row">' +
+      (!g.w && myTurn ? '<button class="btn grow" id="gRoll"' + (GSHOW.busy ? ' disabled' : '') + ' style="min-height:56px;font-size:18px">🎲 Roll!</button>'
+        : !g.w ? '<div class="grow gwait">' + esc(cur ? cur.n : '') + '’s turn…</div>' : '<span class="grow"></span>') +
+      (host && !g.w && !myTurn ? '<button class="tb" id="gFor">Roll for ' + esc(cur.n) + '</button><button class="tb" id="gSkip">Skip</button>' : '') +
+      (host ? '<button class="tb" id="gNew">' + (g.w ? 'Play again' : 'Menu') + '</button>' : '<button class="tb" id="gHide">See video</button>') +
+    '</div>';
+  if ($('gRoll')) $('gRoll').onclick = () => {
+    $('gRoll').disabled = true;
+    if (host) hostRoll(); else post({ kind: 'roll', id: g.id, seq: g.seq, from: LIVE.name }, teacherSid());
+    setTimeout(() => { if ($('gRoll')) $('gRoll').disabled = false; }, 4000);
+  };
+  if ($('gFor')) $('gFor').onclick = () => hostRoll();
+  if ($('gSkip')) $('gSkip').onclick = hostSkip;
+  if ($('gNew')) $('gNew').onclick = gameSheet;
+  if ($('gHide')) $('gHide').onclick = () => { GSHOW.hidden = true; renderGame(); renderStrip(); };
+}
+function fitGame() {
+  const st = $('gStage'), cv = $('gCanvas');
+  const s = Math.max(100, Math.min(st.clientWidth - 12, st.clientHeight - 12)), dpr = window.devicePixelRatio || 1;
+  cv.style.width = cv.style.height = s + 'px'; cv.width = cv.height = Math.floor(s * dpr); cv._s = s * dpr; drawGame();
+}
+function cellXY(n, cs) {
+  const i = Math.max(1, n) - 1, row = Math.floor(i / 10); let col = i % 10; if (row % 2) col = 9 - col;
+  return [(col + .5) * cs, (9 - row + .5) * cs];
+}
+function drawGame() {
+  const cv = $('gCanvas'); if (!GAME || $('game').classList.contains('hide') || !cv._s) return;
+  const x = cv.getContext('2d'), S = cv._s, cs = S / 10;
+  for (let n = 1; n <= 100; n++) {
+    const [cx, cy] = cellXY(n, cs);
+    x.fillStyle = ['#FFF4D6', '#E3F4EF', '#FDE2D0', '#E4E0F7'][(n + Math.floor((n - 1) / 10)) % 4]; x.fillRect(cx - cs / 2, cy - cs / 2, cs, cs);
+    x.fillStyle = '#5B647D'; x.font = '700 ' + Math.round(cs * .24) + 'px "Nunito Sans", sans-serif'; x.textAlign = 'left'; x.fillText(String(n), cx - cs / 2 + cs * .07, cy - cs / 2 + cs * .28);
+  }
+  x.lineCap = 'round';
+  Object.keys(LADDERS).forEach(a => {
+    const [x1, y1] = cellXY(+a, cs), [x2, y2] = cellXY(LADDERS[a], cs);
+    const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy), ox = -dy / L * cs * .16, oy = dx / L * cs * .16;
+    x.strokeStyle = '#8A5A00'; x.lineWidth = cs * .07;
+    [[1], [-1]].forEach(([k]) => { x.beginPath(); x.moveTo(x1 + ox * k, y1 + oy * k); x.lineTo(x2 + ox * k, y2 + oy * k); x.stroke(); });
+    const rungs = Math.max(2, Math.round(L / (cs * .45)));
+    x.lineWidth = cs * .05;
+    for (let r = 1; r < rungs; r++) { const t = r / rungs; x.beginPath(); x.moveTo(x1 + dx * t + ox, y1 + dy * t + oy); x.lineTo(x1 + dx * t - ox, y1 + dy * t - oy); x.stroke(); }
+  });
+  Object.keys(SNAKES).forEach((a, k) => {
+    const [x1, y1] = cellXY(+a, cs), [x2, y2] = cellXY(SNAKES[a], cs);
+    const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy), nx = -dy / L, ny = dx / L, w = cs * .45;
+    x.strokeStyle = ['#2DA44E', '#16A34A', '#65A30D', '#0D9488'][k % 4]; x.lineWidth = cs * .16;
+    x.beginPath(); x.moveTo(x1, y1);
+    x.bezierCurveTo(x1 + dx * .33 + nx * w, y1 + dy * .33 + ny * w, x1 + dx * .66 - nx * w, y1 + dy * .66 - ny * w, x2, y2); x.stroke();
+    x.fillStyle = x.strokeStyle; x.beginPath(); x.arc(x1, y1, cs * .17, 0, Math.PI * 2); x.fill();
+    x.fillStyle = '#fff'; x.beginPath(); x.arc(x1 - cs * .06, y1 - cs * .04, cs * .04, 0, Math.PI * 2); x.arc(x1 + cs * .06, y1 - cs * .04, cs * .04, 0, Math.PI * 2); x.fill();
+  });
+  const at = {};
+  GAME.pl.forEach(p => { const pos = GSHOW.pos[p.n] != null ? GSHOW.pos[p.n] : p.p; (at[pos] = at[pos] || []).push(p); });
+  Object.keys(at).forEach(pos => {
+    const list = at[pos], n = +pos;
+    let base = n === 0 ? [cs * .5, S - cs * .5] : cellXY(n, cs);
+    list.forEach((p, i) => {
+      const k = list.length > 1 ? (i - (list.length - 1) / 2) * cs * .22 : 0;
+      const cx = base[0] + k, cy = base[1] + (n === 0 ? 0 : cs * .08), r = cs * .26;
+      x.fillStyle = 'rgba(0,0,0,.25)'; x.beginPath(); x.arc(cx + 2, cy + 3, r, 0, Math.PI * 2); x.fill();
+      x.fillStyle = PCOL[p.c % 7]; x.beginPath(); x.arc(cx, cy, r, 0, Math.PI * 2); x.fill();
+      x.strokeStyle = '#fff'; x.lineWidth = cs * .05; x.stroke();
+      x.fillStyle = '#fff'; x.font = '800 ' + Math.round(cs * .28) + 'px "Baloo 2", sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+      x.fillText(p.n.charAt(0).toUpperCase(), cx, cy + 1); x.textBaseline = 'alphabetic';
+    });
+  });
+}
+
+/* ================= STAR CARD =================
+   Each child's stars and quiz points from a class, made into a picture the
+   parent can share on WhatsApp (which also tells other parents about the class). */
+const CERTK = 'openroom:certs';
+function certs() { try { return JSON.parse(localStorage.getItem(CERTK) || '{}'); } catch (e) { return {}; } }
+function certsKeep(o) { try { localStorage.setItem(CERTK, JSON.stringify(o)); } catch (e) {} }
+function certFor(c) {
+  const all = certs();
+  if (!all[c.id]) all[c.id] = { title: c.title, name: LIVE.name, stars: 0, points: 0, at: c.starts_at, teacher: INFO.teacher || '' };
+  else all[c.id].name = LIVE.name;
+  Object.keys(all).forEach(k => { if (Date.now() - new Date(all[k].at).getTime() > 60 * 86400000) delete all[k]; });
+  certsKeep(all);
+}
+function certAdd(k, n) { if (!LIVE) return; const all = certs(), c = all[LIVE.cls.id]; if (!c) return; c[k] = (c[k] || 0) + n; certsKeep(all); }
+function certSet(k, v) { if (!LIVE) return; const all = certs(), c = all[LIVE.cls.id]; if (!c) return; c[k] = v; certsKeep(all); }
+function starShape(x, cx, cy, r) {
+  x.beginPath();
+  for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * .45 : r; x.lineTo(cx + rr * Math.cos(a), cy + rr * Math.sin(a)); }
+  x.closePath();
+}
+function fitText(x, t, max, size, weight, fam) {
+  let s = size; do { x.font = weight + ' ' + s + 'px ' + fam; s -= 4; } while (x.measureText(t).width > max && s > 24); return x.font;
+}
+async function drawCert(c) {
+  try { await Promise.all([document.fonts.load('800 80px "Baloo 2"'), document.fonts.load('700 40px "Nunito Sans"')]); } catch (e) {}
+  const W = 1080, H = 1350, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const x = cv.getContext('2d'), FD = '"Baloo 2", "Trebuchet MS", sans-serif', FB = '"Nunito Sans", system-ui, sans-serif';
+  x.fillStyle = '#FFF8E6'; x.fillRect(0, 0, W, H);
+  x.strokeStyle = '#F2A900'; x.lineWidth = 14; x.strokeRect(40, 40, W - 80, H - 80);
+  x.strokeStyle = '#0F6E70'; x.lineWidth = 3; x.strokeRect(66, 66, W - 132, H - 132);
+  x.textAlign = 'center'; x.fillStyle = '#0F6E70'; x.font = '800 40px ' + FB; x.fillText('O P E N   R O O M', W / 2, 150);
+  x.fillStyle = '#F2A900'; starShape(x, W / 2, 330, 130); x.fill();
+  if (c.stars) { x.fillStyle = '#1B2340'; x.font = '800 92px ' + FD; x.fillText(String(c.stars), W / 2, 362); }
+  x.fillStyle = '#5B647D'; x.font = '700 50px ' + FB; x.fillText('Well done,', W / 2, 560);
+  x.fillStyle = '#1B2340'; x.font = fitText(x, c.name || 'Star', W - 200, 120, '800', FD); x.fillText(c.name || 'Star', W / 2, 690);
+  x.fillStyle = '#5B647D'; x.font = '700 42px ' + FB; x.fillText('for joining the class', W / 2, 780);
+  x.fillStyle = '#0F6E70'; const title = String(c.title || ''); x.font = fitText(x, title, W - 200, 64, '800', FD); x.fillText(title, W / 2, 870);
+  const line = [];
+  if (c.stars) line.push('★ ' + c.stars + (c.stars === 1 ? ' star' : ' stars'));
+  if (c.points) line.push('🏆 ' + c.points + (c.points === 1 ? ' quiz point' : ' quiz points'));
+  if (line.length) { x.fillStyle = '#B07A00'; x.font = '800 54px ' + FB; x.fillText(line.join('   '), W / 2, 1000); }
+  x.fillStyle = '#5B647D'; x.font = '700 36px ' + FB;
+  x.fillText(new Date(c.at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) + (c.teacher ? '  ·  Teacher: ' + c.teacher : ''), W / 2, 1150);
+  x.fillStyle = '#0F6E70'; x.font = '800 34px ' + FB; x.fillText(location.host, W / 2, 1220);
+  return cv;
+}
+async function showCert(classId, finished) {
+  const c = certs()[classId]; if (!c) return;
+  const cv = await drawCert(c);
+  const blob = await new Promise(r => cv.toBlob(r, 'image/png'));
+  const url = URL.createObjectURL(blob), file = 'open-room-' + String(c.name || 'star').replace(/\W+/g, '-').toLowerCase() + '.png';
+  const msg = (c.name || 'My child') + (c.stars ? ' earned ' + c.stars + ' star' + (c.stars === 1 ? '' : 's') + ' in' : ' joined') + ' “' + c.title + '” at Open Room — small live classes for kids. ' + location.origin + location.pathname;
+  sheet('<h2>' + (finished ? 'Class finished! 🎉' : '⭐ Star card') + '</h2><img src="' + url + '" alt="Star card for ' + esc(c.name) + '" style="width:100%;border-radius:14px">' +
+    '<button class="btn teal block" id="ceShare">Share on WhatsApp</button><a class="btn ghost block" id="ceSave" href="' + url + '" download="' + file + '">Save picture</a>' +
+    '<button class="btn ghost block" id="ceNo">Close</button>', () => {
+      $('ceNo').onclick = closeSheet;
+      $('ceShare').onclick = async () => {
+        try {
+          const f = new File([blob], file, { type: 'image/png' });
+          if (navigator.canShare && navigator.canShare({ files: [f] })) { await navigator.share({ files: [f], text: msg }); return; }
+        } catch (e) { if (e && e.name === 'AbortError') return; }
+        location.href = 'https://wa.me/?text=' + encodeURIComponent(msg);
+      };
+    });
+}
+
 /* Daily sends errors as objects, not plain text — turn them into words a person can act on */
 function videoErr(e) {
   if (!e) return 'unknown problem';
@@ -566,53 +1540,6 @@ function showVideoErr(m) {
   sheet('<h2>Could not join the video</h2><div style="word-break:break-word;margin:8px 0">' + esc(m) + '</div><div class="sm">Send a screenshot of this to whoever set up the app.</div><button class="btn" id="veOk" style="margin-top:12px">OK</button>',
     () => { $('veOk').onclick = closeSheet; });
 }
-function leaveLive() {
-  if (FRAME) { try { FRAME.destroy(); } catch (e) {} FRAME = null; }
-  clearInterval(TASK_T); $('taskBanner').classList.add('hide'); $('starPop').classList.add('hide');
-  $('live').classList.add('hide');
-  closeSheet();
-}
-function send(msg) { onMsg(msg); try { FRAME.sendAppMessage(msg, '*'); } catch (e) {} }
-function onMsg(m) {
-  if (!m || typeof m !== 'object') return;
-  if (m.kind === 'task') {
-    clearInterval(TASK_T);
-    let left = Math.max(0, parseInt(m.secs, 10) || 0);
-    $('taskText').textContent = String(m.text || '').slice(0, 120);
-    const draw = () => { $('taskSecs').textContent = Math.floor(left / 60) + ':' + String(left % 60).padStart(2, '0'); };
-    draw(); $('taskBanner').classList.remove('hide');
-    TASK_T = setInterval(() => { left--; if (left < 0) { clearInterval(TASK_T); $('taskSecs').textContent = 'Time!'; setTimeout(() => $('taskBanner').classList.add('hide'), 4000); return; } draw(); }, 1000);
-  } else if (m.kind === 'endtask') {
-    clearInterval(TASK_T); $('taskBanner').classList.add('hide');
-  } else if (m.kind === 'star') {
-    $('starName').textContent = String(m.to || '').slice(0, 40) + ' got a star!';
-    const p = $('starPop'); p.classList.remove('hide');
-    setTimeout(() => p.classList.add('hide'), 3000);
-  }
-}
-function taskSheet() {
-  let secs = 60;
-  sheet('<h2>Give a task to everyone</h2>' +
-    '<div><label class="f" for="tkText">The task</label><input class="in" id="tkText" placeholder="Freeze in your best Bihu pose!"></div>' +
-    '<div><div class="f">Time</div><div class="chips" id="tkSecs">' + [30, 60, 120, 300].map(s => '<button class="chip' + (s === 60 ? ' on' : '') + '" data-s="' + s + '">' + (s < 60 ? s + ' sec' : (s / 60) + ' min') + '</button>').join('') + '</div></div>' +
-    '<button class="btn block" id="tkGo">Show it to everyone</button><button class="btn ghost block" id="tkEnd">End the current task</button>', () => {
-      document.querySelectorAll('#tkSecs [data-s]').forEach(b => b.onclick = () => {
-        secs = parseInt(b.dataset.s, 10); document.querySelectorAll('#tkSecs .chip').forEach(x => x.classList.toggle('on', x === b)); });
-      $('tkGo').onclick = () => { const t = $('tkText').value.trim(); if (!t) return toast('Type the task', true); send({ kind: 'task', text: t, secs: secs }); closeSheet(); };
-      $('tkEnd').onclick = () => { send({ kind: 'endtask' }); closeSheet(); };
-    });
-}
-function starSheet() {
-  let names = [];
-  try { const ps = FRAME.participants(); names = Object.keys(ps).filter(k => k !== 'local').map(k => ps[k].user_name).filter(Boolean); } catch (e) {}
-  sheet('<h2>Give a star</h2>' + (names.length
-      ? '<div class="chips">' + names.map((n, i) => '<button class="chip" data-n="' + i + '">' + esc(n) + '</button>').join('') + '</div>'
-      : '<div class="sm">No children in the room yet.</div>') +
-    '<button class="btn ghost block" id="stNo">Close</button>', () => {
-      $('stNo').onclick = closeSheet;
-      document.querySelectorAll('[data-n]').forEach(b => b.onclick = () => { send({ kind: 'star', to: names[+b.dataset.n] }); closeSheet(); });
-    });
-}
 
 /* ---------------- start ---------------- */
 (async function start() {
@@ -620,6 +1547,7 @@ function starSheet() {
     $('app').innerHTML = '<main><div class="card"><div class="ctitle">Almost ready</div><div>Put your Supabase address and key at the top of this file (SUPA_URL and SUPA_KEY).</div></div></main>';
     return;
   }
+  wireCanvas();
   await loadPublic();
   if (location.hash === '#teacher' || ME.role === 'teacher') {
     if (ME.role === 'teacher') { await loadTeacher(); go('tclasses'); } else go('tlogin');
