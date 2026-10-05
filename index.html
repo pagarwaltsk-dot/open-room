@@ -83,14 +83,53 @@
   #toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 16px;border-radius:14px;font-weight:700;font-size:14.5px;z-index:60;max-width:92vw;box-shadow:0 6px 20px rgba(0,0,0,.2)}
   #toast.bad{background:var(--red)}
   .upi{background:#fff;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px;border:1.5px dashed var(--line)}
+  .qr{width:140px;height:140px;padding:4px;background:#fff;border-radius:10px;border:1.5px solid var(--line);flex:0 0 auto}
+  .qr img,.qr canvas{width:130px!important;height:130px!important;display:block}
+  .paysteps{margin:4px 0 0;padding-left:20px;font-size:14px;color:var(--ink);display:flex;flex-direction:column;gap:4px}
   .mono{font-family:ui-monospace, SFMono-Regular, Menlo, monospace;font-size:15px;word-break:break-all}
   /* live room */
   #live{position:fixed;inset:0;background:var(--live);z-index:30;display:flex;flex-direction:column}
   #live .bar{padding:calc(env(safe-area-inset-top,0px) + 10px) 12px 10px;display:flex;align-items:center;gap:10px;color:#fff}
   #live .dot{background:#E5484D;border-radius:999px;font-size:12px;font-weight:800;padding:4px 10px}
-  #live .frame{flex:1;min-height:0;position:relative}
+  #live .frame{flex:1;min-height:0;position:relative;display:flex;flex-direction:column}
+  #stage{flex:1;min-height:0;display:grid;gap:5px;padding:5px;align-content:stretch}
+  #act{flex:1;min-height:0;position:relative;display:none}
+  .frame.act #act{display:block}
+  .frame.act #stage{flex:0 0 96px;display:flex;overflow-x:auto;padding:5px 5px 0}
+  .frame.act #liveTop{position:static;padding:6px 8px 0}
+  .frame.act #liveStrip:empty + #taskBanner.hide{display:none}
+  .tile{position:relative;border-radius:14px;overflow:hidden;background:#2B2A5E;min-width:0;min-height:0;cursor:pointer}
+  .tile video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
+  .tile.cam video{display:block}
+  .tile.me video{transform:scaleX(-1)}
+  .tile.screen video{object-fit:contain;background:#000;transform:none}
+  .tile .av{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:800;font-size:clamp(26px,9vw,48px);color:#fff}
+  .tile.host{background:#7A2333}
+  .tile .nm{position:absolute;left:6px;bottom:6px;background:rgba(23,22,58,.72);color:#fff;font-size:12px;font-weight:800;padding:2px 8px;border-radius:999px;max-width:calc(100% - 12px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .tile.talk{box-shadow:inset 0 0 0 3px var(--gold)}
+  .tile.big{grid-column:1/-1}
+  .tile.big .av{font-size:72px}
+  #stage.strip .tile{flex:1 0 62px;max-width:120px;height:86px}
+  #stage.strip .tile .nm{font-size:10.5px;left:3px;bottom:3px;padding:1px 6px}
+  #stage.strip .tile .av{font-size:26px}
+  #reactLayer{position:absolute;inset:0;pointer-events:none;z-index:9;overflow:hidden}
+  .fx{position:absolute;bottom:8px;display:flex;flex-direction:column;align-items:center;gap:2px}
+  .fx span{font-size:40px;line-height:1}
+  .fx i{font-style:normal;font-size:11.5px;font-weight:800;color:#fff;background:rgba(23,22,58,.7);border-radius:999px;padding:1px 7px}
+  @media (prefers-reduced-motion:no-preference){ .fx{animation:rise 2.5s ease-out forwards} @keyframes rise{0%{transform:translateY(0) scale(.6);opacity:0}15%{transform:translateY(-30px) scale(1.15);opacity:1}100%{transform:translateY(-320px) scale(1);opacity:0}} }
+  #reactBar{position:absolute;left:8px;right:8px;bottom:8px;z-index:10;background:#fff;border-radius:999px;display:flex;justify-content:space-around;padding:6px;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+  #reactBar button{border:0;background:none;font-size:30px;width:48px;height:48px;border-radius:50%}
+  #podium{top:50%;transform:translateY(-50%);z-index:9;text-align:center}
+  .pod{display:flex;align-items:flex-end;justify-content:center;gap:8px;margin-top:6px}
+  .pod div{flex:1;max-width:110px;border-radius:14px 14px 0 0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:8px 4px;font-weight:800;color:#fff}
+  .pod b{font-size:30px;line-height:1}
+  .pod span{font-size:14px;word-break:break-word}
+  .scores{font-size:13.5px;color:var(--muted);text-align:center}
+  .scores b{color:var(--ink)}
+  #live .ctl button.off{background:#4A2433;color:#FFD4DA}
   #live .ctl{display:flex;gap:8px;padding:10px 12px calc(env(safe-area-inset-bottom,0px) + 12px);background:#0A0F1F}
-  #live .ctl button{flex:1;min-width:0;min-height:54px;border:0;border-radius:14px;font-weight:800;font-size:13px;background:#222A44;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;line-height:1.1;white-space:nowrap}
+  #live .ctl{gap:5px!important;padding-left:6px!important;padding-right:6px!important}
+  #live .ctl button{flex:1;min-width:0;min-height:54px;border:0;border-radius:13px;font-weight:800;font-size:11.5px;background:#222A44;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;line-height:1.1;white-space:nowrap}
   #live .ctl button b{font-size:18px;font-weight:400}
   #live .ctl button.gold{background:var(--gold);color:var(--ink)}
   #liveTop{position:absolute;left:8px;right:8px;top:8px;z-index:7;display:flex;flex-direction:column;gap:8px;pointer-events:none}
@@ -116,7 +155,7 @@
   .recdot{width:16px;height:16px;border-radius:50%;background:var(--red)}
   @media (prefers-reduced-motion:no-preference){ .recdot{animation:blink 1s infinite} @keyframes blink{50%{opacity:.25}} }
   #board{position:absolute;inset:0;z-index:4;background:#0A0F1F;display:flex;flex-direction:column}
-  .btools{display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding:8px;flex:0 0 auto;padding-top:54px}
+  .btools{display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding:8px;flex:0 0 auto}
   .bstage{flex:1;min-height:0;position:relative;display:flex;align-items:center;justify-content:center}
   #bCanvas{background:#fff;border-radius:12px;touch-action:none;display:block}
   .btitle{position:absolute;left:0;right:0;bottom:2px;text-align:center;color:#C9CEDD;font-size:12.5px;font-weight:700;pointer-events:none}
@@ -136,6 +175,8 @@
   .gtag.on{background:var(--gold)}
   .gtag i{width:12px;height:12px;border-radius:50%;display:inline-block}
   .gmsg{font-weight:700;font-size:15px}
+  .die{font-size:64px;line-height:1;text-align:center;color:var(--ink)}
+  @media (prefers-reduced-motion:no-preference){ .die{animation:tumble .7s ease-out} @keyframes tumble{0%{transform:rotate(-200deg) scale(.4)}70%{transform:rotate(15deg) scale(1.15)}100%{transform:none}} }
   .gwait{font-weight:800;color:var(--muted)}
   .gpanel .tb{background:#EEF1F7;color:var(--ink)}
   /* landing */
@@ -145,6 +186,16 @@
   .ctas{display:flex;flex-wrap:wrap;gap:10px}
   .btn.red{background:var(--red);color:#fff}
   .toy{margin-top:22px;background:var(--ink);color:#fff;border-radius:26px;padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:0 16px 34px rgba(35,33,79,.28)}
+  .toytabs{display:flex;gap:4px;background:rgba(255,255,255,.08);border-radius:999px;padding:4px}
+  .toytabs button{flex:1;border:0;background:none;color:#D4D2EE;font-weight:800;font-size:13px;min-height:38px;border-radius:999px;padding:0 6px;white-space:nowrap}
+  .toytabs button.on{background:var(--gold);color:var(--ink)}
+  #toy{display:flex;flex-direction:column;gap:12px}
+  .dwrap{width:100%}
+  .dcv{display:block;border-radius:14px;background:#fff;touch-action:none}
+  .dtools{display:flex;align-items:center;gap:6px}
+  .dtools .sw{width:30px;height:30px}
+  .toy .tb{background:rgba(255,255,255,.12)}
+  .mdie{font-size:28px;vertical-align:middle;line-height:1}
   .toy-top{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:14.5px;color:#D4D2EE}
   .toy-stars{background:var(--gold);color:var(--ink);border-radius:999px;padding:4px 12px;font-weight:800;font-size:15px}
   .toy-q{font-family:var(--fd);font-weight:800;font-size:46px;text-align:center;line-height:1;padding:6px 0}
@@ -195,10 +246,13 @@
 <div id="overlay"></div>
 <div id="toast" class="hide"></div>
 <div id="live" class="hide">
-  <div class="bar"><span class="dot">● LIVE</span><span class="grow" id="liveTitle" style="font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></span></div>
+  <div class="bar"><span class="dot">● LIVE</span><span class="grow" id="liveTitle" style="font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></span><span id="liveCount" style="font-size:12.5px;font-weight:800;color:#C9C7E6"></span></div>
   <div class="frame" id="liveFrame">
-    <div id="board" class="hide"><div class="btools" id="bTools"></div><div class="bstage" id="bStage"><canvas id="bCanvas"></canvas><div class="btitle" id="bTitle"></div></div></div>
-    <div id="game" class="hide"><div class="bstage" id="gStage" style="padding-top:50px"><canvas id="gCanvas" style="border-radius:10px;display:block"></canvas></div><div id="gPanel" class="gpanel"></div></div>
+    <div id="stage" class="grid"></div>
+    <div id="act">
+      <div id="board" class="hide"><div class="btools" id="bTools"></div><div class="bstage" id="bStage"><canvas id="bCanvas"></canvas><div class="btitle" id="bTitle"></div></div></div>
+      <div id="game" class="hide"><div class="bstage" id="gStage"><canvas id="gCanvas" style="border-radius:10px;display:block"></canvas></div><div id="gPanel" class="gpanel"></div></div>
+    </div>
     <div id="liveTop"><div id="liveStrip"></div>
       <div id="taskBanner" class="hide"><div class="grow"><div style="font-size:11.5px;font-weight:800;letter-spacing:.08em">TASK FOR EVERYONE</div><div class="t" id="taskText"></div></div><div class="s" id="taskSecs"></div></div>
     </div>
@@ -206,9 +260,13 @@
     <div id="quizCard" class="pop hide" role="dialog" aria-label="Quiz"></div>
     <div id="voiceCard" class="pop hide" role="dialog" aria-label="Voice answer"></div>
     <div id="speakPop" class="pop hide" role="dialog" aria-label="Your turn to talk"></div>
+    <div id="podium" class="pop hide" role="dialog" aria-label="Quiz scoreboard"></div>
+    <div id="reactLayer" aria-hidden="true"></div>
+    <div id="reactBar" class="hide"></div>
     <div id="liveWait" class="hide"></div>
   </div>
   <div class="ctl" id="liveCtl"></div>
+  <div id="audios" class="hide"></div>
 </div>
 
 <script>
@@ -240,11 +298,17 @@ function toast(msg, bad) {
   toastT = setTimeout(() => t.className = 'hide', 3200);
 }
 function sheet(html, wire) {
+  if (!$('overlay').innerHTML) { try { history.pushState({ sheet: 1, screen: S.screen }, ''); } catch (e) {} }
   $('overlay').innerHTML = '<div class="veil" id="veil"><div class="sheet" role="dialog" aria-modal="true">' + html + '</div></div>';
   $('veil').onclick = e => { if (e.target.id === 'veil') closeSheet(); };
   if (wire) wire();
 }
-function closeSheet() { $('overlay').innerHTML = ''; }
+function closeSheet() {
+  if (!$('overlay').innerHTML) return;
+  $('overlay').innerHTML = '';
+  /* the history step the sheet added is left behind; mark it so Back skips over it */
+  try { if (history.state && history.state.sheet) history.replaceState({ dup: 1, screen: S.screen }, ''); } catch (e) {}
+}
 
 /* ---------------- talking to the server ---------------- */
 const keyHeaders = () => Object.assign({ 'Content-Type': 'application/json', apikey: SUPA_KEY },
@@ -275,12 +339,32 @@ async function roomPass(classId) {
 
 /* ---------------- state and screens ---------------- */
 let S = { screen: 'home' }, INFO = { teacher: '', intro: '', upi: '', upi_name: '', ready: true }, CLASSES = [], MINE = null, OV = null;
-function go(screen, extra) { S = Object.assign({ screen: screen }, extra || {}); render(); window.scrollTo(0, 0); }
+let NAV_POP = false;
+function go(screen, extra) {
+  const from = S.screen;
+  S = Object.assign({ screen: screen }, extra || {}); render(); window.scrollTo(0, 0);
+  if (!NAV_POP && screen !== from) { try { history.pushState({ screen: screen }, ''); } catch (e) {} }
+}
+/* the phone's Back button: close a pop-up, then go back a screen; in a class, ask first */
+window.addEventListener('popstate', e => {
+  const st = e.state || {};
+  if ($('overlay').innerHTML) { $('overlay').innerHTML = ''; return; }
+  if (!$('live').classList.contains('hide')) {
+    try { history.pushState({ live: 1, screen: S.screen }, ''); } catch (x) {}
+    if (LIVE && LIVE.joined) (IS_HOST ? endSheet : leaveAsk)(); else leaveLive(true);
+    return;
+  }
+  let to = st.screen || (ME.role === 'teacher' ? 'tclasses' : 'home');
+  if (to === 'book') to = 'home';
+  if (to === 'tclass') to = 'tclasses';
+  if (st.dup || st.live || to === S.screen) { history.back(); return; }   // nothing new here: keep going back
+  NAV_POP = true; try { go(to); } finally { NAV_POP = false; }
+});
 function render() {
   const v = { home: vHome, book: vBook, tlogin: vTLogin, tclasses: vTClasses, tclass: vTClass, tpay: vTPay, tset: vTSet }[S.screen] || vHome;
   v();
   if ($('app') && !$('verTag')) {
-    const tag = '<div id="verTag" class="sm" style="text-align:center;opacity:.5;padding:14px 0 22px">kidspri · version 5-Oct-E</div>', last = $('app').lastElementChild;
+    const tag = '<div id="verTag" class="sm" style="text-align:center;opacity:.5;padding:14px 0 22px">kidspri · version 5-Oct-G</div>', last = $('app').lastElementChild;
     if (last && last.classList.contains('band')) last.insertAdjacentHTML('beforebegin', tag); else $('app').insertAdjacentHTML('beforeend', tag);
   }
 }
@@ -364,7 +448,9 @@ function vHome() {
       '<p class="lead">Dance, stories, craft, quick maths and games with ' + esc(name) + ', on your phone. For children aged 5 to 10.</p>' +
       '<div class="ctas"><a class="btn red" href="#classes" id="hSee">See this week’s classes</a>' +
         (vid ? '<button class="btn ghost" id="hVid">▶ Watch ' + esc(name) + ' say hello</button>' : '') + '</div>' +
-      '<div class="toy" id="toy" aria-live="polite"></div>' +
+      '<div class="toy"><div class="toytabs" role="tablist" aria-label="Try it like in class">' +
+        '<button role="tab" data-tm="quiz" class="on">Quiz race</button><button role="tab" data-tm="draw">Draw together</button><button role="tab" data-tm="snl">Snakes &amp; Ladders</button></div>' +
+        '<div id="toy" aria-live="polite"></div></div>' +
     '</section>' +
     '<section class="meet" id="meet"><div class="who"><div class="ph" id="ph">' + esc(name.charAt(0)) + '</div>' +
       '<div><h2 class="h2" style="margin:0">Hi, I’m ' + esc(name) + '</h2><div class="sm">Your child’s teacher</div></div></div>' +
@@ -401,7 +487,8 @@ function vHome() {
   const play = () => { const b = $('vidBox'); if (!b) return; b.outerHTML = '<div class="vid"><iframe src="https://www.youtube-nocookie.com/embed/' + yid + '?autoplay=1&rel=0&playsinline=1" title="' + esc(name) + ' says hello" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>'; };
   if ($('vidBox')) $('vidBox').onclick = play;
   if ($('hVid')) $('hVid').onclick = () => { $('meet').scrollIntoView({ behavior: 'smooth' }); if (yid) setTimeout(play, 400); else { const a = document.querySelector('#meet a.btn'); if (a) a.click(); } };
-  wireWordmark(); toyNext(); loadPhoto(); fillHome();
+  document.querySelectorAll('[data-tm]').forEach(b => b.onclick = () => toyMode(b.dataset.tm));
+  wireWordmark(); TOYM = 'quiz'; toyNext(); loadPhoto(); fillHome();
 }
 function qa(q, a) { return '<details class="qa"><summary>' + q + '</summary><p>' + a + '</p></details>'; }
 /* the parts that change (bookings, seats left) refresh without disturbing the video or the quiz */
@@ -455,15 +542,119 @@ async function loadPhoto() {
   const ph = $('ph'); if (ph && c.d && ph.tagName !== 'IMG') ph.outerHTML = '<img class="ph" id="ph" src="' + c.d + '" alt="' + esc(firstName()) + '" style="' + esc(ph.getAttribute('style') || '') + '">';
 }
 /* the quiz you can play on the landing page: what a quiz race feels like */
-let TOY = { stars: 0, q: null, busy: false };
+let TOY = { stars: 0, q: null, busy: false }, TOYM = 'quiz';
+function toyMode(m) {
+  TOYM = m; DEMO.run++;                                   // stops whatever the last tab was animating
+  document.querySelectorAll('[data-tm]').forEach(b => { b.classList.toggle('on', b.dataset.tm === m); b.setAttribute('aria-selected', b.dataset.tm === m); });
+  if (m === 'quiz') toyNext(); else if (m === 'draw') toyDraw(); else toySnl();
+}
 function toyNext() {
-  const el = $('toy'); if (!el) return;
+  const el = $('toy'); if (!el || TOYM !== 'quiz') return;
   TOY.q = mathQ({ op: TOY.stars < 2 ? '+' : 'mix', lvl: 0 }); TOY.busy = false;
   el.innerHTML = '<div class="toy-top"><span>Try a quiz race</span><span class="toy-stars" id="toyStars">★ ' + TOY.stars + '</span></div>' +
     '<div class="toy-q">' + esc(TOY.q.q) + '</div><div class="qgrid">' +
     TOY.q.o.map((t, i) => '<button class="qopt" data-ta="' + i + '" style="background:' + QCOL[i] + '">' + QSHAPE[i] + ' ' + esc(t) + '</button>').join('') + '</div>' +
     '<div class="toy-say" id="toySay">' + (TOY.stars ? 'Again! How fast can you go?' : 'Tap the right answer. In class, the quickest right answer wins a point.') + '</div>';
   el.querySelectorAll('[data-ta]').forEach(b => b.onclick = () => toyPick(+b.dataset.ta, b));
+}
+/* ----- front-page demo: drawing together (a pretend classmate draws beside you) ----- */
+const DEMO = { run: 0, mine: [], bot: [] };
+function demoShapes() {
+  const ring = (cx, cy, r, n) => { const p = []; for (let i = 0; i <= n; i++) { const a = i / n * Math.PI * 2; p.push(Math.round(cx + r * Math.cos(a)), Math.round(cy + r * Math.sin(a))); } return p; };
+  const sun = [{ c: 4, w: 2, p: ring(830, 140, 62, 28) }];
+  for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2; sun.push({ c: 4, w: 1, p: [830 + 85 * Math.cos(a), 140 + 85 * Math.sin(a), 830 + 125 * Math.cos(a), 140 + 125 * Math.sin(a)].map(Math.round) }); }
+  const house = [{ c: 1, w: 1, p: [140, 610, 140, 410, 360, 410, 360, 610, 140, 610] }, { c: 0, w: 1, p: [115, 415, 250, 290, 385, 415] }, { c: 2, w: 1, p: [225, 610, 225, 510, 280, 510, 280, 610] }];
+  const flower = [{ c: 3, w: 1, p: [600, 640, 605, 560, 598, 480] }];
+  for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2; flower.push({ c: 5, w: 1, p: ring(598 + 38 * Math.cos(a), 440 + 38 * Math.sin(a), 24, 16) }); }
+  flower.push({ c: 4, w: 2, p: ring(598, 440, 10, 10) });
+  const grass = [{ c: 3, w: 1, p: [] }]; for (let x = 20; x <= 980; x += 20) grass[0].p.push(x, 668 - (x / 20 % 2) * 22);
+  return [['Riya', 'a sun', sun], ['Kabir', 'a house', house], ['Mitali', 'a flower', flower], ['Riya', 'some grass', grass]];
+}
+function demoCanvas(id, ratio) {
+  const cv = $(id), w = cv.parentElement.clientWidth, dpr = window.devicePixelRatio || 1, h = Math.round(w * ratio);
+  cv.style.width = w + 'px'; cv.style.height = h + 'px'; cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+  cv._sc = w * dpr / BW; cv._s = w * dpr; return cv;
+}
+function dctx(cv) { const x = cv.getContext('2d'); x.setTransform(cv._sc, 0, 0, cv._sc, 0, 0); x.lineCap = 'round'; x.lineJoin = 'round'; return x; }
+function demoRedraw() {
+  const cv = $('dCv'); if (!cv) return; const x = cv.getContext('2d');
+  x.setTransform(1, 0, 0, 1, 0, 0); x.fillStyle = '#fff'; x.fillRect(0, 0, cv.width, cv.height);
+  const y = dctx(cv); DEMO.bot.concat(DEMO.mine).forEach(s => paint(y, s, 0));
+}
+function toyDraw() {
+  const el = $('toy'), run = DEMO.run; DEMO.mine = []; DEMO.bot = []; let col = 2;
+  el.innerHTML = '<div class="toy-top"><span>Draw a sunny day together</span><span class="toy-stars" id="dWho">✏️ Riya</span></div>' +
+    '<div class="dwrap"><canvas id="dCv" class="dcv" aria-label="Drawing board"></canvas></div>' +
+    '<div class="dtools">' + [0, 1, 2, 3, 5].map(i => '<button class="sw' + (i === col ? ' on' : '') + '" data-dc="' + i + '" style="background:' + COLORS[i] + '" aria-label="Colour"></button>').join('') +
+      '<span class="grow"></span><button class="tb" id="dClr">Clear mine</button></div>' +
+    '<div class="toy-say">Draw with your finger. In class everyone shares one board, and the teacher can show any child’s drawing to all.</div>';
+  const cv = demoCanvas('dCv', BH / BW); demoRedraw();
+  el.querySelectorAll('[data-dc]').forEach(b => b.onclick = () => { col = +b.dataset.dc; el.querySelectorAll('[data-dc]').forEach(x => x.classList.toggle('on', x === b)); });
+  $('dClr').onclick = () => { DEMO.mine = []; demoRedraw(); };
+  let cur = null;
+  const pt = e => { const r = cv.getBoundingClientRect(); return [Math.round((e.clientX - r.left) / r.width * BW), Math.round((e.clientY - r.top) / r.height * BH)]; };
+  cv.onpointerdown = e => { e.preventDefault(); cv.setPointerCapture(e.pointerId); cur = { c: col, w: 1, p: pt(e) }; DEMO.mine.push(cur); paint(dctx(cv), cur, 0); };
+  cv.onpointermove = e => { if (!cur) return; const q = pt(e), p = cur.p; if (Math.abs(q[0] - p[p.length - 2]) + Math.abs(q[1] - p[p.length - 1]) < 3) return; const f = p.length; p.push(q[0], q[1]); paint(dctx(cv), cur, f); };
+  cv.onpointerup = cv.onpointercancel = () => { cur = null; };
+  /* the pretend classmates draw one picture after another, a few points at a time */
+  const calm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  (async () => {
+    for (const [who, what, strokes] of demoShapes()) {
+      if (DEMO.run !== run || !$('dCv')) return;
+      $('dWho').textContent = '✏️ ' + who + ': ' + what;
+      for (const s of strokes) {
+        const live = { c: s.c, w: s.w, p: [] }; DEMO.bot.push(live);
+        for (let i = 0; i < s.p.length; i += 2) {
+          if (DEMO.run !== run || !$('dCv')) return;
+          const f = live.p.length; live.p.push(s.p[i], s.p[i + 1]); paint(dctx($('dCv')), live, f);
+          if (!calm) await sleep(40);
+        }
+      }
+      await sleep(calm ? 0 : 700);
+    }
+    if (DEMO.run === run && $('dWho')) $('dWho').textContent = '🎨 Your turn to add more!';
+  })();
+}
+/* ----- front-page demo: Snakes & Ladders against two pretend classmates ----- */
+let SNL = null;
+function toySnl() {
+  const el = $('toy'), run = DEMO.run;
+  SNL = { pl: [{ n: 'You', c: 0 }, { n: 'Riya', c: 1 }, { n: 'Kabir', c: 2 }], pos: { You: 0, Riya: 0, Kabir: 0 }, t: 0, busy: false, w: '', run: run };
+  el.innerHTML = '<div class="toy-top"><span>Snakes &amp; Ladders with friends</span><span class="toy-stars" id="sTurn">Your turn</span></div>' +
+    '<div class="dwrap"><canvas id="sCv" class="dcv" aria-label="Snakes and Ladders board"></canvas></div>' +
+    '<div class="row"><div class="grow toy-say" id="sMsg" style="text-align:left;min-height:0">You go first. Tap Roll!</div><button class="btn" id="sRoll">🎲 Roll</button></div>';
+  const cv = demoCanvas('sCv', 1); cv._s = cv.width; drawSnl(cv, SNL.pl, p => SNL.pos[p.n]);
+  $('sRoll').onclick = () => { if (!SNL.busy && SNL.t === 0 && !SNL.w) snlMove(); else if (SNL.w) toySnl(); };
+}
+async function snlMove() {
+  const g = SNL, me = g.pl[g.t], r = 1 + Math.floor(Math.random() * 6), from = g.pos[me.n];
+  const calm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  g.busy = true; $('sRoll').disabled = true;
+  let x = from + r; if (x > 100) x = 200 - x;
+  const to = SNAKES[x] || LADDERS[x] || x;
+  $('sMsg').innerHTML = '<span class="mdie">' + '⚀⚁⚂⚃⚄⚅'.charAt(r - 1) + '</span> ' + (me.n === 'You' ? 'You' : esc(me.n)) + ' rolled <b>' + r + '</b>';
+  let p = from, up = true;
+  for (let i = 0; i < r; i++) {
+    if (g !== SNL || DEMO.run !== g.run || !$('sCv')) return;
+    if (up && p === 100) up = false; p += up ? 1 : -1; g.pos[me.n] = p; drawSnl($('sCv'), g.pl, q => g.pos[q.n]);
+    if (!calm) await sleep(200);
+  }
+  if (to !== x) {
+    if (!calm) await sleep(300);
+    if (g !== SNL || !$('sCv')) return;
+    g.pos[me.n] = to; drawSnl($('sCv'), g.pl, q => g.pos[q.n]);
+    $('sMsg').innerHTML += LADDERS[x] ? ' — 🪜 up to ' + to + '!' : ' — 🐍 down to ' + to + '!';
+  }
+  if (to === 100) {
+    g.w = me.n; $('sMsg').innerHTML = '🏆 ' + (me.n === 'You' ? 'You win!' : esc(me.n) + ' wins!') + ' In class the whole group plays like this.';
+    $('sRoll').disabled = false; $('sRoll').textContent = 'Play again'; $('sTurn').textContent = 'Game over'; g.busy = false; return;
+  }
+  g.t = (g.t + 1) % g.pl.length; g.busy = false;
+  const nx = g.pl[g.t];
+  $('sTurn').textContent = nx.n === 'You' ? 'Your turn' : nx.n + '’s turn';
+  if (nx.n === 'You') { $('sRoll').disabled = false; return; }
+  await sleep(calm ? 300 : 1100);
+  if (g === SNL && DEMO.run === g.run && $('sCv')) snlMove();
 }
 function toyPick(i, btn) {
   if (TOY.busy) return;
@@ -534,10 +725,14 @@ function vBook() {
       kids.map(k => '<button class="chip' + (S.child === k.id ? ' on' : '') + '" data-kid="' + k.id + '">' + esc(k.name) + (k.age ? ', ' + k.age : '') + '</button>').join('') +
       '<button class="chip" id="bAddKid">+ Another child</button></div></div>' +
     (c.fee ? '<div class="lbl">Pay ' + money(c.fee) + ' by UPI</div><div class="upi">' +
-        '<a class="btn teal block" href="' + esc(upiLink(c)) + '">Pay ' + money(c.fee) + ' with a UPI app</a>' +
-        '<div class="sm">Or pay to this UPI ID from any app:</div>' +
-        '<div class="row"><div class="grow mono" id="upiId">' + esc(INFO.upi || '[UPI ID not set yet]') + '</div><button class="chip" id="bCopy">Copy</button></div>' +
-        '<div class="sm">Name: ' + esc(INFO.upi_name || INFO.teacher) + '</div></div>' +
+        '<div class="row" style="align-items:flex-start;gap:12px"><div id="upiQr" class="qr" aria-label="UPI QR code"></div>' +
+        '<div class="grow"><div class="sm">Pay to</div><div style="font-weight:800">' + esc(INFO.upi_name || INFO.teacher) + '</div>' +
+        '<div class="mono" id="upiId" style="margin-top:4px">' + esc(INFO.upi || '[UPI ID not set yet]') + '</div>' +
+        '<div class="row" style="margin-top:8px;flex-wrap:wrap"><button class="chip" id="bCopy">Copy UPI ID</button><button class="chip hide" id="bSaveQr">Save QR</button></div></div></div>' +
+        '<ol class="paysteps"><li>Open GPay, PhonePe, Paytm or any UPI app.</li>' +
+        '<li>Tap <b>Scan</b> and scan this QR from another phone, or tap <b>Save QR</b> here and choose it from your gallery. You can also pay to the UPI ID.</li>' +
+        '<li>Pay <b>' + money(c.fee) + '</b>, then type the 12-digit UPI reference from the payment receipt below.</li></ol>' +
+        '<a class="btn ghost small" href="' + esc(upiLink(c)) + '">Or open my UPI app directly</a></div>' +
         '<div><label class="f" for="bUtr">UPI reference number (12 digits, shown in your payment app after paying)</label>' +
         '<input class="in" id="bUtr" inputmode="numeric" placeholder="e.g. 412345678901"></div>' : '') +
     '<div class="sm" style="text-align:center;font-weight:700;color:var(--ink)">Not booked yet — tap the button below to book the seat.</div>' +
@@ -556,6 +751,7 @@ function vBook() {
         catch (e) { toast(e.message, true); }
       };
     });
+  if (c.fee && INFO.upi) drawQr(upiLink(c), money(c.fee));
   if ($('bCopy')) $('bCopy').onclick = () => {
     const t = INFO.upi;
     try { navigator.clipboard.writeText(t).then(() => toast('UPI ID copied'), () => toast(t)); } catch (e) { toast(t); }
@@ -568,6 +764,33 @@ function vBook() {
       await Promise.all([loadMine(), loadPublic()]);
       go('home'); toast(c.fee ? 'Booked! The teacher will confirm your seat.' : 'Seat booked!');
     } catch (e) { $('bGo').disabled = false; toast(e.message, true); }
+  };
+}
+
+/* a UPI QR code. Scanning a QR (or picking it from the gallery) is how most people pay,
+   and UPI apps trust it more than a payment link. The QR maker loads only when needed. */
+function loadQrLib() {
+  if (window.QRCode) return Promise.resolve();
+  return new Promise((ok, bad) => { const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'; s.onload = ok; s.onerror = bad; document.head.appendChild(s); });
+}
+async function drawQr(text, label) {
+  const box = $('upiQr'); if (!box) return;
+  try { await loadQrLib(); } catch (e) { box.remove(); return; }
+  if (!$('upiQr')) return;
+  box.innerHTML = '';
+  new window.QRCode(box, { text: text, width: 132, height: 132, correctLevel: window.QRCode.CorrectLevel.M });
+  const save = $('bSaveQr'); if (!save) return;
+  save.classList.remove('hide');
+  save.onclick = () => {
+    const src = box.querySelector('canvas'); if (!src) return;
+    const W = 600, cv = document.createElement('canvas'); cv.width = W; cv.height = 720;
+    const x = cv.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, W, 720); x.imageSmoothingEnabled = false;
+    x.drawImage(src, 60, 60, 480, 480);
+    x.fillStyle = '#23214F'; x.textAlign = 'center'; x.font = '800 36px "Nunito Sans", sans-serif';
+    x.fillText('Pay ' + label + ' — kidspri', W / 2, 600);
+    x.font = '700 26px "Nunito Sans", sans-serif'; x.fillStyle = '#5E5C7E'; x.fillText(INFO.upi, W / 2, 645);
+    const a = document.createElement('a'); a.href = cv.toDataURL('image/png'); a.download = 'kidspri-upi-qr.png'; a.click();
+    toast('QR saved. Open your UPI app → Scan → gallery');
   };
 }
 
@@ -626,19 +849,24 @@ function vTClasses() {
         (conf.length ? '<div class="sm">' + conf.map(b => esc(b.child) + (b.age ? ' (' + b.age + ')' : '')).join(', ') + '</div>' : '') +
         '<div class="row" style="flex-wrap:wrap">' +
           '<button class="btn teal small" data-start="' + c.id + '"' + (open ? '' : ' disabled') + '>' + (open ? 'Start class' : 'Start (15 min before)') + '</button>' +
+          (conf.length ? '<button class="btn ghost small" data-remind="' + c.id + '">📲 Remind</button>' : '') +
           '<button class="btn ghost small" data-edit="' + c.id + '">Edit</button>' +
           '<button class="btn ghost small" data-cancel="' + c.id + '" style="color:var(--red)">Cancel</button></div></div>';
     }).join('') : '<div class="empty">No classes open. Tap “Open a new class” to start.</div>') +
-    (done.length ? '<div class="lbl">Finished (last 3 days)</div>' + done.map(c =>
-      '<div class="card"><div class="row"><div class="grow"><div style="font-weight:800">' + esc(c.title) + '</div>' +
-      '<div class="sm">' + esc(when(c.starts_at)) + ' · ' + c.bookings.filter(b => b.status === 'confirmed').length + ' children</div></div>' +
-      (c.voices ? '<button class="btn teal small" data-voices="' + c.id + '">🎧 ' + c.voices + '</button>' : '') + '</div></div>').join('') : '') +
+    (done.length ? '<div class="lbl">Finished (last 3 days)</div>' + done.map(c => {
+      const conf = c.bookings.filter(b => b.status === 'confirmed'), came = conf.filter(b => b.joined);
+      return '<div class="card"><div class="row"><div class="grow"><div style="font-weight:800">' + esc(c.title) + '</div>' +
+        '<div class="sm">' + esc(when(c.starts_at)) + ' · ' + came.length + ' of ' + conf.length + ' came</div></div>' +
+        (c.voices ? '<button class="btn teal small" data-voices="' + c.id + '">🎧 ' + c.voices + '</button>' : '') + '</div>' +
+        (conf.length ? '<div class="sm">' + conf.map(b => (b.joined ? '✓ ' : '✗ ') + esc(b.child)).join(' · ') + '</div>' : '') + '</div>';
+    }).join('') : '') +
     '</main>';
   wireTeacher();
   $('tNew').onclick = () => go('tclass', { edit: null });
   document.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => go('tclass', { edit: OV.find(c => c.id === b.dataset.edit) }));
   document.querySelectorAll('[data-start]').forEach(b => b.onclick = () => joinLive(OV.find(c => c.id === b.dataset.start), true));
   document.querySelectorAll('[data-voices]').forEach(b => b.onclick = () => voiceSheet(b.dataset.voices, false));
+  document.querySelectorAll('[data-remind]').forEach(b => b.onclick = () => remindSheet(OV.find(c => c.id === b.dataset.remind)));
   document.querySelectorAll('[data-cancel]').forEach(b => b.onclick = () => {
     const c = OV.find(x => x.id === b.dataset.cancel);
     sheet('<h2>Cancel this class?</h2><div>' + esc(c.title) + '</div><div class="sm">It disappears for parents. Message the booked families and refund or move them to another class.</div>' +
@@ -647,6 +875,23 @@ function vTClasses() {
         $('cxGo').onclick = async () => { try { await api({ action: 'class_cancel', id: c.id }); closeSheet(); await loadTeacher(); vTClasses(); toast('Class cancelled'); } catch (e) { toast(e.message, true); } };
       });
   });
+}
+/* a ready-written WhatsApp reminder for each booked family; she taps Send for each one */
+function remindSheet(c) {
+  const fam = {};
+  c.bookings.filter(b => b.status === 'confirmed').forEach(b => { const f = fam[b.phone] = fam[b.phone] || { parent: b.parent, phone: b.phone, kids: [] }; f.kids.push(b.child); });
+  const list = Object.values(fam), link = location.origin + location.pathname, t = new Date(c.starts_at);
+  const day = t.toDateString() === new Date().toDateString() ? 'today' : t.toDateString() === new Date(Date.now() + 86400000).toDateString() ? 'tomorrow' : t.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' });
+  const time = t.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' });
+  const msg = f => 'Hello ' + f.parent + '! 🌟 ' + f.kids.join(' & ') + '’s class “' + c.title + '” is ' + day + ' at ' + time + '. ' +
+    'Please open ' + link + ' up to 15 minutes before and tap Join. Keep the camera on and a little space to move. See you! — ' + firstName();
+  sheet('<h2>📲 Remind the families</h2><div class="sm">Tap Send for each family. WhatsApp opens with the message written; you just press send.</div>' +
+    list.map((f, i) => '<div class="card row"><div class="grow"><div style="font-weight:800">' + esc(f.kids.join(' & ')) + '</div><div class="sm">' + esc(f.parent) + ' · ' + esc(f.phone) + '</div></div>' +
+      '<a class="btn teal small" data-wa="' + i + '" target="_blank" rel="noopener" href="https://wa.me/91' + esc(f.phone) + '?text=' + encodeURIComponent(msg(f)) + '">Send</a></div>').join('') +
+    '<button class="btn ghost block" id="rmNo">Done</button>', () => {
+      $('rmNo').onclick = closeSheet;
+      document.querySelectorAll('[data-wa]').forEach(a => a.addEventListener('click', () => { a.textContent = 'Sent ✓'; a.classList.remove('teal'); a.classList.add('ghost'); }));
+    });
 }
 function localInput(iso) {
   const d = iso ? new Date(iso) : new Date(Date.now() + 86400000);
@@ -732,7 +977,8 @@ function vTSet() {
     '<div><label class="f" for="sVideo">Your hello video (YouTube link)</label><input class="in" id="sVideo" inputmode="url" placeholder="https://youtu.be/…" value="' + esc(INFO.video || '') + '">' +
       '<div class="sm" style="margin-top:6px">Record a 30–60 second hello on your phone. Upload it to YouTube as <b>Unlisted</b>, tap Share, copy the link and paste it here.</div></div>' +
     '<div><label class="f" for="sWa">WhatsApp number for parents’ questions</label><input class="in" id="sWa" inputmode="tel" placeholder="98640 12345" value="' + esc(INFO.whatsapp || '') + '"></div>' +
-    '<div><label class="f" for="sUpi">UPI ID</label><input class="in" id="sUpi" value="' + esc(INFO.upi) + '"></div>' +
+    '<div><label class="f" for="sUpi">UPI ID</label><input class="in" id="sUpi" value="' + esc(INFO.upi) + '">' +
+      '<div class="sm" style="margin-top:6px">Tip: a free <b>business</b> UPI ID (PhonePe Business, Paytm for Business or BharatPe) stops warnings like “could not load banking name” for parents.</div></div>' +
     '<div><label class="f" for="sUpiName">Name on the UPI account</label><input class="in" id="sUpiName" value="' + esc(INFO.upi_name) + '"></div>' +
     '<div><label class="f" for="sPin">New teacher PIN (leave empty to keep)</label><input class="in" id="sPin" inputmode="numeric" type="password" autocomplete="new-password"></div>' +
     '<button class="btn block" id="sGo">Save</button>' +
@@ -851,6 +1097,173 @@ function gotChunk(m, done) {
   }
 }
 
+/* ================= OUR OWN VIDEO GRID =================
+   Daily carries the sound and pictures; this page lays them out itself so every
+   child is always on screen: the teacher sees everyone in a grid, children see
+   the teacher big with their friends below, and while the board or a game is
+   open everyone shrinks into a strip along the top. */
+const TILES = {};
+let TILE_RAF = 0, NEED_TAP = false;
+function queueTiles() { if (!TILE_RAF) TILE_RAF = requestAnimationFrame(() => { TILE_RAF = 0; renderTiles(); }); }
+function trackOf(p, kind) {
+  const t = p && p.tracks && p.tracks[kind];
+  if (!t || t.state !== 'playable') return null;
+  return t.persistentTrack || t.track || null;
+}
+function tileFor(id, screen) {
+  let t = TILES[id]; if (t) return t;
+  const el = document.createElement('div'); el.className = 'tile' + (screen ? ' screen' : '');
+  el.innerHTML = '<div class="av"></div><video autoplay playsinline muted></video><div class="nm"></div><div class="rx"></div>';
+  t = TILES[id] = { el: el, v: el.querySelector('video'), vt: null, a: null, at: null, name: '', owner: false, local: false, screen: !!screen };
+  el.onclick = () => tileTap(id);
+  $('stage').appendChild(el);
+  return t;
+}
+function setVideo(t, track) {
+  if (track === t.vt) return;
+  t.vt = track; t.v.srcObject = track ? new MediaStream([track]) : null;
+  if (track) { const p = t.v.play(); if (p && p.catch) p.catch(() => {}); }
+}
+function setAudio(t, track) {
+  if (track === t.at) return;
+  t.at = track;
+  if (!t.a) { t.a = document.createElement('audio'); t.a.autoplay = true; t.a.setAttribute('playsinline', ''); $('audios').appendChild(t.a); }
+  t.a.srcObject = track ? new MediaStream([track]) : null;
+  if (track) { const p = t.a.play(); if (p && p.catch) p.catch(() => { NEED_TAP = true; renderStrip(); }); }
+}
+function dropTile(id) {
+  const t = TILES[id]; if (!t) return;
+  try { t.v.srcObject = null; } catch (e) {}
+  if (t.a) { try { t.a.srcObject = null; } catch (e) {} t.a.remove(); }
+  t.el.remove(); delete TILES[id];
+}
+function clearTiles() { Object.keys(TILES).forEach(dropTile); $('stage').innerHTML = ''; $('audios').innerHTML = ''; NEED_TAP = false; }
+function renderTiles() {
+  if (!LIVE || !FRAME) return;
+  const ps = roster(), seen = {};
+  Object.keys(ps).forEach(k => {
+    const p = ps[k], id = p.local ? 'local' : (p.session_id || k);
+    seen[id] = 1;
+    const t = tileFor(id, false);
+    t.name = p.user_name || (p.local ? LIVE.name : 'Guest'); t.owner = !!p.owner; t.local = !!p.local;
+    const vt = trackOf(p, 'video'); setVideo(t, vt);
+    t.el.classList.toggle('cam', !!vt); t.el.classList.toggle('me', t.local); t.el.classList.toggle('host', t.owner);
+    t.el.querySelector('.av').textContent = (t.name || '?').charAt(0).toUpperCase();
+    t.el.querySelector('.nm').textContent = (t.owner ? '★ ' : '') + t.name + (t.local ? ' (you)' : '') + (p.audio === false ? ' 🔇' : '');
+    t.el.classList.toggle('talk', !!LIVE.speaker && (LIVE.speaker === p.session_id || (t.local && LIVE.speaker === 'local')));
+    if (!t.local) setAudio(t, trackOf(p, 'audio'));
+    const st = trackOf(p, 'screenVideo');
+    if (st) { const s = tileFor('scr-' + id, true); s.name = t.name; s.owner = t.owner; setVideo(s, st); s.el.classList.add('cam');
+      s.el.querySelector('.nm').textContent = '🖥 ' + t.name + '’s screen'; seen['scr-' + id] = 1; }
+  });
+  Object.keys(TILES).forEach(id => { if (!seen[id]) dropTile(id); });
+  layoutStage();
+  if (LIVE.host) { const n = kidNames().length; $('liveCount').textContent = n + (n === 1 ? ' child' : ' children'); }
+  renderCtl();
+}
+function layoutStage() {
+  if (!LIVE) return;
+  const stage = $('stage'), frame = $('liveFrame'), act = frame.classList.contains('act');
+  const ids = Object.keys(TILES);
+  const scr = ids.find(i => i.indexOf('scr-') === 0);
+  const spot = LIVE.spot ? ids.find(i => !TILES[i].screen && TILES[i].name === LIVE.spot) : null;
+  const teach = ids.find(i => !TILES[i].screen && TILES[i].owner);
+  const big = act ? null : (scr || spot || (!LIVE.host ? teach : null));
+  const rank = i => i === big ? 0 : TILES[i].screen ? 1 : TILES[i].owner ? 2 : TILES[i].local ? 9 : 3;
+  ids.sort((a, b) => rank(a) - rank(b) || TILES[a].name.localeCompare(TILES[b].name)).forEach((i, n) => {
+    TILES[i].el.style.order = n; TILES[i].el.classList.toggle('big', i === big);
+  });
+  const n = ids.length;
+  stage.className = act ? 'strip' : big ? 'focus' : 'grid';
+  stage.style.gridTemplateColumns = ''; stage.style.gridTemplateRows = '';
+  if (act || !n) return;
+  const W = stage.clientWidth || 360, H = stage.clientHeight || 600;
+  if (big) {
+    const m = n - 1, c = Math.min(Math.max(m, 1), 3), r = Math.ceil(m / c), sh = m ? Math.min(120, Math.max(80, Math.floor(H * .19))) : 0;
+    stage.style.gridTemplateColumns = 'repeat(' + c + ',minmax(0,1fr))';
+    stage.style.gridTemplateRows = 'minmax(0,1fr)' + (r ? ' repeat(' + r + ',' + sh + 'px)' : '');
+  } else {
+    let best = 1, bs = 0;
+    for (let c = 1; c <= 4; c++) { const r = Math.ceil(n / c), s = Math.min(W / c, (H / r) * 1.1); if (s > bs + 1) { bs = s; best = c; } }
+    stage.style.gridTemplateColumns = 'repeat(' + best + ',minmax(0,1fr))';
+    stage.style.gridTemplateRows = 'repeat(' + Math.ceil(n / best) + ',minmax(0,1fr))';
+  }
+}
+function setActMode() {
+  const on = !$('board').classList.contains('hide') || !$('game').classList.contains('hide');
+  $('liveFrame').classList.toggle('act', on);
+  layoutStage();
+}
+window.addEventListener('resize', () => { if (LIVE) layoutStage(); });
+/* teacher taps a child's picture */
+function tileTap(id) {
+  if (!LIVE) return;
+  const t = TILES[id]; if (!t) return;
+  if (NEED_TAP) return unmuteSpeakers();
+  if (!LIVE.host || t.local || t.screen) return;
+  const name = t.name, sid = id;
+  sheet('<h2>' + esc(name) + '</h2>' +
+    (LIVE.spot === name ? '<button class="btn block" id="tsOff">Back to the normal view</button>' : '<button class="btn block" id="tsOn">⭐ Show ' + esc(name) + ' big to everyone</button>') +
+    '<button class="btn teal block" id="tsSpeak">🎤 Ask ' + esc(name) + ' to speak</button>' +
+    '<button class="btn ghost block" id="tsStar">Give a star</button>' +
+    '<button class="btn ghost block" id="tsMute">🔇 Mute ' + esc(name) + '</button>' +
+    '<button class="btn ghost block" id="tsNo">Close</button>', () => {
+      $('tsNo').onclick = closeSheet;
+      if ($('tsOn')) $('tsOn').onclick = () => { send({ kind: 'spot', name: name }); closeSheet(); };
+      if ($('tsOff')) $('tsOff').onclick = () => { send({ kind: 'spot', name: '' }); closeSheet(); };
+      $('tsSpeak').onclick = () => { post({ kind: 'speak' }, sid); LIVE.hands = LIVE.hands.filter(n => n !== name); post({ kind: 'handdown' }, sid); renderStrip(); closeSheet(); toast(name + ' is asked to unmute'); };
+      $('tsStar').onclick = () => { send({ kind: 'star', to: name }); closeSheet(); };
+      $('tsMute').onclick = () => { try { FRAME.updateParticipant(sid, { setAudio: false }); toast(name + ' muted'); } catch (e) { toast('Could not mute', true); } closeSheet(); };
+    });
+}
+function unmuteSpeakers() {
+  NEED_TAP = false;
+  Object.keys(TILES).forEach(i => { const a = TILES[i].a; if (a && a.srcObject) { const p = a.play(); if (p && p.catch) p.catch(() => {}); } });
+  renderStrip();
+}
+/* the buttons at the bottom */
+function renderCtl() {
+  if (!LIVE || !LIVE.joined) return;
+  let mic = true, cam = true;
+  try { mic = FRAME.localAudio(); cam = FRAME.localVideo(); } catch (e) {}
+  const m = $('lMic'), c = $('lCam');
+  if (m) { m.innerHTML = '<b>' + (mic ? '🎤' : '🔇') + '</b>' + (mic ? 'Mic on' : 'Mic off'); m.classList.toggle('off', !mic); }
+  if (c) { c.innerHTML = '<b>' + (cam ? '📷' : '🚫') + '</b>' + (cam ? 'Camera' : 'Cam off'); c.classList.toggle('off', !cam); }
+}
+function toggleMic() { try { FRAME.setLocalAudio(!FRAME.localAudio()); } catch (e) {} setTimeout(renderCtl, 150); }
+function toggleCam() { try { FRAME.setLocalVideo(!FRAME.localVideo()); } catch (e) {} setTimeout(renderCtl, 150); }
+async function flipCam() {
+  try { if (FRAME.cycleCamera) { await FRAME.cycleCamera(); toast('Camera switched'); } } catch (e) { toast('Could not switch camera', true); }
+  closeSheet();
+}
+function canShareScreen() { return !!(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) && !/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent); }
+function shareScreen() {
+  closeSheet();
+  if (!canShareScreen()) return sheet('<h2>🖥 Share your screen</h2><div>Phones cannot share their screen. Open the class on a <b>laptop or computer</b> and tap Share screen there. Only you can share; children cannot.</div><button class="btn ghost block" id="scOk">OK</button>', () => { $('scOk').onclick = closeSheet; });
+  try { if (LIVE.sharing) { FRAME.stopScreenShare(); LIVE.sharing = false; } else { FRAME.startScreenShare(); LIVE.sharing = true; } } catch (e) { toast('Could not share the screen', true); }
+  renderStrip();
+}
+/* emoji reactions: a quiet child can still say “that was fun” */
+const REACTS = ['👏', '😂', '❤️', '👍', '😮', '🎉'];
+let REACT_AT = 0;
+function reactBar() {
+  const el = $('reactBar');
+  if (!el.classList.contains('hide')) { el.classList.add('hide'); return; }
+  el.innerHTML = REACTS.map(e => '<button data-e="' + e + '" aria-label="Send ' + e + '">' + e + '</button>').join('');
+  el.classList.remove('hide');
+  el.querySelectorAll('[data-e]').forEach(b => b.onclick = () => {
+    if (Date.now() - REACT_AT < 1200) return; REACT_AT = Date.now();
+    send({ kind: 'react', e: b.dataset.e, from: LIVE.name }); el.classList.add('hide');
+  });
+}
+function floatReact(e, who) {
+  if (REACTS.indexOf(e) < 0) return;
+  const layer = $('reactLayer'), s = document.createElement('div');
+  s.className = 'fx'; s.innerHTML = '<span>' + e + '</span><i>' + esc(String(who || '').slice(0, 14)) + '</i>';
+  s.style.left = (10 + Math.random() * 70) + '%'; layer.appendChild(s);
+  setTimeout(() => s.remove(), 2600);
+}
+
 /* ---------- opening and closing the room ---------- */
 function liveReset(c, host) {
   return { cls: c, host: host, name: host ? (INFO.teacher || 'Teacher') : '', tag: rid().slice(0, 4), joined: false,
@@ -862,6 +1275,7 @@ async function joinLive(c, host) {
   IS_HOST = host; LIVE = liveReset(c, host);
   BOARD = { on: false, all: false, title: '', strokes: [] }; MYPAD = { strokes: [] }; VIEW = null; GAME = null; GSHOW = { pos: {}, busy: false, hidden: false };
   $('live').classList.remove('hide'); $('liveTitle').textContent = c.title;
+  try { history.pushState({ live: 1, screen: S.screen }, ''); } catch (e) {}
   $('liveCtl').innerHTML = '<button id="lLeave" style="background:#E5484D">Leave</button>';
   $('lLeave').onclick = () => leaveLive();
   if (!host && !(await waitAtDoor(c))) return;
@@ -871,11 +1285,14 @@ async function joinLive(c, host) {
   catch (e) { leaveLive(true); return toast(e.message, true); }
   if (!LIVE || LIVE.cls !== c) return;
   LIVE.name = pass.name || LIVE.name;
-  $('liveCtl').innerHTML = host
-    ? '<button class="gold" id="lQuiz"><b>❓</b>Quiz</button><button id="lBoard"><b>✏️</b>Board</button><button id="lTask"><b>⏱</b>Task</button><button id="lMore"><b>⋯</b>More</button><button id="lLeave" style="background:#E5484D"><b>■</b>End</button>'
-    : '<button id="lHand"><b>✋</b>Hand</button><button id="lDraw"><b>✏️</b>Draw</button><button id="lLeave" style="background:#E5484D"><b>👋</b>Leave</button>';
-  FRAME = window.DailyIframe.createFrame($('liveFrame'), { showLeaveButton: false, iframeStyle: { position: 'absolute', inset: '0', width: '100%', height: '100%', border: '0' } });
+  $('liveCtl').innerHTML = (host
+    ? '<button id="lMic"><b>🎤</b>Mic</button><button id="lCam"><b>📷</b>Camera</button><button class="gold" id="lQuiz"><b>❓</b>Quiz</button><button id="lBoard"><b>✏️</b>Board</button><button id="lGame"><b>🎲</b>Game</button><button id="lMore"><b>⋯</b>More</button><button id="lLeave" style="background:#E5484D"><b>■</b>End</button>'
+    : '<button id="lMic"><b>🎤</b>Mic</button><button id="lCam"><b>📷</b>Camera</button><button id="lHand"><b>✋</b>Hand</button><button id="lFun"><b>😊</b>Fun</button><button id="lDraw"><b>✏️</b>Draw</button><button id="lLeave" style="background:#E5484D"><b>👋</b>Leave</button>');
+  clearTiles();
+  FRAME = window.DailyIframe.createCallObject({ audioSource: true, videoSource: true });
   FRAME.on('app-message', ev => onMsg(ev && ev.data, ev && ev.fromId));
+  ['joined-meeting', 'participant-joined', 'participant-updated', 'participant-left', 'track-started', 'track-stopped'].forEach(e => FRAME.on(e, queueTiles));
+  FRAME.on('active-speaker-change', ev => { if (!LIVE) return; LIVE.speaker = ev && ev.activeSpeaker && ev.activeSpeaker.peerId; queueTiles(); });
   FRAME.on('left-meeting', () => leaveLive());
   FRAME.on('error', ev => toast('Video: ' + videoErr(ev), true));
   FRAME.on('camera-error', ev => toast('Camera/mic: ' + videoErr(ev) + ' — allow camera and microphone for this site in the browser settings', true));
@@ -884,12 +1301,15 @@ async function joinLive(c, host) {
   catch (e) { const m = videoErr(e); leaveLive(true); return showVideoErr(m); }
   if (!LIVE) return;
   LIVE.joined = true;
-  $('lLeave').onclick = host ? endSheet : () => leaveLive();
+  try { if (FRAME.updateSendSettings) FRAME.updateSendSettings({ video: 'bandwidth-optimized' }); } catch (e) {}
+  queueTiles();
+  $('lLeave').onclick = host ? endSheet : leaveAsk;
+  $('lMic').onclick = toggleMic; $('lCam').onclick = toggleCam;
   if (host) {
-    $('lQuiz').onclick = quizSheet; $('lBoard').onclick = toggleBoard; $('lTask').onclick = taskSheet; $('lMore').onclick = moreSheet;
+    $('lQuiz').onclick = quizSheet; $('lBoard').onclick = toggleBoard; $('lGame').onclick = gameSheet; $('lMore').onclick = moreSheet;
     pollRoom(); LIVE.pollT = setInterval(pollRoom, 4000);
   } else {
-    $('lHand').onclick = toggleHand; $('lDraw').onclick = openMyPad;
+    $('lHand').onclick = toggleHand; $('lDraw').onclick = openMyPad; $('lFun').onclick = reactBar;
     certFor(c);                        // a star card starts the moment the child is in
   }
   renderStrip();
@@ -915,14 +1335,21 @@ function leaveLive(quiet) {
   if (was && was.pollT) clearInterval(was.pollT);
   if (was && was.rec && was.rec.mr && was.rec.mr.state === 'recording') { try { was.rec.mr.stop(); } catch (e) {} }
   const f = FRAME; FRAME = null;
-  if (f) { try { f.destroy(); } catch (e) {} }
+  if (f) { try { f.leave(); } catch (e) {} try { f.destroy(); } catch (e) {} }
+  clearTiles(); $('liveFrame').classList.remove('act'); $('liveCount').textContent = '';
   clearInterval(TASK_T);
-  ['taskBanner', 'starPop', 'quizCard', 'voiceCard', 'speakPop', 'board', 'game', 'liveWait'].forEach(id => $(id).classList.add('hide'));
+  ['taskBanner', 'starPop', 'quizCard', 'voiceCard', 'speakPop', 'board', 'game', 'liveWait', 'podium', 'reactBar'].forEach(id => $(id).classList.add('hide'));
   $('liveStrip').innerHTML = '';
   $('live').classList.add('hide');
   closeSheet();
+  try { if (history.state && history.state.live) history.replaceState({ dup: 1, screen: S.screen }, ''); } catch (e) {}
   if (was && !was.host && S.screen === 'home') vHome();      // the new star card shows on the home screen
   if (!quiet && was && !was.host && was.joined) showCert(was.cls.id, was.ended);
+}
+function leaveAsk() {
+  sheet('<h2>Leave the class?</h2><button class="btn red block" id="laGo">Leave the class</button><button class="btn ghost block" id="laNo">Stay</button>', () => {
+    $('laNo').onclick = closeSheet; $('laGo').onclick = () => { closeSheet(); leaveLive(); };
+  });
 }
 function endSheet() {
   sheet('<h2>End the class?</h2>' +
@@ -971,6 +1398,10 @@ function onMsg(m, from) {
       if (!LIVE.host && m.to === LIVE.name) certAdd('stars', 1);
       break;
     }
+    case 'spot': LIVE.spot = String(m.name || '').slice(0, 60); layoutStage(); renderStrip();
+      if (!LIVE.host && LIVE.spot === LIVE.name) toast('⭐ You are on the big screen!'); break;
+    case 'react': floatReact(m.e, sender); break;
+    case 'podium': if (m.s) showPodium(m.s); else $('podium').classList.add('hide'); break;
     case 'end': if (!LIVE.host) { LIVE.ended = true; if (FRAME) FRAME.leave(); else leaveLive(); } break;
     /* drawing board */
     case 'board': if (!LIVE.host) { BOARD.on = !!m.on; BOARD.all = !!m.all; BOARD.title = String(m.title || '').slice(0, 60);
@@ -1009,6 +1440,9 @@ function onMsg(m, from) {
 function renderStrip() {
   if (!LIVE) return;
   const ch = [];
+  if (NEED_TAP) ch.push('<button class="schip gold" data-s="sound">🔈 Tap to hear the class</button>');
+  if (LIVE.host && LIVE.spot) ch.push('<button class="schip" data-s="unspot">⭐ ' + esc(LIVE.spot) + ' on big screen ✕</button>');
+  if (LIVE.host && LIVE.sharing) ch.push('<button class="schip gold" data-s="unshare">🖥 Stop sharing</button>');
   if (LIVE.host) {
     if (LIVE.waiting.length === 1) ch.push('<button class="schip gold" data-s="let1">🚪 Let ' + esc(LIVE.waiting[0].name) + ' in</button>');
     else if (LIVE.waiting.length > 1) ch.push('<button class="schip gold" data-s="door">🚪 ' + LIVE.waiting.length + ' at the door</button>');
@@ -1025,7 +1459,10 @@ function renderStrip() {
   $('liveStrip').innerHTML = ch.join('');
   $('liveStrip').querySelectorAll('[data-s]').forEach(b => b.onclick = () => {
     const s = b.dataset.s;
-    if (s === 'let1') admit(LIVE.waiting[0].parent_id);
+    if (s === 'sound') unmuteSpeakers();
+    else if (s === 'unspot') send({ kind: 'spot', name: '' });
+    else if (s === 'unshare') shareScreen();
+    else if (s === 'let1') admit(LIVE.waiting[0].parent_id);
     else if (s === 'door') doorSheet();
     else if (s === 'voices') voiceSheet(LIVE.cls.id, true);
     else if (s === 'pads') padsSheet();
@@ -1106,16 +1543,16 @@ function moreSheet() {
     '<button class="mbtn" id="mPads">🎨<span>Children’s drawings' + (pads ? ' (' + pads + ')' : '') + '</span></button>' +
     '<button class="mbtn" id="mPts">🏆<span>Quiz points</span></button>' +
     '<button class="mbtn" id="mDoor">🚪<span>Waiting room' + (LIVE.openDoor ? ' (door open)' : '') + '</span></button>' +
-    '<button class="mbtn" id="mGame">🎲<span>Snakes &amp; Ladders</span></button>' +
-    '<button class="mbtn" id="mScr">🖥<span>Share screen</span></button>' +
+    '<button class="mbtn" id="mTask">⏱<span>Give a task</span></button>' +
+    '<button class="mbtn" id="mScr">🖥<span>' + (LIVE.sharing ? 'Stop sharing' : 'Share screen') + '</span></button>' +
+    '<button class="mbtn" id="mFlip">🔄<span>Switch camera</span></button>' +
+    '<button class="mbtn" id="mFun">😊<span>Send a reaction</span></button>' +
     '</div><button class="btn ghost block" id="mNo">Close</button>', () => {
       $('mNo').onclick = closeSheet;
       $('mStar').onclick = starSheet; $('mMute').onclick = muteAll; $('mVoice').onclick = askVoiceSheet;
       $('mHear').onclick = () => voiceSheet(LIVE.cls.id, true); $('mPads').onclick = padsSheet; $('mPts').onclick = pointsSheet;
-      $('mDoor').onclick = doorSheet; $('mGame').onclick = gameSheet;
-      $('mScr').onclick = () => sheet('<h2>🖥 Share your screen</h2><div>Use a <b>laptop or computer</b> for this — phones cannot share their screen.</div>' +
-        '<div class="sm">Open the class on the laptop, then tap the <b>Share</b> button at the bottom of the video. Only you can share; children cannot.</div>' +
-        '<button class="btn ghost block" id="scOk">OK</button>', () => { $('scOk').onclick = closeSheet; });
+      $('mDoor').onclick = doorSheet; $('mTask').onclick = taskSheet;
+      $('mScr').onclick = shareScreen; $('mFlip').onclick = flipCam; $('mFun').onclick = () => { closeSheet(); reactBar(); };
     });
 }
 function taskSheet() {
@@ -1175,8 +1612,8 @@ function judge(m, who) {
   if (right) {
     z.done = true; z.winner = who;
     LIVE.scores[who] = (LIVE.scores[who] || 0) + 1;
+    send({ kind: 'score', s: LIVE.scores });                  // scores first, so the result card shows them
     send({ kind: 'qwin', id: z.id, name: who, a: z.a, ans: z.o[z.a] });
-    send({ kind: 'score', s: LIVE.scores });
   } else {
     const kids = kidNames();
     if (kids.length && kids.every(k => z.answered.some(x => x.who === k))) reveal(); else renderQuizHost();
@@ -1189,16 +1626,17 @@ function renderQuizHost() {
   card.innerHTML = '<div class="qhead"><span>QUIZ RACE</span><button class="qx" id="qClose" aria-label="Close quiz">✕</button></div>' +
     '<div class="qq">' + esc(z.q) + '</div><div class="qgrid">' +
     z.o.map((t, i) => '<div class="qopt' + (i === z.a ? ' right' : ' dim') + '" style="background:' + QCOL[i] + '">' + QSHAPE[i] + ' ' + esc(t) + (i === z.a ? ' ✓' : '') + '</div>').join('') + '</div>' +
-    (z.done ? '<div class="qres">' + (z.winner ? '🏆 ' + esc(z.winner) + ' got it first!' : 'Nobody got it — answer: ' + esc(z.o[z.a])) + '</div>' : '') +
+    (z.done ? '<div class="qres">' + (z.winner ? '🏆 ' + esc(z.winner) + ' got it first!' : 'Nobody got it — answer: ' + esc(z.o[z.a])) + '</div>' + scoreLine(LIVE.scores) : '') +
     '<div class="sm">' + (z.answered.length ? z.answered.map(x => esc(x.who) + (x.right ? ' ✓' : ' ✗')).join(' · ') : 'Waiting for answers…') + '</div>' +
     '<div class="row">' + (z.done
-      ? (z.gen ? '<button class="btn small grow" id="qNext">Next maths ➜</button>' : '') + '<button class="btn ghost small grow" id="qNew">New question</button>'
+      ? (z.gen ? '<button class="btn small grow" id="qNext">Next maths ➜</button>' : '') + '<button class="btn ghost small grow" id="qNew">New question</button><button class="btn ghost small" id="qPod" aria-label="Show champions">🏆</button>'
       : '<button class="btn ghost small grow" id="qReveal">Show the answer</button>') + '</div>';
   card.classList.remove('hide');
   $('qClose').onclick = () => { post({ kind: 'qclose', id: z.id }); LIVE.quiz = null; renderQuizHost(); };
   if ($('qReveal')) $('qReveal').onclick = reveal;
   if ($('qNext')) $('qNext').onclick = () => { const g = mathQ(z.gen); askQuiz(g.q, g.o, g.a, z.gen); };
   if ($('qNew')) $('qNew').onclick = quizSheet;
+  if ($('qPod')) $('qPod').onclick = () => { send({ kind: 'podium', s: LIVE.scores }); post({ kind: 'qclose', id: z.id }); LIVE.quiz = null; renderQuizHost(); };
 }
 function renderQuizKid() {
   const z = LIVE && LIVE.kq, card = $('quizCard');
@@ -1210,7 +1648,7 @@ function renderQuizKid() {
       if (r) cls += i === r.a ? ' right' : ' dim'; else if (z.picked !== null) cls += i === z.picked ? ' picked' : ' dim';
       return '<button class="' + cls + '" data-q="' + i + '" style="background:' + QCOL[i] + '"' + (z.picked !== null || r ? ' disabled' : '') + '>' + QSHAPE[i] + ' ' + esc(t) + '</button>';
     }).join('') + '</div>' +
-    (r ? '<div class="qres">' + (me ? '🎉 You got it first! +1 point' : r.name ? '🏆 ' + esc(r.name) + ' got it first!' : 'The answer is ' + esc(r.ans)) + '</div>'
+    (r ? '<div class="qres">' + (me ? '🎉 You got it first! +1 point' : r.name ? '🏆 ' + esc(r.name) + ' got it first!' : 'The answer is ' + esc(r.ans)) + '</div>' + scoreLine(LIVE.scores)
        : z.picked !== null ? '<div class="qres" style="background:#EEF1F7">Sent! Wait and see…</div>' : '');
   card.classList.remove('hide');
   card.querySelectorAll('[data-q]').forEach(b => b.onclick = () => {
@@ -1259,11 +1697,32 @@ function pointsSheet() {
   const rows = Object.keys(LIVE.scores).sort((a, b) => LIVE.scores[b] - LIVE.scores[a]);
   sheet('<h2>🏆 Quiz points</h2>' + (rows.length ? rows.map(n => '<div class="card row"><div class="grow" style="font-weight:800">' + esc(n) + '</div><div class="ctitle">' + LIVE.scores[n] + '</div></div>').join('')
       : '<div class="empty">No points yet. Ask a quiz question!</div>') +
-    (rows.length ? '<button class="btn ghost block" id="ptZero">Start points again from 0</button>' : '') +
+    (rows.length ? '<button class="btn block" id="ptShow">🏆 Show the champions to everyone</button><button class="btn ghost block" id="ptZero">Start points again from 0</button>' : '') +
     '<button class="btn ghost block" id="ptNo">Close</button>', () => {
       $('ptNo').onclick = closeSheet;
+      if ($('ptShow')) $('ptShow').onclick = () => { send({ kind: 'podium', s: LIVE.scores }); closeSheet(); };
       if ($('ptZero')) $('ptZero').onclick = () => { LIVE.scores = {}; send({ kind: 'score', s: {} }); closeSheet(); };
     });
+}
+
+/* running scores, best first: “Aarav 3 · Riya 2 · Kabir 1” */
+function scoreLine(s) {
+  const r = Object.keys(s || {}).filter(n => s[n] > 0).sort((a, b) => s[b] - s[a] || a.localeCompare(b));
+  return r.length ? '<div class="scores">Scores: ' + r.map(n => '<b>' + esc(n) + '</b> ' + s[n]).join(' · ') + '</div>' : '';
+}
+/* the champions: 1st in the middle, 2nd left, 3rd right, everyone else listed below */
+function showPodium(s) {
+  const r = Object.keys(s || {}).filter(n => s[n] > 0).sort((a, b) => s[b] - s[a] || a.localeCompare(b));
+  if (!r.length) return;
+  const col = ['#E9A82B', '#8D93AE', '#C27C3E'], hgt = [130, 100, 80], place = [1, 0, 2];
+  const el = $('podium');
+  el.innerHTML = '<div class="qhead"><span>🏆 QUIZ CHAMPIONS</span><button class="qx" id="poX" aria-label="Close">✕</button></div>' +
+    '<div class="pod">' + place.filter(i => r[i]).map(i => '<div style="background:' + col[i] + ';height:' + hgt[i] + 'px"><b>' + ['🥇', '🥈', '🥉'][i] + '</b><span>' + esc(r[i]) + '</span><span>' + s[r[i]] + ' pt</span></div>').join('') + '</div>' +
+    (r.length > 3 ? '<div class="scores">' + r.slice(3).map(n => '<b>' + esc(n) + '</b> ' + s[n]).join(' · ') + '</div>' : '') +
+    (r.indexOf(LIVE && LIVE.name) === 0 && !LIVE.host ? '<div class="qres">🎉 You are the champion!</div>' : '');
+  el.classList.remove('hide');
+  $('poX').onclick = () => { el.classList.add('hide'); if (LIVE && LIVE.host) post({ kind: 'podium', s: null }); };
+  if (LIVE && !LIVE.host && r.indexOf(LIVE.name) >= 0 && r.indexOf(LIVE.name) < 3) certSet('place', r.indexOf(LIVE.name) + 1);
 }
 
 /* ================= DRAWING BOARD =================
@@ -1288,8 +1747,8 @@ function closeBoard() { BOARD.on = false; VIEW = null; post({ kind: 'board', on:
 function openMyPad() { VIEW = VIEW === 'mine' ? (BOARD.on && !LIVE.boardHidden ? 'shared' : null) : 'mine'; renderBoard(); renderStrip(); }
 function renderBoard() {
   const el = $('board');
-  if (!LIVE || !VIEW || (VIEW === 'shared' && (!BOARD.on || (!IS_HOST && LIVE.boardHidden)))) { el.classList.add('hide'); return; }
-  el.classList.remove('hide');
+  if (!LIVE || !VIEW || (VIEW === 'shared' && (!BOARD.on || (!IS_HOST && LIVE.boardHidden)))) { el.classList.add('hide'); setActMode(); return; }
+  el.classList.remove('hide'); setActMode();
   const edit = canEdit();
   const sw = COLORS.slice(0, 6).map((c, i) => '<button class="sw' + (TOOL.c === i && TOOL.w < 3 ? ' on' : '') + '" data-c="' + i + '" style="background:' + c + '" aria-label="Colour ' + (i + 1) + '"></button>').join('');
   const sizes = [0, 1, 2].map(i => '<button class="tb' + (TOOL.w === i ? ' on' : '') + '" data-w="' + i + '" aria-label="Line size ' + (i + 1) + '"><span style="display:inline-block;border-radius:50%;background:currentColor;width:' + (6 + i * 6) + 'px;height:' + (6 + i * 6) + 'px"></span></button>').join('');
@@ -1297,7 +1756,7 @@ function renderBoard() {
   let right = '';
   if (VIEW === 'mine') right = '<button class="tb" id="bClr">Clear</button><button class="tb gold" id="bSend">Send to teacher</button><button class="tb" id="bClose">✕</button>';
   else if (IS_HOST) right = '<button class="tb" id="bClr">Clear</button><button class="tb' + (BOARD.all ? ' gold' : '') + '" id="bAll">' + (BOARD.all ? 'Kids drawing: ON' : 'Let kids draw') + '</button><button class="tb" id="bClose">Close board</button>';
-  else right = (BOARD.all ? '' : '<span class="sm" style="color:#C9CEDD;padding:0 6px">' + esc(BOARD.title || 'Teacher’s board') + '</span>') + '<button class="tb" id="bHide">See video</button>';
+  else right = (BOARD.all ? '' : '<span class="sm" style="color:#C9CEDD;padding:0 6px">' + esc(BOARD.title || 'Teacher’s board') + '</span>') + '<button class="tb" id="bHide">Big video</button>';
   $('bTools').innerHTML = tools + '<span class="grow"></span>' + right;
   $('bTitle').textContent = VIEW === 'mine' ? 'My drawing pad' : (BOARD.title || (IS_HOST ? 'Board — everyone sees this' : ''));
   $('bTools').querySelectorAll('[data-c]').forEach(b => b.onclick = () => { TOOL.c = +b.dataset.c; if (TOOL.w === 3) TOOL.w = 1; renderBoard(); });
@@ -1551,23 +2010,29 @@ function hostRoll(asked) {
 function hostSkip() { const g = GAME; if (!g || g.w) return; const n = JSON.parse(JSON.stringify(g)); n.seq++; n.t = (g.t + 1) % g.pl.length; n.last = { n: g.pl[g.t].n, skip: true }; send({ kind: 'game', g: n }); }
 function gotGame(g) {
   const old = GAME; GAME = g;
-  if (!g) { $('game').classList.add('hide'); GSHOW = { pos: {}, busy: false, hidden: false }; renderStrip(); return; }
+  if (!g) { $('game').classList.add('hide'); setActMode(); GSHOW = { pos: {}, busy: false, hidden: false }; renderStrip(); return; }
   if (!old || old.id !== g.id) { GSHOW = { pos: {}, busy: false, hidden: false }; g.pl.forEach(p => GSHOW.pos[p.n] = p.p); }
   const myTurn = !g.w && g.pl[g.t] && g.pl[g.t].n === (LIVE && LIVE.name);
   if (myTurn) GSHOW.hidden = false;
+  clearTimeout(GSHOW.retry);
+  if (myTurn && (!old || old.seq !== g.seq || old.t !== g.t)) {
+    toast('🎲 Your turn! Tap Roll');
+    try { if (navigator.vibrate) navigator.vibrate([120, 60, 120]); } catch (e) {}
+  }
   if (!GSHOW.hidden && LIVE && LIVE.rec && (LIVE.rec.state === 'idle' || LIVE.rec.state === 'done')) { LIVE.rec.min = true; renderVoiceCard(); }
   renderGame();
   if (old && old.id === g.id && g.last && !g.last.skip && g.seq > old.seq) animateMove(g.last); else { g.pl.forEach(p => GSHOW.pos[p.n] = p.p); drawGame(); }
   renderStrip();
 }
 async function animateMove(m) {
-  GSHOW.busy = true; renderGamePanel();
+  GSHOW.busy = true; GSHOW.die = m.r; renderGamePanel();
+  await sleep(700);
   let p = m.f;
   const path = []; let up = true;
   for (let i = 0; i < m.r; i++) { if (up && p === 100) up = false; p += up ? 1 : -1; path.push(p); }
   for (const s of path) { GSHOW.pos[m.n] = s; drawGame(); await sleep(220); }
   if (m.to !== m.x) { await sleep(250); GSHOW.pos[m.n] = m.to; drawGame(); }
-  GSHOW.busy = false; renderGamePanel();
+  GSHOW.busy = false; GSHOW.die = 0; renderGamePanel();
 }
 function gameMsg(m) {
   if (!m) return 'Tap Roll to start!';
@@ -1580,8 +2045,8 @@ function gameMsg(m) {
 }
 function renderGame() {
   const el = $('game');
-  if (!GAME || !LIVE || GSHOW.hidden) { el.classList.add('hide'); return; }
-  el.classList.remove('hide'); fitGame(); renderGamePanel();
+  if (!GAME || !LIVE || GSHOW.hidden) { el.classList.add('hide'); setActMode(); return; }
+  el.classList.remove('hide'); setActMode(); fitGame(); renderGamePanel();
 }
 function renderGamePanel() {
   const g = GAME; if (!g || !LIVE) return;
@@ -1589,18 +2054,27 @@ function renderGamePanel() {
   const host = LIVE.host;
   $('gPanel').innerHTML =
     '<div class="gpl">' + g.pl.map(p => '<span class="gtag' + (!g.w && p === cur ? ' on' : '') + '"><i style="background:' + PCOL[p.c % 7] + '"></i>' + esc(p.n) + ' · ' + p.p + '</span>').join('') + '</div>' +
+    (GSHOW.die ? '<div class="die" aria-label="Rolled ' + GSHOW.die + '">' + '⚀⚁⚂⚃⚄⚅'.charAt(GSHOW.die - 1) + '</div>' : '') +
     (g.w ? '<div class="qres">🏆 ' + esc(g.w) + ' wins! 🎉</div>'
-         : '<div class="gmsg">' + gameMsg(g.last) + '</div>') +
+         : '<div class="gmsg">' + (GSHOW.busy ? esc(g.last.n) + ' rolled <b>' + g.last.r + '</b>…' : gameMsg(g.last)) + '</div>') +
     '<div class="row">' +
       (!g.w && myTurn ? '<button class="btn grow" id="gRoll"' + (GSHOW.busy ? ' disabled' : '') + ' style="min-height:56px;font-size:18px">🎲 Roll!</button>'
         : !g.w ? '<div class="grow gwait">' + esc(cur ? cur.n : '') + '’s turn…</div>' : '<span class="grow"></span>') +
       (host && !g.w && !myTurn ? '<button class="tb" id="gFor">Roll for ' + esc(cur.n) + '</button><button class="tb" id="gSkip">Skip</button>' : '') +
-      (host ? '<button class="tb" id="gNew">' + (g.w ? 'Play again' : 'Menu') + '</button>' : '<button class="tb" id="gHide">See video</button>') +
+      (host ? '<button class="tb" id="gNew">' + (g.w ? 'Play again' : 'Menu') + '</button>' : '<button class="tb" id="gHide">Big video</button>') +
     '</div>';
   if ($('gRoll')) $('gRoll').onclick = () => {
     $('gRoll').disabled = true;
-    if (host) hostRoll(); else post({ kind: 'roll', id: g.id, seq: g.seq, from: LIVE.name }, teacherSid());
-    setTimeout(() => { if ($('gRoll')) $('gRoll').disabled = false; }, 4000);
+    if (host) return hostRoll();
+    /* ask the teacher's phone to throw the dice; ask again if no answer comes */
+    let tries = 0;
+    const ask = () => {
+      if (!GAME || GAME.id !== g.id || GAME.seq !== g.seq || !LIVE) return;
+      if (tries++ >= 3) { toast('The teacher’s phone is not answering. Ask her to tap “Roll for you”.', true); if ($('gRoll')) $('gRoll').disabled = false; return; }
+      post({ kind: 'roll', id: g.id, seq: g.seq, from: LIVE.name }, teacherSid());
+      GSHOW.retry = setTimeout(ask, 2500);
+    };
+    ask();
   };
   if ($('gFor')) $('gFor').onclick = () => hostRoll();
   if ($('gSkip')) $('gSkip').onclick = hostSkip;
@@ -1618,6 +2092,9 @@ function cellXY(n, cs) {
 }
 function drawGame() {
   const cv = $('gCanvas'); if (!GAME || $('game').classList.contains('hide') || !cv._s) return;
+  drawSnl(cv, GAME.pl, p => GSHOW.pos[p.n] != null ? GSHOW.pos[p.n] : p.p);
+}
+function drawSnl(cv, players, posOf) {
   const x = cv.getContext('2d'), S = cv._s, cs = S / 10;
   for (let n = 1; n <= 100; n++) {
     const [cx, cy] = cellXY(n, cs);
@@ -1644,7 +2121,7 @@ function drawGame() {
     x.fillStyle = '#fff'; x.beginPath(); x.arc(x1 - cs * .06, y1 - cs * .04, cs * .04, 0, Math.PI * 2); x.arc(x1 + cs * .06, y1 - cs * .04, cs * .04, 0, Math.PI * 2); x.fill();
   });
   const at = {};
-  GAME.pl.forEach(p => { const pos = GSHOW.pos[p.n] != null ? GSHOW.pos[p.n] : p.p; (at[pos] = at[pos] || []).push(p); });
+  players.forEach(p => { const pos = posOf(p); (at[pos] = at[pos] || []).push(p); });
   Object.keys(at).forEach(pos => {
     const list = at[pos], n = +pos;
     let base = n === 0 ? [cs * .5, S - cs * .5] : cellXY(n, cs);
@@ -1704,6 +2181,7 @@ async function drawCert(c) {
   const line = [];
   if (c.stars) line.push('★ ' + c.stars + (c.stars === 1 ? ' star' : ' stars'));
   if (c.points) line.push('🏆 ' + c.points + (c.points === 1 ? ' quiz point' : ' quiz points'));
+  if (c.place) { x.fillStyle = '#C3263A'; x.font = '800 50px ' + FB; x.fillText(['🥇 Quiz champion!', '🥈 2nd in the quiz', '🥉 3rd in the quiz'][c.place - 1] || '', W / 2, 1075); }
   if (line.length) { x.fillStyle = '#B07A00'; x.font = '800 54px ' + FB; x.fillText(line.join('   '), W / 2, 1000); }
   x.fillStyle = '#5E5C7E'; x.font = '700 36px ' + FB;
   x.fillText(new Date(c.at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) + (c.teacher ? '  ·  Teacher: ' + c.teacher : ''), W / 2, 1150);
@@ -1766,9 +2244,12 @@ function showVideoErr(m) {
   }
   wireCanvas();
   await loadPublic();
+  NAV_POP = true;            // the first screen is the bottom of the history, not a new step
   if (location.hash === '#teacher' || ME.role === 'teacher') {
     if (ME.role === 'teacher') { await loadTeacher(); go('tclasses'); } else go('tlogin');
   } else { await loadMine(); go('home'); }
+  NAV_POP = false;
+  try { history.replaceState({ screen: S.screen }, ''); } catch (e) {}
   /* keep the page fresh: new bookings, confirmations, the Join button opening */
   const fresh = async () => {
     if (!$('live').classList.contains('hide') || $('overlay').innerHTML) return;
