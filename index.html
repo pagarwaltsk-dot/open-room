@@ -3,15 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1B2340">
-<title>Open Room</title>
+<meta name="theme-color" content="#C3263A">
+<title>kidspri — live group classes for children</title>
+<meta name="description" content="Small live classes where children aged 5 to 10 learn and play together: dance, stories, craft, quick maths and games, on your phone.">
+<meta property="og:title" content="kidspri — live group classes for children">
+<meta property="og:description" content="Dance, stories, craft, quick maths and games, live in small groups of five. Book a seat on your phone.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23C3263A'/%3E%3Cpath d='M32 10l6.5 13.2 14.5 2.1-10.5 10.2 2.5 14.5L32 43.2l-13 6.8 2.5-14.5L11 25.3l14.5-2.1z' fill='%23E9A82B'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito+Sans:wght@400;600;700;800&display=swap">
 <style>
   :root{
-    --ink:#1B2340; --muted:#5B647D; --bg:#F3F5FA; --card:#FFFFFF; --line:#DDE2EC;
-    --teal:#0F6E70; --teal-soft:#E3F4EF; --gold:#F2A900; --gold-soft:#FFF4D6; --red:#C4382C; --red-soft:#FCEBEA;
-    --live:#10162B;
+    /* kidspri: gamosa red, muga-silk gold, tea-leaf green, indigo ink */
+    --ink:#23214F; --muted:#5E5C7E; --bg:#F6F5FB; --card:#FFFFFF; --line:#E1DFEE;
+    --teal:#1E7F5A; --teal-soft:#E2F3EA; --gold:#E9A82B; --gold-soft:#FDF1D6; --red:#C3263A; --red-soft:#FBE8EA;
+    --sky:#2F6FD6; --live:#17163A;
+    --gamosa:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='18'%3E%3Crect width='44' height='18' fill='%23fff'/%3E%3Crect y='1' width='44' height='2.5' fill='%23C3263A'/%3E%3Crect y='14.5' width='44' height='2.5' fill='%23C3263A'/%3E%3Cpath d='M22 5.5l3.5 3.5-3.5 3.5-3.5-3.5z' fill='%23C3263A'/%3E%3Cpath d='M3 9h11M30 9h11' stroke='%23C3263A' stroke-width='1.4'/%3E%3Ccircle cx='0' cy='9' r='1.6' fill='%23C3263A'/%3E%3Ccircle cx='44' cy='9' r='1.6' fill='%23C3263A'/%3E%3C/svg%3E");
     --fd:'Baloo 2', 'Trebuchet MS', system-ui, sans-serif;
     --fb:'Nunito Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   }
@@ -22,15 +28,25 @@
   button{cursor:pointer}
   a{color:var(--teal)}
   .wrap{max-width:560px;margin:0 auto;min-height:100%;display:flex;flex-direction:column}
-  header.top{background:var(--ink);color:#fff;padding:calc(env(safe-area-inset-top,0px) + 18px) 18px 16px;display:flex;align-items:center;gap:12px}
-  header.top.teacher{background:var(--teal)}
-  .logo{width:42px;height:42px;border-radius:12px;background:var(--gold);color:var(--ink);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:800;font-size:20px;flex:0 0 auto}
+  header.top{background:#fff;color:var(--ink);padding:calc(env(safe-area-inset-top,0px) + 12px) 16px 10px;display:flex;align-items:center;gap:12px}
+  header.top.teacher{background:var(--ink);color:#fff}
+  .band{height:18px;background:var(--gamosa) repeat-x;background-size:44px 18px}
   .ttl{flex:1;min-width:0}
-  .ttl .a{font-family:var(--fd);font-weight:700;font-size:20px;line-height:1.1}
-  .ttl .b{font-size:13px;opacity:.8}
-  .hbtn{border:0;background:rgba(255,255,255,.14);color:#fff;border-radius:999px;padding:8px 12px;font-weight:800;font-size:13px;min-height:40px}
+  .ttl .b{font-size:12.5px;color:var(--muted);font-weight:700;margin-top:-4px}
+  header.teacher .ttl .b{color:#C9C7E6}
+  .hbtn{border:1.5px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:8px 14px;font-weight:800;font-size:13px;min-height:40px}
+  header.teacher .hbtn{background:rgba(255,255,255,.12);border-color:transparent;color:#fff}
+  /* the wordmark: “kids” in crayon colours, “pri” in ink, a star for each dot */
+  .wm{font-family:var(--fd);font-weight:800;font-size:34px;line-height:1;letter-spacing:-.01em;display:inline-flex;white-space:nowrap;user-select:none}
+  .wm span{display:inline-block;position:relative}
+  .wm .k{color:var(--red)} .wm .i1{color:var(--gold)} .wm .d{color:var(--teal)} .wm .s{color:var(--sky)} .wm .p{color:var(--ink)}
+  header.teacher .wm .p{color:#fff}
+  .wm .dot::after{content:'★';position:absolute;left:50%;top:-.02em;transform:translateX(-50%);font-size:.42em;color:var(--red)}
+  .wm .i1.dot::after{color:var(--gold)}
+  .wm .p.dot::after{left:44%}
+  @media (prefers-reduced-motion:no-preference){ .wm span.hop{animation:hop .5s ease} @keyframes hop{40%{transform:translateY(-.25em) rotate(-6deg)}} }
   main{flex:1;padding:16px 16px 40px;display:flex;flex-direction:column;gap:14px}
-  .lbl{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:6px 2px -4px}
+  .lbl{font-family:var(--fd);font-size:21px;font-weight:800;color:var(--ink);margin:10px 2px -4px;line-height:1.2}
   .card{background:var(--card);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px}
   .row{display:flex;align-items:center;gap:10px}
   .grow{flex:1;min-width:0}
@@ -122,6 +138,45 @@
   .gmsg{font-weight:700;font-size:15px}
   .gwait{font-weight:800;color:var(--muted)}
   .gpanel .tb{background:#EEF1F7;color:var(--ink)}
+  /* landing */
+  .landing{gap:26px;padding-top:20px}
+  .hero h1{font-family:var(--fd);font-weight:800;font-size:clamp(32px,9.2vw,46px);line-height:1.02;margin:0 0 12px;letter-spacing:-.015em;color:var(--ink)}
+  .lead{font-size:17px;color:var(--muted);margin:0 0 18px;max-width:32em}
+  .ctas{display:flex;flex-wrap:wrap;gap:10px}
+  .btn.red{background:var(--red);color:#fff}
+  .toy{margin-top:22px;background:var(--ink);color:#fff;border-radius:26px;padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:0 16px 34px rgba(35,33,79,.28)}
+  .toy-top{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:14.5px;color:#D4D2EE}
+  .toy-stars{background:var(--gold);color:var(--ink);border-radius:999px;padding:4px 12px;font-weight:800;font-size:15px}
+  .toy-q{font-family:var(--fd);font-weight:800;font-size:46px;text-align:center;line-height:1;padding:6px 0}
+  .toy-say{font-size:14.5px;color:#DCDAF2;text-align:center;min-height:2.7em}
+  .toy .qopt:disabled{cursor:default}
+  @media (prefers-reduced-motion:no-preference){ .shake{animation:shake .35s} @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}} }
+  .fly{position:fixed;z-index:70;font-size:30px;line-height:1;color:var(--gold);pointer-events:none;text-shadow:0 2px 8px rgba(0,0,0,.3)}
+  h2.h2{font-family:var(--fd);font-weight:800;font-size:25px;line-height:1.12;margin:0 0 12px;color:var(--ink)}
+  .meet{background:#fff;border-radius:26px;padding:18px;display:flex;flex-direction:column;gap:14px}
+  .meet .who{display:flex;gap:14px;align-items:center}
+  .ph{width:86px;height:86px;border-radius:50%;object-fit:cover;flex:0 0 auto;border:4px solid var(--gold-soft);background:var(--gold);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:800;font-size:38px;color:var(--ink)}
+  .vid{position:relative;border-radius:18px;overflow:hidden;aspect-ratio:16/9;background:var(--ink);border:0;padding:0;width:100%;display:block}
+  .vid img{width:100%;height:100%;object-fit:cover;opacity:.85;display:block}
+  .vid .play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:70px;height:70px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+  .vid .cap{position:absolute;left:14px;bottom:10px;color:#fff;font-weight:800;text-shadow:0 1px 6px rgba(0,0,0,.7)}
+  .vid iframe{width:100%;height:100%;border:0;display:block}
+  .feat{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -16px;padding:2px 16px 8px;scrollbar-width:none}
+  .feat::-webkit-scrollbar{display:none}
+  .ft{flex:0 0 64%;max-width:230px;scroll-snap-align:start;background:#fff;border-radius:20px;padding:14px;display:flex;flex-direction:column;gap:6px}
+  .ft .ic{width:48px;height:48px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:24px}
+  .ft b{font-family:var(--fd);font-size:19px;line-height:1.1}
+  .steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+  .steps li{display:flex;gap:12px;align-items:flex-start}
+  .steps .n{flex:0 0 auto;width:36px;height:36px;border-radius:50%;background:var(--red);color:#fff;font-family:var(--fd);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:19px}
+  details.qa{background:#fff;border-radius:16px;padding:0 16px}
+  details.qa summary{min-height:54px;display:flex;align-items:center;gap:10px;font-weight:800;cursor:pointer;list-style:none}
+  details.qa summary::-webkit-details-marker{display:none}
+  details.qa summary::after{content:'+';margin-left:auto;font-size:24px;font-weight:700;color:var(--red)}
+  details.qa[open] summary::after{content:'–'}
+  details.qa p{margin:0 0 16px;color:var(--muted)}
+  .lfoot{display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;padding:10px 0 4px}
+  .linkbtn{background:none;border:0;color:var(--muted);font-size:13.5px;text-decoration:underline;min-height:40px}
   .mgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .mbtn{border:0;background:#fff;border-radius:16px;min-height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:26px;padding:8px}
   .mbtn span{font-size:13.5px;font-weight:800;text-align:center}
@@ -173,8 +228,8 @@ const LSK = 'openroom:v1';
 let ME = { tok: '', role: '' };
 try { ME = Object.assign(ME, JSON.parse(localStorage.getItem(LSK) || '{}')); } catch (e) {}
 const keep = () => { try { localStorage.setItem(LSK, JSON.stringify(ME)); } catch (e) {} };
-const KINDS = ['Dance', 'Drawing', 'Craft', 'Story time', 'Music', 'Science fun', 'Yoga', 'Cooking', 'Other'];
-const TINT = { 'Dance':'#FCE7B2', 'Drawing':'#F7DCE6', 'Craft':'#DDF0DC', 'Story time':'#E4E0F7', 'Music':'#D9EEF0', 'Science fun':'#D9E6FA', 'Yoga':'#E8F1D6', 'Cooking':'#FDE2D0', 'Other':'#E6E9F2' };
+const KINDS = ['Dance', 'Drawing', 'Craft', 'Story time', 'Music', 'Maths & games', 'Science fun', 'Yoga', 'Cooking', 'Other'];
+const TINT = { 'Dance':'#FDF1D6', 'Drawing':'#FBE8EA', 'Craft':'#E2F3EA', 'Story time':'#EFE8FA', 'Music':'#E3ECFB', 'Maths & games':'#FDE4D3', 'Science fun':'#DDF1F4', 'Yoga':'#EAF3DA', 'Cooking':'#FCE3D6', 'Other':'#ECEBF4' };
 const money = n => '₹' + Number(n || 0).toLocaleString('en-IN');
 const when = iso => new Date(iso).toLocaleString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
 const startMs = c => Date.parse(c.starts_at);
@@ -224,7 +279,10 @@ function go(screen, extra) { S = Object.assign({ screen: screen }, extra || {});
 function render() {
   const v = { home: vHome, book: vBook, tlogin: vTLogin, tclasses: vTClasses, tclass: vTClass, tpay: vTPay, tset: vTSet }[S.screen] || vHome;
   v();
-  if ($('app') && !$('verTag')) $('app').insertAdjacentHTML('beforeend', '<div id="verTag" class="sm" style="text-align:center;opacity:.5;padding:18px 0 28px">Open Room · version 5-Oct-D</div>');
+  if ($('app') && !$('verTag')) {
+    const tag = '<div id="verTag" class="sm" style="text-align:center;opacity:.5;padding:14px 0 22px">kidspri · version 5-Oct-E</div>', last = $('app').lastElementChild;
+    if (last && last.classList.contains('band')) last.insertAdjacentHTML('beforebegin', tag); else $('app').insertAdjacentHTML('beforeend', tag);
+  }
 }
 async function loadPublic() {
   try { INFO = await api({ action: 'info' }); } catch (e) {}
@@ -242,20 +300,32 @@ async function loadTeacher() {
 function starCards() {
   const all = certs(), ids = Object.keys(all).sort((a, b) => new Date(all[b].at) - new Date(all[a].at)).slice(0, 6);
   if (!ids.length) return '';
-  return '<div class="lbl">Star cards</div><div class="card" style="gap:6px">' + ids.map(id => {
+  return '<section><h2 class="h2">Star cards</h2><div class="card" style="gap:6px">' + ids.map(id => {
     const c = all[id];
     return '<div class="row"><div class="grow"><div style="font-weight:800">⭐ ' + (c.stars || 0) + ' · ' + esc(c.name) + '</div><div class="sm">' + esc(c.title) + ' · ' + esc(when(c.at)) + '</div></div>' +
       '<button class="btn ghost small" data-cert="' + esc(id) + '">View</button></div>';
-  }).join('') + '</div>';
+  }).join('') + '</div></section>';
+}
+function wordmark(size) {
+  const L = [['k', 'k'], ['ı', 'i1 dot'], ['d', 'd'], ['s', 's'], ['p', 'p'], ['r', 'p'], ['ı', 'p dot']];
+  return '<span class="wm" role="img" aria-label="kidspri"' + (size ? ' style="font-size:' + size + 'px"' : '') + '>' +
+    L.map(x => '<span class="' + x[1] + '" aria-hidden="true">' + x[0] + '</span>').join('') + '</span>';
 }
 function header(teacher) {
-  return '<header class="top' + (teacher ? ' teacher' : '') + '"><div class="logo">OR</div><div class="ttl">' +
-    '<div class="a">' + (teacher ? 'Teacher' : 'Open Room') + '</div>' +
-    '<div class="b">' + esc(teacher ? (INFO.teacher || '') : ('Small live classes' + (INFO.teacher ? ' with ' + INFO.teacher : ''))) + '</div></div>' +
+  return '<header class="top' + (teacher ? ' teacher' : '') + '"><div class="ttl">' + wordmark(teacher ? 28 : 32) +
+    '<div class="b">' + esc(teacher ? 'Teacher' + (INFO.teacher ? ' · ' + INFO.teacher : '') : 'live classes for little ones') + '</div></div>' +
     (teacher ? '<button class="hbtn" id="hSet">Settings</button>'
              : (ME.role === 'parent' ? '<button class="hbtn" id="hOut">Sign out</button>' : '<button class="hbtn" id="hIn">Sign in</button>')) +
-    '</header>';
+    '</header>' + (teacher ? '' : '<div class="band" aria-hidden="true"></div>');
 }
+/* tapping the logo makes the letters hop, one after another */
+function wireWordmark() {
+  document.querySelectorAll('.wm').forEach(w => w.onclick = () => {
+    [...w.children].forEach((s, i) => { s.classList.remove('hop'); setTimeout(() => s.classList.add('hop'), i * 60); setTimeout(() => s.classList.remove('hop'), i * 60 + 600); });
+  });
+}
+function firstName() { return String(INFO.teacher || 'Priti').trim().split(/\s+/)[0]; }
+function ytId(u) { const m = String(u || '').match(/(?:youtu\.be\/|[?&]v=|shorts\/|embed\/|live\/)([\w-]{11})/); return m ? m[1] : ''; }
 function classCard(c, mineForClass) {
   const full = c.left <= 0;
   return '<div class="card"><div class="row" style="align-items:flex-start;gap:12px">' +
@@ -273,33 +343,87 @@ function statusTag(b) {
   if (b.status === 'rejected') return '<span class="tag no">Payment not found</span>';
   return '<span class="tag no">Cancelled</span>';
 }
+
+/* ----- parent: the landing page ----- */
+const FEATS = [
+  ['🏁', 'Quiz race', 'The quickest right answer wins a point.', '#FBE8EA'],
+  ['✏️', 'Draw together', 'One board that everyone can draw on.', '#E2F3EA'],
+  ['🎲', 'Snakes & Ladders', 'Children take turns to roll; the whole class watches.', '#FDF1D6'],
+  ['✋', 'Raise a hand', 'Every child gets heard, one at a time.', '#E3ECFB'],
+  ['🎙', 'Voice answers', 'Sing or speak, and send it to the teacher.', '#EFE8FA'],
+  ['⭐', 'Star card', 'A picture of today’s stars to keep and share.', '#FDF1D6']
+];
 function vHome() {
+  const name = firstName(), vid = INFO.video || '', yid = ytId(vid);
+  const paid = CLASSES.some(c => c.fee > 0);
+  const wa = INFO.whatsapp ? 'https://wa.me/91' + INFO.whatsapp + '?text=' + encodeURIComponent('Hello ' + name + ', I saw kidspri and would like to know more about the classes.') : '';
+  $('app').innerHTML = header(false) + '<main id="landing" class="landing">' +
+    '<div id="hBookings"></div>' +
+    '<section class="hero">' +
+      '<h1>Live classes where five children learn and play together</h1>' +
+      '<p class="lead">Dance, stories, craft, quick maths and games with ' + esc(name) + ', on your phone. For children aged 5 to 10.</p>' +
+      '<div class="ctas"><a class="btn red" href="#classes" id="hSee">See this week’s classes</a>' +
+        (vid ? '<button class="btn ghost" id="hVid">▶ Watch ' + esc(name) + ' say hello</button>' : '') + '</div>' +
+      '<div class="toy" id="toy" aria-live="polite"></div>' +
+    '</section>' +
+    '<section class="meet" id="meet"><div class="who"><div class="ph" id="ph">' + esc(name.charAt(0)) + '</div>' +
+      '<div><h2 class="h2" style="margin:0">Hi, I’m ' + esc(name) + '</h2><div class="sm">Your child’s teacher</div></div></div>' +
+      (INFO.intro ? '<p style="margin:0">' + esc(INFO.intro) + '</p>' : '') +
+      (yid ? '<button class="vid" id="vidBox" aria-label="Play ' + esc(name) + '’s hello video"><img src="https://i.ytimg.com/vi/' + yid + '/hqdefault.jpg" alt="" loading="lazy"><span class="play">▶</span><span class="cap">' + esc(name) + ' says hello</span></button>'
+           : vid ? '<a class="btn ghost" href="' + esc(vid) + '" target="_blank" rel="noopener">▶ Watch ' + esc(name) + '’s hello video</a>' : '') +
+    '</section>' +
+    '<section><h2 class="h2">What happens in a class</h2><div class="feat">' +
+      FEATS.map(f => '<div class="ft"><div class="ic" style="background:' + f[3] + '">' + f[0] + '</div><b>' + f[1] + '</b><span class="sm">' + f[2] + '</span></div>').join('') + '</div></section>' +
+    '<section><h2 class="h2">How it works</h2><ol class="steps">' +
+      '<li><span class="n">1</span><div><b>Book a seat</b><div class="sm">Pick a class and add your child’s name. ' + (paid ? 'Pay by UPI and ' + esc(name) + ' confirms your seat.' : 'Classes are free for now.') + '</div></div></li>' +
+      '<li><span class="n">2</span><div><b>Join at class time</b><div class="sm">Open this page up to 15 minutes before. ' + esc(name) + ' lets your child in from the waiting room.</div></div></li>' +
+      '<li><span class="n">3</span><div><b>Learn, play and collect stars</b><div class="sm">At the end your child gets a star card to keep.</div></div></li>' +
+    '</ol></section>' +
+    '<section id="classes"><h2 class="h2">Classes this week</h2><div id="hClasses" style="display:flex;flex-direction:column;gap:12px"></div></section>' +
+    '<div id="hCards"></div>' +
+    '<section><h2 class="h2">Parents ask</h2><div style="display:flex;flex-direction:column;gap:8px">' +
+      qa('Is it safe for my child?', 'Only children with a booked seat can come in, and ' + esc(name) + ' lets each one in herself from a waiting room. The class link cannot be forwarded to strangers. Voice answers are kept for 30 days, then deleted.') +
+      qa('What does my child need?', 'A phone or tablet with a camera, and a little space to move. Earphones help in a noisy room. If a class needs paper or crayons, it says so on the class.') +
+      qa('How many children are in a class?', 'Small groups, usually five, so every child gets a turn to speak, show and play.') +
+      qa('How much does it cost?', paid ? 'Each class shows its price. You pay by UPI straight to ' + esc(name) + ', and she confirms your seat.' : 'Classes are free for now. Just book a seat.') +
+      qa('Can I sit with my child?', 'Yes. For younger children a grown-up nearby helps, especially the first time.') +
+    '</div></section>' +
+    '<footer class="lfoot">' +
+      (wa ? '<a class="btn teal block" href="' + wa + '" target="_blank" rel="noopener">Message ' + esc(name) + ' on WhatsApp</a>' : '') +
+      wordmark(26) + '<div class="sm">Small live classes for children, from Assam.</div>' +
+      '<button class="linkbtn" id="iAmT">I’m the teacher</button>' +
+    '</footer>' +
+    '</main><div class="band" aria-hidden="true"></div>';
+  if ($('hIn')) $('hIn').onclick = () => authSheet(null);
+  if ($('hOut')) $('hOut').onclick = () => { ME = { tok: '', role: '' }; keep(); MINE = null; vHome(); toast('Signed out'); };
+  $('iAmT').onclick = () => go('tlogin');
+  $('hSee').onclick = e => { e.preventDefault(); $('classes').scrollIntoView({ behavior: 'smooth' }); };
+  const play = () => { const b = $('vidBox'); if (!b) return; b.outerHTML = '<div class="vid"><iframe src="https://www.youtube-nocookie.com/embed/' + yid + '?autoplay=1&rel=0&playsinline=1" title="' + esc(name) + ' says hello" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>'; };
+  if ($('vidBox')) $('vidBox').onclick = play;
+  if ($('hVid')) $('hVid').onclick = () => { $('meet').scrollIntoView({ behavior: 'smooth' }); if (yid) setTimeout(play, 400); else { const a = document.querySelector('#meet a.btn'); if (a) a.click(); } };
+  wireWordmark(); toyNext(); loadPhoto(); fillHome();
+}
+function qa(q, a) { return '<details class="qa"><summary>' + q + '</summary><p>' + a + '</p></details>'; }
+/* the parts that change (bookings, seats left) refresh without disturbing the video or the quiz */
+function fillHome() {
   const mine = (MINE && MINE.bookings) || [];
   const upcoming = mine.filter(b => startMs(b.class) + (b.class.minutes + 30) * 60000 > Date.now() && b.status !== 'cancelled');
   const byClass = {};
   upcoming.forEach(b => { (byClass[b.class.id] = byClass[b.class.id] || []).push(b.child); });
-  $('app').innerHTML = header(false) + '<main>' +
-    (INFO.intro ? '<div class="card" style="background:var(--ink);color:#fff"><div style="font-weight:800">' + esc(INFO.teacher) + '</div><div style="font-size:14.5px;opacity:.9">' + esc(INFO.intro) + '</div></div>' : '') +
-    (upcoming.length ? '<div class="lbl">My bookings</div>' + upcoming.map(b => {
-        const open = b.status === 'confirmed' && roomOpen(b.class);
-        return '<div class="card"><div class="row"><div class="grow"><div style="font-weight:800">' + esc(b.class.title) + '</div>' +
-          '<div class="sm">' + esc(b.child) + ' · ' + esc(when(b.class.starts_at)) + '</div></div>' + statusTag(b) + '</div>' +
-          (b.status === 'confirmed' ? '<button class="btn teal block" data-join="' + b.class.id + '"' + (open ? '' : ' disabled') + '>' +
-             (open ? 'Join the class now' : 'Join opens 15 min before') + '</button>' : '') +
-          (b.status === 'rejected' ? '<div class="sm">The teacher could not find this payment. Book again with the right UPI reference, or message her.</div>' : '') +
-          (b.status === 'pending' ? '<div class="sm">The teacher checks the payment and confirms your seat. Usually within a few hours.</div>' : '') +
-          '</div>';
-      }).join('') : '') +
-    starCards() +
-    '<div class="lbl">Classes this week</div>' +
-    (CLASSES.length ? CLASSES.map(c => classCard(c, byClass[c.id] ? 'Booked for ' + byClass[c.id].join(', ') : '')).join('')
-                    : '<div class="empty">No classes open right now. Check back soon.</div>') +
-    '<div class="sm" style="text-align:center;padding:4px 10px">Every class is live, with the teacher and at most a few children, so each child is seen and heard.</div>' +
-    '</main><div class="foot"><button id="iAmT">I’m the teacher</button></div>';
+  $('hBookings').innerHTML = upcoming.length ? '<section style="display:flex;flex-direction:column;gap:12px"><h2 class="h2" style="margin:0">My bookings</h2>' + upcoming.map(b => {
+      const open = b.status === 'confirmed' && roomOpen(b.class);
+      return '<div class="card"><div class="row"><div class="grow"><div style="font-weight:800">' + esc(b.class.title) + '</div>' +
+        '<div class="sm">' + esc(b.child) + ' · ' + esc(when(b.class.starts_at)) + '</div></div>' + statusTag(b) + '</div>' +
+        (b.status === 'confirmed' ? '<button class="btn teal block" data-join="' + b.class.id + '"' + (open ? '' : ' disabled') + '>' +
+           (open ? 'Join the class now' : 'Join opens 15 min before') + '</button>' : '') +
+        (b.status === 'rejected' ? '<div class="sm">The teacher could not find this payment. Book again with the right UPI reference, or message her.</div>' : '') +
+        (b.status === 'pending' ? '<div class="sm">The teacher checks the payment and confirms your seat. Usually within a few hours.</div>' : '') +
+        '</div>';
+    }).join('') + '</section>' : '';
+  $('hClasses').innerHTML = CLASSES.length ? CLASSES.map(c => classCard(c, byClass[c.id] ? 'Booked for ' + byClass[c.id].join(', ') : '')).join('')
+    : '<div class="empty">New classes are coming soon. ' + (INFO.whatsapp ? 'Message ' + esc(firstName()) + ' on WhatsApp to hear first.' : 'Check back in a day or two.') + '</div>';
+  $('hCards').innerHTML = starCards();
   document.querySelectorAll('[data-cert]').forEach(b => b.onclick = () => showCert(b.dataset.cert, false));
-  if ($('hIn')) $('hIn').onclick = () => authSheet(null);
-  if ($('hOut')) $('hOut').onclick = () => { ME = { tok: '', role: '' }; keep(); MINE = null; vHome(); toast('Signed out'); };
-  $('iAmT').onclick = () => go('tlogin');
   document.querySelectorAll('[data-book]').forEach(b => b.onclick = () => {
     const c = CLASSES.find(x => x.id === b.dataset.book);
     if (ME.role !== 'parent') return authSheet(async () => {
@@ -320,6 +444,46 @@ function vHome() {
   document.querySelectorAll('[data-join]').forEach(b => b.onclick = () => {
     const bk = mine.find(x => x.class.id === b.dataset.join); joinLive(bk.class, false);
   });
+}
+/* the teacher's photo is fetched once and kept on the phone */
+async function loadPhoto() {
+  if (!INFO.photo_v) return;
+  let c = null; try { c = JSON.parse(localStorage.getItem('kidspri:photo') || 'null'); } catch (e) {}
+  if (!c || c.v !== INFO.photo_v) {
+    try { const r = await api({ action: 'photo' }); c = { v: INFO.photo_v, d: r.photo || '' }; localStorage.setItem('kidspri:photo', JSON.stringify(c)); } catch (e) { return; }
+  }
+  const ph = $('ph'); if (ph && c.d && ph.tagName !== 'IMG') ph.outerHTML = '<img class="ph" id="ph" src="' + c.d + '" alt="' + esc(firstName()) + '" style="' + esc(ph.getAttribute('style') || '') + '">';
+}
+/* the quiz you can play on the landing page: what a quiz race feels like */
+let TOY = { stars: 0, q: null, busy: false };
+function toyNext() {
+  const el = $('toy'); if (!el) return;
+  TOY.q = mathQ({ op: TOY.stars < 2 ? '+' : 'mix', lvl: 0 }); TOY.busy = false;
+  el.innerHTML = '<div class="toy-top"><span>Try a quiz race</span><span class="toy-stars" id="toyStars">★ ' + TOY.stars + '</span></div>' +
+    '<div class="toy-q">' + esc(TOY.q.q) + '</div><div class="qgrid">' +
+    TOY.q.o.map((t, i) => '<button class="qopt" data-ta="' + i + '" style="background:' + QCOL[i] + '">' + QSHAPE[i] + ' ' + esc(t) + '</button>').join('') + '</div>' +
+    '<div class="toy-say" id="toySay">' + (TOY.stars ? 'Again! How fast can you go?' : 'Tap the right answer. In class, the quickest right answer wins a point.') + '</div>';
+  el.querySelectorAll('[data-ta]').forEach(b => b.onclick = () => toyPick(+b.dataset.ta, b));
+}
+function toyPick(i, btn) {
+  if (TOY.busy) return;
+  const calm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (i !== TOY.q.a) {
+    $('toySay').textContent = 'Not that one. Try again!';
+    btn.classList.add('dim'); btn.disabled = true;
+    if (!calm) { btn.classList.remove('shake'); void btn.offsetWidth; btn.classList.add('shake'); }
+    return;
+  }
+  TOY.busy = true; TOY.stars++;
+  btn.classList.add('right');
+  $('toySay').textContent = TOY.stars === 1 ? 'Yes! That’s a quiz race. In class you race four friends.' : ['Brilliant!', 'Super fast!', 'Star student!', 'You got it!'][TOY.stars % 4];
+  const done = () => { const s = $('toyStars'); if (s) s.textContent = '★ ' + TOY.stars; setTimeout(toyNext, 900); };
+  if (calm || !btn.animate) return done();
+  const a = btn.getBoundingClientRect(), t = $('toyStars').getBoundingClientRect();
+  const st = document.createElement('div'); st.className = 'fly'; st.textContent = '★'; document.body.appendChild(st);
+  st.style.left = (a.left + a.width / 2 - 15) + 'px'; st.style.top = (a.top + a.height / 2 - 18) + 'px';
+  st.animate([{ transform: 'translate(0,0) scale(1.6)', opacity: 1 }, { transform: 'translate(' + (t.left + t.width / 2 - a.left - a.width / 2) + 'px,' + (t.top + t.height / 2 - a.top - a.height / 2) + 'px) scale(.7)', opacity: .9 }],
+    { duration: 650, easing: 'cubic-bezier(.5,-0.3,.7,1)' }).onfinish = () => { st.remove(); done(); };
 }
 
 /* ----- parent: sign up / sign in ----- */
@@ -357,7 +521,7 @@ function authSheet(after, mode) {
 /* ----- parent: book a seat ----- */
 function upiLink(c) {
   return 'upi://pay?pa=' + encodeURIComponent(INFO.upi) + '&pn=' + encodeURIComponent(INFO.upi_name || INFO.teacher || 'Teacher') +
-    '&am=' + encodeURIComponent(c.fee) + '&cu=INR&tn=' + encodeURIComponent(('Open Room ' + c.title).slice(0, 40));
+    '&am=' + encodeURIComponent(c.fee) + '&cu=INR&tn=' + encodeURIComponent(('kidspri ' + c.title).slice(0, 40));
 }
 function vBook() {
   const c = S.cls; if (!c) return go('home');
@@ -526,7 +690,7 @@ function vTClass() {
 }
 function shareSheet() {
   const link = location.origin + location.pathname;
-  const msg = 'New live class on Open Room — small group, 5 kids, live with ' + (INFO.teacher || 'me') + '. Book a seat here: ' + link;
+  const msg = 'New live class on kidspri — small group, 5 kids, live with ' + (INFO.teacher || 'me') + '. Book a seat here: ' + link;
   sheet('<h2>Tell parents</h2><div class="sm">Send the booking link to your parents’ WhatsApp.</div>' +
     '<a class="btn teal block" href="https://wa.me/?text=' + encodeURIComponent(msg) + '" target="_blank" rel="noopener">Share on WhatsApp</a>' +
     '<button class="btn ghost block" id="shNo">Later</button>', () => { $('shNo').onclick = closeSheet; });
@@ -556,23 +720,72 @@ function vTPay() {
 /* ----- teacher: settings ----- */
 function vTSet() {
   if (ME.role !== 'teacher') return go('tlogin');
+  let photo = null;   // null = unchanged, '' = removed, 'data:…' = new
   $('app').innerHTML = header(true).replace('<button class="hbtn" id="hSet">Settings</button>', '<button class="hbtn" id="hBack">Back</button>') + '<main>' +
     '<div class="ctitle">Settings</div>' +
+    '<div class="card"><div class="row" style="gap:14px"><div class="ph" id="ph" style="width:72px;height:72px;font-size:30px">' + esc(firstName().charAt(0)) + '</div>' +
+      '<div class="grow"><div style="font-weight:800">Your photo</div><div class="sm">Parents see it on the front page.</div>' +
+      '<div class="row" style="margin-top:8px;flex-wrap:wrap"><label class="btn small ghost" for="sPhoto" style="cursor:pointer">Choose photo</label>' +
+      '<input type="file" id="sPhoto" accept="image/*" class="hide"><button class="btn small ghost" id="sNoPhoto"' + (INFO.photo_v ? '' : ' disabled') + '>Remove</button></div></div></div></div>' +
     '<div><label class="f" for="sName">Your name</label><input class="in" id="sName" value="' + esc(INFO.teacher) + '"></div>' +
-    '<div><label class="f" for="sIntro">About you and your classes</label><textarea class="in" id="sIntro">' + esc(INFO.intro) + '</textarea></div>' +
+    '<div><label class="f" for="sIntro">About you and your classes (on the front page)</label><textarea class="in" id="sIntro" rows="4">' + esc(INFO.intro) + '</textarea></div>' +
+    '<div><label class="f" for="sVideo">Your hello video (YouTube link)</label><input class="in" id="sVideo" inputmode="url" placeholder="https://youtu.be/…" value="' + esc(INFO.video || '') + '">' +
+      '<div class="sm" style="margin-top:6px">Record a 30–60 second hello on your phone. Upload it to YouTube as <b>Unlisted</b>, tap Share, copy the link and paste it here.</div></div>' +
+    '<div><label class="f" for="sWa">WhatsApp number for parents’ questions</label><input class="in" id="sWa" inputmode="tel" placeholder="98640 12345" value="' + esc(INFO.whatsapp || '') + '"></div>' +
     '<div><label class="f" for="sUpi">UPI ID</label><input class="in" id="sUpi" value="' + esc(INFO.upi) + '"></div>' +
     '<div><label class="f" for="sUpiName">Name on the UPI account</label><input class="in" id="sUpiName" value="' + esc(INFO.upi_name) + '"></div>' +
     '<div><label class="f" for="sPin">New teacher PIN (leave empty to keep)</label><input class="in" id="sPin" inputmode="numeric" type="password" autocomplete="new-password"></div>' +
     '<button class="btn block" id="sGo">Save</button>' +
     '<button class="btn ghost block" id="sOut">Sign out of teacher</button>' +
     '<div class="sm">Booking link for parents: <span class="mono">' + esc(location.origin + location.pathname) + '</span></div>' +
+    '<div class="card" style="border:1.5px solid var(--red-soft)"><div style="font-weight:800">Start fresh</div>' +
+      '<div class="sm">Deletes every class, booking, parent, child and voice answer — for example after trying the app out. Your name, photo, video, UPI and PIN stay.</div>' +
+      '<button class="btn red small" id="sWipe">Delete all and start fresh</button></div>' +
     '</main>';
+  wireWordmark(); loadPhoto();
   $('hBack').onclick = () => go('tclasses');
+  $('sPhoto').onchange = async () => {
+    const f = $('sPhoto').files[0]; if (!f) return;
+    try { photo = await squarePhoto(f); $('ph').outerHTML = '<img class="ph" id="ph" src="' + photo + '" alt="" style="width:72px;height:72px">'; $('sNoPhoto').disabled = false; toast('Photo ready — tap Save'); }
+    catch (e) { toast('Could not open that picture', true); }
+  };
+  $('sNoPhoto').onclick = () => { photo = ''; $('ph').outerHTML = '<div class="ph" id="ph" style="width:72px;height:72px;font-size:30px">' + esc(firstName().charAt(0)) + '</div>'; $('sNoPhoto').disabled = true; };
   $('sGo').onclick = async () => {
-    try { const j = await api({ action: 'settings', name: $('sName').value, intro: $('sIntro').value, upi: $('sUpi').value, upi_name: $('sUpiName').value, new_pin: $('sPin').value });
-      INFO = j.info || INFO; toast('Saved'); go('tclasses'); } catch (e) { toast(e.message, true); }
+    const v = $('sVideo').value.trim();
+    if (v && !/^https?:\/\//i.test(v)) return toast('Paste the full video link, starting with https://', true);
+    const wa = $('sWa').value.replace(/\D/g, '').slice(-10);
+    if ($('sWa').value.trim() && wa.length !== 10) return toast('Type a 10-digit WhatsApp number', true);
+    const body = { action: 'settings', name: $('sName').value, intro: $('sIntro').value, upi: $('sUpi').value, upi_name: $('sUpiName').value, new_pin: $('sPin').value, video: v, whatsapp: wa };
+    if (photo !== null) body.photo = photo;
+    $('sGo').disabled = true;
+    try { const j = await api(body); INFO = j.info || INFO; toast('Saved'); go('tclasses'); } catch (e) { $('sGo').disabled = false; toast(e.message, true); }
   };
   $('sOut').onclick = () => { ME = { tok: '', role: '' }; keep(); go('home'); };
+  $('sWipe').onclick = () => sheet('<h2>Delete everything and start fresh?</h2>' +
+    '<div>All classes, bookings, parents, children and voice answers will be deleted. This cannot be undone.</div>' +
+    '<div><label class="f" for="wPin">Type your teacher PIN to confirm</label><input class="in" id="wPin" inputmode="numeric" type="password" autocomplete="off"></div>' +
+    '<button class="btn red block" id="wGo">Delete all</button><button class="btn ghost block" id="wNo">Keep everything</button>', () => {
+      $('wNo').onclick = closeSheet;
+      $('wGo').onclick = async () => {
+        $('wGo').disabled = true;
+        try { await api({ action: 'wipe', pin: $('wPin').value }); closeSheet(); await loadTeacher(); toast('All cleared. Ready for real classes!'); go('tclasses'); }
+        catch (e) { $('wGo').disabled = false; toast(e.message, true); }
+      };
+    });
+}
+/* the teacher's photo: cut to a square and made small, so the front page loads fast */
+function squarePhoto(file) {
+  return new Promise((ok, bad) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const s = Math.min(img.naturalWidth, img.naturalHeight), N = 360, cv = document.createElement('canvas');
+      cv.width = cv.height = N;
+      cv.getContext('2d').drawImage(img, (img.naturalWidth - s) / 2, (img.naturalHeight - s) / 2, s, s, 0, 0, N, N);
+      URL.revokeObjectURL(url); ok(cv.toDataURL('image/jpeg', 0.82));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); bad(new Error('bad image')); };
+    img.src = url;
+  });
 }
 
 /* ================= THE LIVE CLASS =================
@@ -931,7 +1144,7 @@ function starSheet() {
 /* ================= QUIZ RACE =================
    The teacher asks; each child gets ONE try; the first right answer to reach
    the teacher's phone wins the point and the question vanishes for everyone. */
-const QCOL = ['#E5484D', '#1F6FEB', '#C98A00', '#2DA44E'], QSHAPE = ['▲', '●', '■', '◆'];
+const QCOL = ['#C3263A', '#2F6FD6', '#B9800F', '#1E7F5A'], QSHAPE = ['▲', '●', '■', '◆'];
 let QGEN = { op: '+', lvl: 1 };
 function mathQ(g) {
   const ops = g.op === 'mix' ? ['+', '−', '×'] : [g.op];
@@ -1474,23 +1687,27 @@ async function drawCert(c) {
   try { await Promise.all([document.fonts.load('800 80px "Baloo 2"'), document.fonts.load('700 40px "Nunito Sans"')]); } catch (e) {}
   const W = 1080, H = 1350, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
   const x = cv.getContext('2d'), FD = '"Baloo 2", "Trebuchet MS", sans-serif', FB = '"Nunito Sans", system-ui, sans-serif';
-  x.fillStyle = '#FFF8E6'; x.fillRect(0, 0, W, H);
-  x.strokeStyle = '#F2A900'; x.lineWidth = 14; x.strokeRect(40, 40, W - 80, H - 80);
-  x.strokeStyle = '#0F6E70'; x.lineWidth = 3; x.strokeRect(66, 66, W - 132, H - 132);
-  x.textAlign = 'center'; x.fillStyle = '#0F6E70'; x.font = '800 40px ' + FB; x.fillText('O P E N   R O O M', W / 2, 150);
-  x.fillStyle = '#F2A900'; starShape(x, W / 2, 330, 130); x.fill();
-  if (c.stars) { x.fillStyle = '#1B2340'; x.font = '800 92px ' + FD; x.fillText(String(c.stars), W / 2, 362); }
-  x.fillStyle = '#5B647D'; x.font = '700 50px ' + FB; x.fillText('Well done,', W / 2, 560);
-  x.fillStyle = '#1B2340'; x.font = fitText(x, c.name || 'Star', W - 200, 120, '800', FD); x.fillText(c.name || 'Star', W / 2, 690);
-  x.fillStyle = '#5B647D'; x.font = '700 42px ' + FB; x.fillText('for joining the class', W / 2, 780);
-  x.fillStyle = '#0F6E70'; const title = String(c.title || ''); x.font = fitText(x, title, W - 200, 64, '800', FD); x.fillText(title, W / 2, 870);
+  x.fillStyle = '#FFFDF6'; x.fillRect(0, 0, W, H);
+  x.strokeStyle = '#C3263A'; x.lineWidth = 14; x.strokeRect(40, 40, W - 80, H - 80);
+  x.strokeStyle = '#E9A82B'; x.lineWidth = 3; x.strokeRect(66, 66, W - 132, H - 132);
+  x.textAlign = 'left'; x.font = '800 76px ' + FD;
+  const cols = ['#C3263A', '#E9A82B', '#1E7F5A', '#2F6FD6'];
+  let cx = W / 2 - x.measureText('kidspri').width / 2;
+  'kidspri'.split('').forEach((ch, i) => { x.fillStyle = i < 4 ? cols[i] : '#23214F'; x.fillText(ch, cx, 170); cx += x.measureText(ch).width; });
+  x.textAlign = 'center';
+  x.fillStyle = '#E9A82B'; starShape(x, W / 2, 330, 130); x.fill();
+  if (c.stars) { x.fillStyle = '#23214F'; x.font = '800 92px ' + FD; x.fillText(String(c.stars), W / 2, 362); }
+  x.fillStyle = '#5E5C7E'; x.font = '700 50px ' + FB; x.fillText('Well done,', W / 2, 560);
+  x.fillStyle = '#23214F'; x.font = fitText(x, c.name || 'Star', W - 200, 120, '800', FD); x.fillText(c.name || 'Star', W / 2, 690);
+  x.fillStyle = '#5E5C7E'; x.font = '700 42px ' + FB; x.fillText('for joining the class', W / 2, 780);
+  x.fillStyle = '#1E7F5A'; const title = String(c.title || ''); x.font = fitText(x, title, W - 200, 64, '800', FD); x.fillText(title, W / 2, 870);
   const line = [];
   if (c.stars) line.push('★ ' + c.stars + (c.stars === 1 ? ' star' : ' stars'));
   if (c.points) line.push('🏆 ' + c.points + (c.points === 1 ? ' quiz point' : ' quiz points'));
   if (line.length) { x.fillStyle = '#B07A00'; x.font = '800 54px ' + FB; x.fillText(line.join('   '), W / 2, 1000); }
-  x.fillStyle = '#5B647D'; x.font = '700 36px ' + FB;
+  x.fillStyle = '#5E5C7E'; x.font = '700 36px ' + FB;
   x.fillText(new Date(c.at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) + (c.teacher ? '  ·  Teacher: ' + c.teacher : ''), W / 2, 1150);
-  x.fillStyle = '#0F6E70'; x.font = '800 34px ' + FB; x.fillText(location.host, W / 2, 1220);
+  x.fillStyle = '#1E7F5A'; x.font = '800 34px ' + FB; x.fillText(location.host, W / 2, 1220);
   return cv;
 }
 async function showCert(classId, finished) {
@@ -1498,7 +1715,7 @@ async function showCert(classId, finished) {
   const cv = await drawCert(c);
   const blob = await new Promise(r => cv.toBlob(r, 'image/png'));
   const url = URL.createObjectURL(blob), file = 'open-room-' + String(c.name || 'star').replace(/\W+/g, '-').toLowerCase() + '.png';
-  const msg = (c.name || 'My child') + (c.stars ? ' earned ' + c.stars + ' star' + (c.stars === 1 ? '' : 's') + ' in' : ' joined') + ' “' + c.title + '” at Open Room — small live classes for kids. ' + location.origin + location.pathname;
+  const msg = (c.name || 'My child') + (c.stars ? ' earned ' + c.stars + ' star' + (c.stars === 1 ? '' : 's') + ' in' : ' joined') + ' “' + c.title + '” at kidspri — small live classes for kids. ' + location.origin + location.pathname;
   sheet('<h2>' + (finished ? 'Class finished! 🎉' : '⭐ Star card') + '</h2><img src="' + url + '" alt="Star card for ' + esc(c.name) + '" style="width:100%;border-radius:14px">' +
     '<button class="btn teal block" id="ceShare">Share on WhatsApp</button><a class="btn ghost block" id="ceSave" href="' + url + '" download="' + file + '">Save picture</a>' +
     '<button class="btn ghost block" id="ceNo">Close</button>', () => {
@@ -1555,7 +1772,7 @@ function showVideoErr(m) {
   /* keep the page fresh: new bookings, confirmations, the Join button opening */
   const fresh = async () => {
     if (!$('live').classList.contains('hide') || $('overlay').innerHTML) return;
-    if (S.screen === 'home') { await loadPublic(); await loadMine(); if (S.screen === 'home' && !$('overlay').innerHTML) vHome(); }
+    if (S.screen === 'home') { await loadPublic(); await loadMine(); if (S.screen === 'home' && !$('overlay').innerHTML) ($('landing') ? fillHome() : vHome()); }
     else if (S.screen === 'tclasses' || S.screen === 'tpay') { await loadTeacher(); if (!$('overlay').innerHTML) render(); }
   };
   setInterval(fresh, 15000);
