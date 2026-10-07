@@ -108,6 +108,10 @@
   .tile .nm{position:absolute;left:6px;bottom:6px;background:rgba(23,22,58,.72);color:#fff;font-size:12px;font-weight:800;padding:2px 8px;border-radius:999px;max-width:calc(100% - 12px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .tile.talk{box-shadow:inset 0 0 0 3px var(--gold)}
   .tile.big{grid-column:1/-1}
+  #stage{position:relative}
+  .tile.pip{position:absolute;right:14px;aspect-ratio:3/4;z-index:3;border:2px solid rgba(255,255,255,.85);box-shadow:0 6px 18px rgba(0,0,0,.4);border-radius:12px}
+  .tile.pip .av{font-size:28px}
+  .tile.pip .nm{font-size:10.5px;left:4px;bottom:4px;padding:1px 6px}
   .tile.big .av{font-size:72px}
   #stage.strip .tile{flex:1 0 62px;max-width:120px;height:86px}
   #stage.strip .tile .nm{font-size:10.5px;left:3px;bottom:3px;padding:1px 6px}
@@ -126,6 +130,8 @@
   .pod span{font-size:14px;word-break:break-word}
   .scores{font-size:13.5px;color:var(--muted);text-align:center}
   .scores b{color:var(--ink)}
+  #live .ctl button{position:relative}
+  #live .ctl button.dot::after{content:'';position:absolute;top:6px;right:10px;width:10px;height:10px;border-radius:50%;background:#FF4D5E;box-shadow:0 0 0 2px #0A0F1F}
   #live .ctl button.off{background:#4A2433;color:#FFD4DA}
   #live .ctl{display:flex;gap:8px;padding:10px 12px calc(env(safe-area-inset-bottom,0px) + 12px);background:#0A0F1F}
   #live .ctl{gap:5px!important;padding-left:6px!important;padding-right:6px!important}
@@ -243,6 +249,8 @@
   .kmark{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex:0 0 auto}
   .kmark.ok{background:var(--teal-soft);color:var(--teal)} .kmark.no{background:var(--red-soft);color:var(--red)}
   .kmark.wait,.kmark.soon{background:var(--gold-soft);color:#8A5A00}
+  .igbtn{background:linear-gradient(90deg,#F58529,#DD2A7B 55%,#8134AF);color:#fff}
+  img.story{width:62%;align-self:center;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
   .thr{border:0;width:100%;text-align:left;cursor:pointer;font:inherit;color:inherit}
   .chatmain{gap:10px;padding-bottom:12px}
   .chatbox{flex:1;min-height:200px;max-height:calc(100vh - 260px);overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:4px 2px}
@@ -393,7 +401,7 @@ function render() {
   const v = { home: vHome, book: vBook, chat: vChat, tlogin: vTLogin, tclasses: vTClasses, tclass: vTClass, tpay: vTPay, tset: vTSet, tmsgs: vTMsgs, tchat: vTChat, tkids: vTKids, tkid: vTKid }[S.screen] || vHome;
   v();
   if ($('app') && !$('verTag')) {
-    const tag = '<div id="verTag" class="sm" style="text-align:center;opacity:.5;padding:14px 0 22px">kidspri · version 7-Oct-K</div>', last = $('app').lastElementChild;
+    const tag = '<div id="verTag" class="sm" style="text-align:center;opacity:.5;padding:14px 0 22px">kidspri · version 7-Oct-M</div>', last = $('app').lastElementChild;
     if (last && last.classList.contains('band')) last.insertAdjacentHTML('beforebegin', tag); else $('app').insertAdjacentHTML('beforeend', tag);
   }
 }
@@ -886,6 +894,7 @@ function vTClasses() {
         (conf.length ? '<div class="sm">' + conf.map(b => esc(b.child) + (b.age ? ' (' + b.age + ')' : '')).join(', ') + '</div>' : '') +
         '<div class="row" style="flex-wrap:wrap">' +
           '<button class="btn teal small" data-start="' + c.id + '"' + (open ? '' : ' disabled') + '>' + (open ? 'Start class' : 'Start (15 min before)') + '</button>' +
+          '<button class="btn ghost small" data-share="' + c.id + '">📣 Share</button>' +
           (conf.length ? '<button class="btn ghost small" data-remind="' + c.id + '">📲 Remind</button>' : '') +
           '<button class="btn ghost small" data-edit="' + c.id + '">Edit</button>' +
           '<button class="btn ghost small" data-cancel="' + c.id + '" style="color:var(--red)">Cancel</button></div></div>';
@@ -904,6 +913,7 @@ function vTClasses() {
   document.querySelectorAll('[data-start]').forEach(b => b.onclick = () => joinLive(OV.find(c => c.id === b.dataset.start), true));
   document.querySelectorAll('[data-voices]').forEach(b => b.onclick = () => voiceSheet(b.dataset.voices, false));
   document.querySelectorAll('[data-remind]').forEach(b => b.onclick = () => remindSheet(OV.find(c => c.id === b.dataset.remind)));
+  document.querySelectorAll('[data-share]').forEach(b => b.onclick = () => shareSheet(OV.find(c => c.id === b.dataset.share)));
   document.querySelectorAll('[data-cancel]').forEach(b => b.onclick = () => {
     const c = OV.find(x => x.id === b.dataset.cancel);
     sheet('<h2>Cancel this class?</h2><div>' + esc(c.title) + '</div><div class="sm">It disappears for parents. Message the booked families and refund or move them to another class.</div>' +
@@ -962,20 +972,115 @@ function vTClass() {
     const w = $('fWhen').value; if (!w) return toast('Pick the date and time', true);
     $('fGo').disabled = true;
     try {
-      await api({ action: 'class_save', id: S.edit ? S.edit.id : '', title: $('fTitle').value, kind: S.kind, about: $('fAbout').value,
+      const saved = await api({ action: 'class_save', id: S.edit ? S.edit.id : '', title: $('fTitle').value, kind: S.kind, about: $('fAbout').value,
         starts_at: new Date(w).toISOString(), minutes: parseInt($('fMin').value, 10) || 40, seats: parseInt($('fSeats').value, 10) || 5, fee: parseInt($('fFee').value, 10) || 0 });
       const wasEdit = !!S.edit;
       await loadTeacher(); go('tclasses'); toast(wasEdit ? 'Saved' : 'Class is open for booking');
-      if (!wasEdit) shareSheet();
+      if (!wasEdit) shareSheet((OV || []).find(x => x.id === saved.id));
     } catch (e) { $('fGo').disabled = false; toast(e.message, true); }
   };
 }
-function shareSheet() {
+/* ----- teacher: share a class (WhatsApp message or an Instagram story picture) ----- */
+const KIND_ICON = { 'Dance': '💃', 'Drawing': '🎨', 'Craft': '✂️', 'Story time': '📖', 'Music': '🎵', 'Maths & games': '🎲', 'Science fun': '🔬', 'Yoga': '🧘', 'Cooking': '🍳', 'Other': '⭐' };
+function classWhen(c) {
+  const d = new Date(c.starts_at);
+  return { day: d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' }), time: d.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' }) };
+}
+function classMsg(c) {
+  const w = classWhen(c), link = location.origin + location.pathname;
+  return '🌟 New live class on kidspri!\n' + (KIND_ICON[c.kind] || '⭐') + ' ' + c.title + '\n🗓 ' + w.day + ', ' + w.time + ' (' + c.minutes + ' min)\n' +
+    (c.fee ? '₹' + c.fee : 'Free') + ' · only ' + c.seats + ' children, live with ' + (INFO.teacher || 'me') + '\n' + (c.about ? c.about + '\n' : '') + 'Book a seat: ' + link;
+}
+function shareSheet(c) {
+  if (!c) return;
   const link = location.origin + location.pathname;
-  const msg = 'New live class on kidspri — small group, 5 kids, live with ' + (INFO.teacher || 'me') + '. Book a seat here: ' + link;
-  sheet('<h2>Tell parents</h2><div class="sm">Send the booking link to your parents’ WhatsApp.</div>' +
-    '<a class="btn teal block" href="https://wa.me/?text=' + encodeURIComponent(msg) + '" target="_blank" rel="noopener">Share on WhatsApp</a>' +
-    '<button class="btn ghost block" id="shNo">Later</button>', () => { $('shNo').onclick = closeSheet; });
+  sheet('<h2>📣 Share “' + esc(c.title) + '”</h2><div class="sm">Tell parents about this class. Every post carries the booking link.</div>' +
+    '<a class="btn teal block" id="shWa" href="https://wa.me/?text=' + encodeURIComponent(classMsg(c)) + '" target="_blank" rel="noopener">Share on WhatsApp</a>' +
+    '<button class="btn block igbtn" id="shIg">Make an Instagram story</button>' +
+    '<button class="btn ghost block" id="shCopy">Copy the booking link</button>' +
+    '<button class="btn ghost block" id="shNo">Later</button>', () => {
+      $('shNo').onclick = closeSheet;
+      $('shCopy').onclick = () => copyText(link, 'Link copied');
+      $('shIg').onclick = () => storySheet(c);
+    });
+}
+function copyText(t, done) {
+  try { navigator.clipboard.writeText(t).then(() => toast(done), () => toast(t)); } catch (e) { toast(t); }
+}
+async function teacherPhoto() {
+  if (!INFO.photo_v) return '';
+  let c = null; try { c = JSON.parse(localStorage.getItem('kidspri:photo') || 'null'); } catch (e) {}
+  if (c && c.v === INFO.photo_v) return c.d || '';
+  try { const r = await api({ action: 'photo' }); localStorage.setItem('kidspri:photo', JSON.stringify({ v: INFO.photo_v, d: r.photo || '' })); return r.photo || ''; } catch (e) { return ''; }
+}
+/* a 1080 × 1920 story picture in the kidspri look */
+async function drawStory(c) {
+  try { await Promise.all([document.fonts.load('800 80px "Baloo 2"'), document.fonts.load('700 40px "Nunito Sans"')]); } catch (e) {}
+  const W = 1080, H = 1920, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const x = cv.getContext('2d'), FD = '"Baloo 2", "Trebuchet MS", sans-serif', FB = '"Nunito Sans", system-ui, sans-serif';
+  const w = classWhen(c), red = '#C3263A', gold = '#E9A82B', ink = '#23214F';
+  x.fillStyle = ink; x.fillRect(0, 0, W, H);
+  const band = y => {                                       // the gamosa border
+    x.fillStyle = '#fff'; x.fillRect(0, y, W, 54);
+    x.fillStyle = red; x.fillRect(0, y + 4, W, 7); x.fillRect(0, y + 43, W, 7);
+    for (let i = 0; i < W; i += 66) { x.beginPath(); x.moveTo(i + 33, y + 15); x.lineTo(i + 45, y + 27); x.lineTo(i + 33, y + 39); x.lineTo(i + 21, y + 27); x.closePath(); x.fill(); x.fillRect(i + 2, y + 26, 13, 3); x.fillRect(i + 51, y + 26, 13, 3); }
+  };
+  band(0); band(H - 54);
+  x.fillStyle = 'rgba(233,168,43,.9)'; [[110, 260, 26], [960, 330, 34], [120, 640, 22], [975, 700, 28], [880, 1600, 20]].forEach(s => { starShape(x, s[0], s[1], s[2]); x.fill(); });
+  x.textAlign = 'left'; x.font = '800 120px ' + FD;
+  const cols = [red, gold, '#2FA36B', '#4E8DF0'];
+  let cx = W / 2 - x.measureText('kidspri').width / 2;
+  'kidspri'.split('').forEach((ch, i) => { x.fillStyle = i < 4 ? cols[i] : '#fff'; x.fillText(ch, cx, 250); cx += x.measureText(ch).width; });
+  x.textAlign = 'center'; x.fillStyle = '#C9C7E6'; x.font = '700 40px ' + FB; x.fillText('live classes for little ones', W / 2, 310);
+  x.fillStyle = gold; const pill = 'New live class'; x.font = '800 44px ' + FB; const pw = x.measureText(pill).width + 80;
+  x.beginPath(); x.roundRect ? x.roundRect(W / 2 - pw / 2, 390, pw, 84, 42) : x.rect(W / 2 - pw / 2, 390, pw, 84); x.fill();
+  x.fillStyle = ink; x.fillText(pill, W / 2, 447);
+  x.font = '150px sans-serif'; x.fillText(KIND_ICON[c.kind] || '⭐', W / 2, 680);
+  x.fillStyle = '#fff'; x.font = '800 96px ' + FD;
+  const words = String(c.title).split(/\s+/), lines = []; let cur = '';
+  words.forEach(wd => { const t = cur ? cur + ' ' + wd : wd; if (x.measureText(t).width > W - 160 && cur) { lines.push(cur); cur = wd; } else cur = t; });
+  if (cur) lines.push(cur);
+  const shown = lines.slice(0, 3); if (lines.length > 3) shown[2] = shown[2].replace(/\s*\S*$/, '…');
+  shown.forEach((l, i) => x.fillText(l, W / 2, 820 + i * 100));
+  const y0 = 820 + shown.length * 100 + 30;
+  x.fillStyle = '#fff'; x.beginPath(); x.roundRect ? x.roundRect(110, y0, W - 220, 300, 36) : x.rect(110, y0, W - 220, 300); x.fill();
+  x.fillStyle = ink; x.font = '800 84px ' + FD; x.fillText(w.day, W / 2, y0 + 110);
+  x.fillStyle = red; x.font = '800 64px ' + FB; x.fillText(w.time + ' · ' + c.minutes + ' min', W / 2, y0 + 195);
+  x.fillStyle = '#5E5C7E'; x.font = '700 42px ' + FB; x.fillText((c.fee ? '₹' + c.fee : 'Free class') + ' · only ' + c.seats + ' children', W / 2, y0 + 262);
+  const photo = await teacherPhoto(), py = y0 + 380;
+  if (photo) {
+    const im = await new Promise(ok => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = photo; });
+    if (im) { x.save(); x.beginPath(); x.arc(W / 2, py + 80, 80, 0, Math.PI * 2); x.closePath(); x.clip(); x.drawImage(im, W / 2 - 80, py, 160, 160); x.restore();
+      x.strokeStyle = gold; x.lineWidth = 8; x.beginPath(); x.arc(W / 2, py + 80, 84, 0, Math.PI * 2); x.stroke(); }
+  }
+  x.fillStyle = '#fff'; x.font = '800 54px ' + FD; x.fillText('Live with ' + (INFO.teacher || 'your teacher'), W / 2, py + (photo ? 230 : 60));
+  x.fillStyle = gold; x.font = '800 50px ' + FB; x.fillText('Book a seat: ' + location.host, W / 2, H - 140);
+  return cv;
+}
+async function storySheet(c) {
+  sheet('<h2>📸 Instagram story</h2><div class="sm">Making the picture…</div>', () => {});
+  const cv = await drawStory(c);
+  const blob = await new Promise(r => cv.toBlob(r, 'image/png'));
+  const url = URL.createObjectURL(blob), file = 'kidspri-' + String(c.title).replace(/\W+/g, '-').toLowerCase().slice(0, 40) + '.png';
+  const link = location.origin + location.pathname;
+  sheet('<h2>📸 Instagram story</h2><img src="' + url + '" alt="Story picture for ' + esc(c.title) + '" class="story">' +
+    '<button class="btn block igbtn" id="stShare">Share to Instagram</button>' +
+    '<a class="btn ghost block" href="' + url + '" download="' + file + '">Save picture</a>' +
+    '<button class="btn ghost block" id="stCopy">Copy the booking link</button>' +
+    '<ol class="paysteps"><li>Tap <b>Share to Instagram</b> and choose <b>Stories</b> (or save the picture and pick it in Instagram → Your story).</li>' +
+    '<li>Tap the sticker button, add a <b>Link</b> sticker and paste the booking link.</li><li>Post it!</li></ol>' +
+    '<button class="btn ghost block" id="stNo">Done</button>', () => {
+      $('stNo').onclick = closeSheet;
+      $('stCopy').onclick = () => copyText(link, 'Link copied — paste it in a Link sticker');
+      $('stShare').onclick = async () => {
+        copyText(link, 'Link copied — paste it in a Link sticker');
+        try {
+          const f = new File([blob], file, { type: 'image/png' });
+          if (navigator.canShare && navigator.canShare({ files: [f] })) { await navigator.share({ files: [f] }); return; }
+        } catch (e) { if (e && e.name === 'AbortError') return; }
+        toast('Save the picture, then add it in Instagram → Your story');
+      };
+    });
 }
 
 /* ----- teacher: payments to check ----- */
@@ -1436,19 +1541,31 @@ function layoutStage() {
   const spot = LIVE.spot ? ids.find(i => !TILES[i].screen && TILES[i].name === LIVE.spot) : null;
   const teach = ids.find(i => !TILES[i].screen && TILES[i].owner);
   const big = act ? null : (scr || spot || (!LIVE.host ? teach : null));
+  /* with one big picture, your own camera becomes a small picture-in-picture in its corner
+     (like a phone video call) instead of a squashed strip */
+  const pip = big ? ids.find(i => TILES[i].local && i !== big) : null;
   const rank = i => i === big ? 0 : TILES[i].screen ? 1 : TILES[i].owner ? 2 : TILES[i].local ? 9 : 3;
   ids.sort((a, b) => rank(a) - rank(b) || TILES[a].name.localeCompare(TILES[b].name)).forEach((i, n) => {
-    TILES[i].el.style.order = n; TILES[i].el.classList.toggle('big', i === big);
+    const el = TILES[i].el; el.style.order = n; el.classList.toggle('big', i === big); el.classList.toggle('pip', i === pip);
+    if (i !== pip) { el.style.bottom = ''; el.style.width = ''; }
   });
   const n = ids.length;
   stage.className = act ? 'strip' : big ? 'focus' : 'grid';
-  stage.style.gridTemplateColumns = ''; stage.style.gridTemplateRows = '';
+  stage.style.gridTemplateColumns = ''; stage.style.gridTemplateRows = ''; stage.style.justifyContent = '';
   if (act || !n) return;
   const W = stage.clientWidth || 360, H = stage.clientHeight || 600;
   if (big) {
-    const m = n - 1, c = Math.min(Math.max(m, 1), 3), r = Math.ceil(m / c), sh = m ? Math.min(120, Math.max(80, Math.floor(H * .19))) : 0;
-    stage.style.gridTemplateColumns = 'repeat(' + c + ',minmax(0,1fr))';
+    /* everyone else below the big picture, in tiles shaped like a person (a little taller than wide) */
+    const m = n - 1 - (pip ? 1 : 0), c = Math.min(Math.max(m, 1), 3);
+    const colW = Math.floor((W - 10 - (c - 1) * 5) / c), sh = m ? Math.min(Math.round(colW * 1.1), Math.floor(H * .3)) : 0;
+    const r = m ? Math.ceil(m / c) : 0;
+    stage.style.gridTemplateColumns = 'repeat(' + c + ',minmax(0,' + colW + 'px))';
+    stage.style.justifyContent = 'center';
     stage.style.gridTemplateRows = 'minmax(0,1fr)' + (r ? ' repeat(' + r + ',' + sh + 'px)' : '');
+    if (pip) {
+      const el = TILES[pip].el, below = r ? r * (sh + 5) : 0;
+      el.style.bottom = (below + 14) + 'px'; el.style.width = Math.round(Math.min(W * .3, 150)) + 'px';
+    }
   } else {
     let best = 1, bs = 0;
     for (let c = 1; c <= 4; c++) { const r = Math.ceil(n / c), s = Math.min(W / c, (H / r) * 1.1); if (s > bs + 1) { bs = s; best = c; } }
@@ -1515,8 +1632,7 @@ function reactBar() {
   const el = $('reactBar');
   if (!el.classList.contains('hide')) { el.classList.add('hide'); return; }
   el.innerHTML = REACTS.map(e => '<button data-e="' + e + '" aria-label="Send ' + e + '">' + e + '</button>').join('') +
-    (LIVE.host ? '' : '<button id="rxChat" aria-label="Message the teacher">💬</button>');
-  if ($('rxChat')) $('rxChat').onclick = () => { el.classList.add('hide'); liveChat(null, firstName()); };
+    '';
   el.classList.remove('hide');
   el.querySelectorAll('[data-e]').forEach(b => b.onclick = () => {
     if (Date.now() - REACT_AT < 1200) return; REACT_AT = Date.now();
@@ -1554,7 +1670,7 @@ async function joinLive(c, host) {
   LIVE.name = pass.name || LIVE.name;
   $('liveCtl').innerHTML = (host
     ? '<button id="lMic"><b>🎤</b>Mic</button><button id="lCam"><b>📷</b>Camera</button><button class="gold" id="lQuiz"><b>❓</b>Quiz</button><button id="lBoard"><b>✏️</b>Board</button><button id="lGame"><b>🎲</b>Game</button><button id="lMore"><b>⋯</b>More</button><button id="lLeave" style="background:#E5484D"><b>■</b>End</button>'
-    : '<button id="lMic"><b>🎤</b>Mic</button><button id="lCam"><b>📷</b>Camera</button><button id="lHand"><b>✋</b>Hand</button><button id="lFun"><b>😊</b>Fun</button><button id="lDraw"><b>✏️</b>Draw</button><button id="lLeave" style="background:#E5484D"><b>👋</b>Leave</button>');
+    : '<button id="lMic"><b>🎤</b>Mic</button><button id="lCam"><b>📷</b>Camera</button><button id="lHand"><b>✋</b>Hand</button><button id="lChat"><b>💬</b>Chat</button><button id="lFun"><b>😊</b>Fun</button><button id="lDraw"><b>✏️</b>Draw</button><button id="lLeave" style="background:#E5484D"><b>👋</b>Leave</button>');
   clearTiles();
   FRAME = window.DailyIframe.createCallObject({ audioSource: true, videoSource: true });
   FRAME.on('app-message', ev => onMsg(ev && ev.data, ev && ev.fromId));
@@ -1579,6 +1695,7 @@ async function joinLive(c, host) {
     pollRoom(); LIVE.pollT = setInterval(pollRoom, 4000);
   } else {
     $('lHand').onclick = toggleHand; $('lDraw').onclick = openMyPad; $('lFun').onclick = reactBar;
+    $('lChat').onclick = () => liveChat(null, firstName());
     certFor(c);                        // a star card starts the moment the child is in
   }
   renderStrip();
@@ -1731,6 +1848,7 @@ function renderStrip() {
     if (BOARD.on && (LIVE.boardHidden || VIEW === 'mine')) ch.push('<button class="schip gold" data-s="board">✏️ Show board</button>');
     if (GAME && GSHOW.hidden) ch.push('<button class="schip gold" data-s="game">🎲 Show game</button>');
     if (LIVE.chatNew) ch.push('<button class="schip gold" data-s="kchat">💬 Message from ' + esc(firstName()) + '</button>');
+    if ($('lChat')) $('lChat').classList.toggle('dot', !!LIVE.chatNew);
     if (LIVE.rec && LIVE.rec.min) ch.push('<button class="schip gold" data-s="voice">🎙 Record answer</button>');
   }
   $('liveStrip').innerHTML = ch.join('');
