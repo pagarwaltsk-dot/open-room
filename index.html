@@ -228,6 +228,30 @@
   details.qa p{margin:0 0 16px;color:var(--muted)}
   .lfoot{display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;padding:10px 0 4px}
   .linkbtn{background:none;border:0;color:var(--muted);font-size:13.5px;text-decoration:underline;min-height:40px}
+  .ttabs{overflow-x:auto;scrollbar-width:none}
+  .ttabs::-webkit-scrollbar{display:none}
+  .ttabs button{flex:1 0 auto;padding:0 10px;font-size:13.5px;white-space:nowrap}
+  .kav{width:44px;height:44px;border-radius:50%;background:var(--gold-soft);color:var(--ink);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:800;font-size:22px;flex:0 0 auto}
+  .kav.big{width:64px;height:64px;font-size:32px;background:var(--gold)}
+  .kstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px}
+  .kstats div{background:var(--bg);border-radius:14px;padding:10px 6px;text-align:center;display:flex;flex-direction:column;gap:2px}
+  .kstats b{font-family:var(--fd);font-size:22px;line-height:1.1}
+  .kstats small{font-size:14px;color:var(--muted)}
+  .kstats span{font-size:12px;color:var(--muted);font-weight:700}
+  .note{border-top:1px solid var(--line);padding-top:8px;display:flex;flex-direction:column;gap:2px}
+  .krow{display:flex;align-items:center;gap:10px;border-top:1px solid var(--line);padding-top:8px}
+  .kmark{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex:0 0 auto}
+  .kmark.ok{background:var(--teal-soft);color:var(--teal)} .kmark.no{background:var(--red-soft);color:var(--red)}
+  .kmark.wait,.kmark.soon{background:var(--gold-soft);color:#8A5A00}
+  .thr{border:0;width:100%;text-align:left;cursor:pointer;font:inherit;color:inherit}
+  .chatmain{gap:10px;padding-bottom:12px}
+  .chatbox{flex:1;min-height:200px;max-height:calc(100vh - 260px);overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:4px 2px}
+  .bub{max-width:82%;align-self:flex-start;background:#fff;border-radius:16px 16px 16px 4px;padding:8px 12px;display:flex;flex-direction:column;gap:2px}
+  .bub.me{align-self:flex-end;background:var(--teal-soft);border-radius:16px 16px 4px 16px}
+  .bub .bw{font-size:11.5px;color:var(--muted);font-weight:700}
+  .bub .bt{font-size:15.5px;line-height:1.35;word-break:break-word}
+  .compose{display:flex;gap:8px;align-items:flex-end}
+  .compose textarea{flex:1;min-height:48px;resize:none}
   .mgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .mbtn{border:0;background:#fff;border-radius:16px;min-height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:26px;padding:8px}
   .mbtn span{font-size:13.5px;font-weight:800;text-align:center}
@@ -343,7 +367,9 @@ let NAV_POP = false;
 function go(screen, extra) {
   const from = S.screen;
   S = Object.assign({ screen: screen }, extra || {}); render(); window.scrollTo(0, 0);
-  if (!NAV_POP && screen !== from) { try { history.pushState({ screen: screen }, ''); } catch (e) {} }
+  /* remember which child / family the screen was showing, so Back returns to it */
+  const keep = extra && (extra.cid || extra.pid) ? { cid: extra.cid, pid: extra.pid, title: extra.title, sub: extra.sub } : null;
+  if (!NAV_POP && (screen !== from || keep)) { try { history.pushState({ screen: screen, x: keep }, ''); } catch (e) {} }
 }
 /* the phone's Back button: close a pop-up, then go back a screen; in a class, ask first */
 window.addEventListener('popstate', e => {
@@ -357,14 +383,17 @@ window.addEventListener('popstate', e => {
   let to = st.screen || (ME.role === 'teacher' ? 'tclasses' : 'home');
   if (to === 'book') to = 'home';
   if (to === 'tclass') to = 'tclasses';
-  if (st.dup || st.live || to === S.screen) { history.back(); return; }   // nothing new here: keep going back
-  NAV_POP = true; try { go(to); } finally { NAV_POP = false; }
+  if (to === 'tchat' && !(st.x && st.x.pid)) to = 'tmsgs';
+  if (to === 'tkid' && !(st.x && st.x.cid)) to = 'tkids';
+  const same = to === S.screen && (!st.x || (st.x.cid || null) === (S.cid || null) && (st.x.pid || null) === (S.pid || null));
+  if (st.dup || st.live || same) { history.back(); return; }   // nothing new here: keep going back
+  NAV_POP = true; try { go(to, st.x || undefined); } finally { NAV_POP = false; }
 });
 function render() {
-  const v = { home: vHome, book: vBook, tlogin: vTLogin, tclasses: vTClasses, tclass: vTClass, tpay: vTPay, tset: vTSet }[S.screen] || vHome;
+  const v = { home: vHome, book: vBook, chat: vChat, tlogin: vTLogin, tclasses: vTClasses, tclass: vTClass, tpay: vTPay, tset: vTSet, tmsgs: vTMsgs, tchat: vTChat, tkids: vTKids, tkid: vTKid }[S.screen] || vHome;
   v();
   if ($('app') && !$('verTag')) {
-    const tag = '<div id="verTag" class="sm" style="text-align:center;opacity:.5;padding:14px 0 22px">kidspri · version 5-Oct-G</div>', last = $('app').lastElementChild;
+    const tag = '<div id="verTag" class="sm" style="text-align:center;opacity:.5;padding:14px 0 22px">kidspri · version 7-Oct-K</div>', last = $('app').lastElementChild;
     if (last && last.classList.contains('band')) last.insertAdjacentHTML('beforebegin', tag); else $('app').insertAdjacentHTML('beforeend', tag);
   }
 }
@@ -378,6 +407,7 @@ async function loadMine() {
 }
 async function loadTeacher() {
   try { OV = (await api({ action: 'overview' })).classes || []; } catch (e) { toast(e.message, true); OV = OV || []; }
+  await loadUnread();
 }
 
 /* ----- parent: home ----- */
@@ -497,7 +527,10 @@ function fillHome() {
   const upcoming = mine.filter(b => startMs(b.class) + (b.class.minutes + 30) * 60000 > Date.now() && b.status !== 'cancelled');
   const byClass = {};
   upcoming.forEach(b => { (byClass[b.class.id] = byClass[b.class.id] || []).push(b.child); });
-  $('hBookings').innerHTML = upcoming.length ? '<section style="display:flex;flex-direction:column;gap:12px"><h2 class="h2" style="margin:0">My bookings</h2>' + upcoming.map(b => {
+  const unread = (MINE && MINE.unread) || 0;
+  const chatCard = ME.role === 'parent' ? '<button class="card thr" id="hChat"><div class="row"><div class="grow" style="text-align:left"><div style="font-weight:800">💬 Messages with ' + esc(firstName()) +
+    (unread ? ' <span class="count">' + unread + ' new</span>' : '') + '</div><div class="sm">Ask a question or say how the class went</div></div><span aria-hidden="true">›</span></div></button>' : '';
+  $('hBookings').innerHTML = chatCard + (upcoming.length ? '<section style="display:flex;flex-direction:column;gap:12px"><h2 class="h2" style="margin:0">My bookings</h2>' + upcoming.map(b => {
       const open = b.status === 'confirmed' && roomOpen(b.class);
       return '<div class="card"><div class="row"><div class="grow"><div style="font-weight:800">' + esc(b.class.title) + '</div>' +
         '<div class="sm">' + esc(b.child) + ' · ' + esc(when(b.class.starts_at)) + '</div></div>' + statusTag(b) + '</div>' +
@@ -506,7 +539,8 @@ function fillHome() {
         (b.status === 'rejected' ? '<div class="sm">The teacher could not find this payment. Book again with the right UPI reference, or message her.</div>' : '') +
         (b.status === 'pending' ? '<div class="sm">The teacher checks the payment and confirms your seat. Usually within a few hours.</div>' : '') +
         '</div>';
-    }).join('') + '</section>' : '';
+    }).join('') + '</section>' : '');
+  if ($('hChat')) $('hChat').onclick = () => go('chat');
   $('hClasses').innerHTML = CLASSES.length ? CLASSES.map(c => classCard(c, byClass[c.id] ? 'Booked for ' + byClass[c.id].join(', ') : '')).join('')
     : '<div class="empty">New classes are coming soon. ' + (INFO.whatsapp ? 'Message ' + esc(firstName()) + ' on WhatsApp to hear first.' : 'Check back in a day or two.') + '</div>';
   $('hCards').innerHTML = starCards();
@@ -639,10 +673,12 @@ async function snlMove() {
     if (up && p === 100) up = false; p += up ? 1 : -1; g.pos[me.n] = p; drawSnl($('sCv'), g.pl, q => g.pos[q.n]);
     if (!calm) await sleep(200);
   }
+  if (g !== SNL || DEMO.run !== g.run || !$('sCv')) return;    // the tab changed while the piece was moving
   if (to !== x) {
     if (!calm) await sleep(300);
     if (g !== SNL || !$('sCv')) return;
     g.pos[me.n] = to; drawSnl($('sCv'), g.pl, q => g.pos[q.n]);
+    if (!$('sMsg')) return;
     $('sMsg').innerHTML += LADDERS[x] ? ' — 🪜 up to ' + to + '!' : ' — 🐍 down to ' + to + '!';
   }
   if (to === 100) {
@@ -826,8 +862,9 @@ function vTLogin() {
 /* ----- teacher: classes ----- */
 function tTabs(on) {
   const pend = (OV || []).reduce((n, c) => n + (c.bookings || []).filter(b => b.status === 'pending').length, 0);
-  return '<div class="tabs"><button data-tt="tclasses" class="' + (on === 'tclasses' ? 'on' : '') + '">Classes</button>' +
-    '<button data-tt="tpay" class="' + (on === 'tpay' ? 'on' : '') + '">Payments' + (pend ? '<span class="count">' + pend + '</span>' : '') + '</button><button id="tRef" aria-label="Refresh">↻ Refresh</button></div>';
+  const t = (k, label, n) => '<button data-tt="' + k + '" class="' + (on === k ? 'on' : '') + '">' + label + (n ? '<span class="count">' + n + '</span>' : '') + '</button>';
+  return '<div class="tabs ttabs">' + t('tclasses', 'Classes') + t('tkids', 'Students') + t('tmsgs', 'Messages', TUNREAD) + t('tpay', 'Payments', pend) +
+    '<button id="tRef" aria-label="Refresh">↻</button></div>';
 }
 function wireTeacher() {
   document.querySelectorAll('[data-tt]').forEach(b => b.onclick = async () => { const to = b.dataset.tt; await loadTeacher(); go(to); });
@@ -1034,6 +1071,208 @@ function squarePhoto(file) {
   });
 }
 
+/* ================= STUDENTS =================
+   Every child who has signed up: the parent's contact, classes booked and
+   attended, stars and quiz points earned in class, and the teacher's own
+   private notes (parents never see these). */
+let KIDS_Q = '';
+async function vTKids() {
+  if (ME.role !== 'teacher') return go('tlogin');
+  $('app').innerHTML = header(true) + '<main>' + tTabs('tkids') +
+    '<input class="in" id="kQ" type="search" placeholder="Search by child, parent or phone" value="' + esc(KIDS_Q) + '" aria-label="Search students">' +
+    '<div id="kList" style="display:flex;flex-direction:column;gap:10px"><div class="sm">Loading…</div></div></main>';
+  wireTeacher();
+  let list = [];
+  try { list = (await api({ action: 'students' })).students || []; } catch (e) { return toast(e.message, true); }
+  if (S.screen !== 'tkids') return;
+  const draw = () => {
+    const q = KIDS_Q.trim().toLowerCase();
+    const rows = list.filter(k => !q || (k.name + ' ' + k.parent + ' ' + k.phone).toLowerCase().indexOf(q) >= 0);
+    $('kList').innerHTML = (rows.length ? '<div class="sm">' + rows.length + (rows.length === 1 ? ' child' : ' children') + '</div>' + rows.map(k =>
+      '<button class="card thr" data-kid="' + k.id + '"><div class="row" style="gap:12px"><div class="kav">' + esc(k.name.charAt(0).toUpperCase()) + '</div>' +
+      '<div class="grow" style="text-align:left"><div style="font-weight:800">' + esc(k.name) + (k.age ? ' <span class="sm">· ' + k.age + ' yrs</span>' : '') + '</div>' +
+      '<div class="sm">' + esc(k.parent) + ' · ' + esc(k.phone) + '</div>' +
+      '<div class="sm" style="color:var(--ink)">' + k.came + ' of ' + k.booked + ' classes · ⭐ ' + k.stars + ' · 🏆 ' + k.points + (k.notes ? ' · 📝 ' + k.notes : '') + '</div></div>' +
+      '<span aria-hidden="true">›</span></div></button>').join('')
+      : '<div class="empty">' + (list.length ? 'Nobody matches that search.' : 'No students yet. Children appear here as soon as a parent signs up.') + '</div>');
+    $('kList').querySelectorAll('[data-kid]').forEach(b => b.onclick = () => go('tkid', { cid: b.dataset.kid }));
+  };
+  $('kQ').oninput = () => { KIDS_Q = $('kQ').value; draw(); };
+  draw();
+}
+async function vTKid() {
+  if (ME.role !== 'teacher' || !S.cid) return go('tkids');
+  const cid = S.cid;
+  $('app').innerHTML = header(true) + '<main id="kidMain"><div class="sm">Loading…</div></main>';
+  wireTeacher();
+  let r; try { r = await api({ action: 'student', child_id: cid }); } catch (e) { return toast(e.message, true); }
+  if (S.screen !== 'tkid' || S.cid !== cid) return;
+  const k = r.child, cls = r.classes || [], notes = r.notes || [];
+  const came = cls.filter(c => c.came).length, booked = cls.filter(c => c.status === 'confirmed').length;
+  const stars = cls.reduce((n, c) => n + c.stars, 0), points = cls.reduce((n, c) => n + c.points, 0);
+  const wa = 'https://wa.me/91' + k.phone + '?text=' + encodeURIComponent('Hello ' + k.parent + ', this is ' + firstName() + ' from kidspri. ');
+  $('kidMain').innerHTML =
+    '<button class="chip" id="kBack" style="align-self:flex-start">‹ Students</button>' +
+    '<div class="card"><div class="row" style="gap:14px"><div class="kav big">' + esc(k.name.charAt(0).toUpperCase()) + '</div>' +
+      '<div class="grow"><div class="ctitle" style="font-size:24px">' + esc(k.name) + '</div>' +
+      '<div class="sm">' + (k.age ? k.age + ' years · ' : '') + 'joined ' + esc(new Date(k.since).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })) + '</div>' +
+      (r.siblings.length ? '<div class="sm">Also in the family: ' + r.siblings.map(s => '<button class="linkbtn" style="min-height:0;padding:0" data-sib="' + s.id + '">' + esc(s.name) + '</button>').join(', ') + '</div>' : '') + '</div></div>' +
+      '<div class="kstats"><div><b>' + came + '<small>/' + booked + '</small></b><span>classes came</span></div><div><b>⭐ ' + stars + '</b><span>stars</span></div><div><b>🏆 ' + points + '</b><span>quiz points</span></div></div></div>' +
+    '<div class="card"><div style="font-weight:800">Parent</div><div>' + esc(k.parent) + ' · <span class="mono">' + esc(k.phone) + '</span></div>' +
+      '<div class="row" style="flex-wrap:wrap"><a class="btn ghost small" href="tel:+91' + esc(k.phone) + '">📞 Call</a>' +
+      '<a class="btn ghost small" href="' + esc(wa) + '" target="_blank" rel="noopener">WhatsApp</a>' +
+      '<button class="btn teal small" id="kMsg">💬 Message</button></div></div>' +
+    '<div class="card"><div style="font-weight:800">My notes</div><div class="sm">Only you can see these — parents never do.</div>' +
+      '<textarea class="in" id="kNote" rows="3" maxlength="2000" placeholder="e.g. Shy at first, loves dancing. Try asking her to show her drawings."></textarea>' +
+      '<button class="btn small" id="kNoteGo" style="align-self:flex-start">Save note</button>' +
+      (notes.length ? notes.map(n => '<div class="note"><div class="sm">' + esc(chatTime(n.at)) + '</div><div>' + esc(n.body).replace(/\n/g, '<br>') + '</div>' +
+        '<button class="linkbtn" data-ndel="' + n.id + '" style="min-height:32px;padding:0;align-self:flex-start">Delete</button></div>').join('') : '') + '</div>' +
+    '<div class="card"><div style="font-weight:800">Classes</div>' + (cls.length ? cls.map(c =>
+      '<div class="krow"><span class="kmark ' + (c.came ? 'ok' : c.status === 'pending' ? 'wait' : new Date(c.at) > new Date() ? 'soon' : 'no') + '">' +
+        (c.came ? '✓' : c.status === 'pending' ? '…' : new Date(c.at) > new Date() ? '•' : '✗') + '</span>' +
+      '<div class="grow"><div style="font-weight:700">' + esc(c.title) + '</div><div class="sm">' + esc(when(c.at)) +
+        (c.status === 'pending' ? ' · payment being checked' : !c.came && new Date(c.at) > new Date() ? ' · coming up' : !c.came ? ' · missed' : '') + '</div></div>' +
+      '<div class="sm" style="color:var(--ink);white-space:nowrap">' + (c.stars ? '⭐ ' + c.stars + ' ' : '') + (c.points ? '🏆 ' + c.points : '') + '</div></div>').join('')
+      : '<div class="sm">No classes booked yet.</div>') + '</div>';
+  $('kBack').onclick = () => history.back();
+  $('kMsg').onclick = () => go('tchat', { pid: k.parent_id, title: k.name, sub: k.parent });
+  document.querySelectorAll('[data-sib]').forEach(b => b.onclick = () => go('tkid', { cid: b.dataset.sib }));
+  $('kNoteGo').onclick = async () => {
+    const body = $('kNote').value.trim(); if (!body) return toast('Write the note first', true);
+    $('kNoteGo').disabled = true;
+    try { await api({ action: 'note_add', child_id: cid, body: body }); toast('Note saved'); vTKid(); } catch (e) { $('kNoteGo').disabled = false; toast(e.message, true); }
+  };
+  document.querySelectorAll('[data-ndel]').forEach(b => b.onclick = async () => {
+    if (!confirm('Delete this note?')) return;
+    try { await api({ action: 'note_del', id: +b.dataset.ndel }); vTKid(); } catch (e) { toast(e.message, true); }
+  });
+}
+
+/* ================= MESSAGES =================
+   A private chat between the teacher and each family. Children use their
+   parent's phone and sign-in, so the parent can always read it — there is no
+   hidden child-to-adult channel. In class it opens as a pop-up. */
+let TUNREAD = 0, CHAT_T = null;
+function chatTime(iso) {
+  const d = new Date(iso), today = d.toDateString() === new Date().toDateString();
+  return today ? d.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' }) : d.toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
+}
+function bubbles(list, teacherSide) {
+  if (!list.length) return '<div class="empty" style="background:none">No messages yet. Say hello!</div>';
+  return list.map(m => {
+    const mine = m.t === teacherSide;
+    return '<div class="bub' + (mine ? ' me' : '') + '"><div class="bw">' + esc(m.who || (m.t ? 'Teacher' : 'Parent')) + '</div>' +
+      '<div class="bt">' + esc(m.body).replace(/\n/g, '<br>') + '</div><div class="bw">' + esc(chatTime(m.at)) + (mine && m.seen ? ' · seen' : '') + '</div></div>';
+  }).join('');
+}
+function fillChat(boxId, list, teacherSide) {
+  const box = $(boxId); if (!box) return;
+  const atEnd = box.scrollHeight - box.scrollTop - box.clientHeight < 60, n = list.length;
+  if (box.dataset.n === String(n) && box.dataset.s === list.map(m => m.seen ? 1 : 0).join('')) return;
+  box.innerHTML = bubbles(list, teacherSide); box.dataset.n = n; box.dataset.s = list.map(m => m.seen ? 1 : 0).join('');
+  if (atEnd || !box.dataset.done) { box.scrollTop = box.scrollHeight; box.dataset.done = 1; }
+}
+function composer(id) {
+  return '<div class="compose"><textarea class="in" id="' + id + '" rows="1" maxlength="1000" placeholder="Write a message…" aria-label="Message"></textarea><button class="btn teal" id="' + id + 'Go" aria-label="Send">Send</button></div>';
+}
+function wireComposer(id, sendFn) {
+  const t = $(id), b = $(id + 'Go');
+  t.oninput = () => { t.style.height = 'auto'; t.style.height = Math.min(120, t.scrollHeight) + 'px'; };
+  const go = async () => {
+    const body = t.value.trim(); if (!body) return;
+    b.disabled = true;
+    try { await sendFn(body); t.value = ''; t.style.height = 'auto'; } catch (e) { toast(e.message, true); }
+    b.disabled = false; t.focus();
+  };
+  b.onclick = go;
+  t.onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey && window.matchMedia('(pointer:fine)').matches) { e.preventDefault(); go(); } };
+}
+function stopChatPoll() { clearInterval(CHAT_T); CHAT_T = null; }
+/* ----- parent ----- */
+function vChat() {
+  if (ME.role !== 'parent') return go('home');
+  const name = firstName();
+  $('app').innerHTML = header(false) + '<main class="chatmain">' +
+    '<div class="row"><button class="chip" id="cBack">‹ Back</button><div class="grow"><div class="ctitle">Messages with ' + esc(name) + '</div>' +
+    '<div class="sm">Private between ' + esc(name) + ' and your family.</div></div></div>' +
+    '<div class="chatbox" id="chatBox"><div class="sm">Loading…</div></div>' + composer('cMsg') + '</main>';
+  $('cBack').onclick = () => history.back();
+  const load = async () => { try { const r = await api({ action: 'msgs' }); fillChat('chatBox', r.messages || [], false); if (MINE) MINE.unread = 0; } catch (e) {} };
+  wireComposer('cMsg', async body => { const r = await api({ action: 'msg_send', body: body }); fillChat('chatBox', r.messages || [], false); });
+  load(); stopChatPoll(); CHAT_T = setInterval(() => { if (S.screen !== 'chat') return stopChatPoll(); if (!$('overlay').innerHTML) load(); }, 4000);
+}
+/* ----- teacher: list of families ----- */
+async function loadUnread() { try { TUNREAD = (await api({ action: 'unread' })).unread || 0; } catch (e) {} }
+async function vTMsgs() {
+  if (ME.role !== 'teacher') return go('tlogin');
+  $('app').innerHTML = header(true) + '<main>' + tTabs('tmsgs') + '<div id="thList"><div class="sm">Loading…</div></div></main>';
+  wireTeacher();
+  let r; try { r = await api({ action: 'threads' }); } catch (e) { return toast(e.message, true); }
+  if (S.screen !== 'tmsgs') return;
+  const th = r.threads || [], fam = r.families || [];
+  $('thList').innerHTML = (th.length ? th.map((t, i) =>
+      '<button class="card thr" data-th="' + i + '"><div class="row"><div class="grow" style="text-align:left"><div style="font-weight:800">' + esc(t.kids || t.parent) +
+      (t.unread ? ' <span class="count">' + t.unread + '</span>' : '') + '</div><div class="sm">' + esc(t.parent) + '</div>' +
+      '<div class="sm" style="color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (t.last_t ? 'You: ' : '') + esc(t.last || '') + '</div></div>' +
+      '<div class="sm">' + esc(chatTime(t.last_at)) + '</div></div></button>').join('')
+    : '<div class="empty">No messages yet. Parents can write to you from the front page, and you can write to any family below.</div>') +
+    (fam.length ? '<button class="btn ghost block" id="thNew">Write to a family</button>' : '');
+  $('thList').querySelectorAll('[data-th]').forEach(b => b.onclick = () => { const t = th[+b.dataset.th]; go('tchat', { pid: t.parent_id, title: t.kids || t.parent, sub: t.parent }); });
+  if ($('thNew')) $('thNew').onclick = () => sheet('<h2>Write to a family</h2>' + fam.map((f, i) =>
+      '<button class="card thr" data-fm="' + i + '"><div style="font-weight:800;text-align:left">' + esc(f.kids || f.parent) + '</div><div class="sm" style="text-align:left">' + esc(f.parent) + '</div></button>').join('') +
+    '<button class="btn ghost block" id="fmNo">Close</button>', () => {
+      $('fmNo').onclick = closeSheet;
+      document.querySelectorAll('[data-fm]').forEach(b => b.onclick = () => { const f = fam[+b.dataset.fm]; closeSheet(); go('tchat', { pid: f.parent_id, title: f.kids || f.parent, sub: f.parent }); });
+    });
+}
+/* ----- teacher: one family ----- */
+function vTChat() {
+  if (ME.role !== 'teacher' || !S.pid) return go('tmsgs');
+  const pid = S.pid;
+  $('app').innerHTML = header(true) + '<main class="chatmain">' +
+    '<div class="row"><button class="chip" id="cBack">‹ Back</button><div class="grow"><div class="ctitle">' + esc(S.title || 'Family') + '</div><div class="sm">' + esc(S.sub || '') + '</div></div></div>' +
+    '<div class="chatbox" id="chatBox"><div class="sm">Loading…</div></div>' + composer('cMsg') + '</main>';
+  wireTeacher();
+  $('cBack').onclick = () => history.back();
+  const load = async () => { try { const r = await api({ action: 'thread', parent_id: pid }); fillChat('chatBox', r.messages || [], true); } catch (e) {} };
+  wireComposer('cMsg', async body => { const r = await api({ action: 'tmsg_send', parent_id: pid, body: body }); fillChat('chatBox', r.messages || [], true); });
+  load(); stopChatPoll(); CHAT_T = setInterval(() => { if (S.screen !== 'tchat' || S.pid !== pid) return stopChatPoll(); if (!$('overlay').innerHTML) load(); }, 4000);
+}
+/* ----- in class: the same chat, as a pop-up ----- */
+let LCHAT_T = null;
+function liveChat(pid, title, sid) {
+  if (!LIVE) return;
+  const host = LIVE.host;
+  if (host && !pid) return toast('Could not find this family yet — try again in a few seconds', true);
+  sheet('<h2>💬 ' + esc(title) + '</h2><div class="sm">' + (host ? 'Private: only this family can read it.' : 'Private between your family and ' + esc(firstName()) + '. Grown-ups can read it too.') + '</div>' +
+    '<div class="chatbox" id="lcBox" style="max-height:42vh"><div class="sm">Loading…</div></div>' + composer('lcMsg') +
+    '<button class="btn ghost block" id="lcNo">Close</button>', () => {
+      $('lcNo').onclick = closeSheet;
+      const load = async () => {
+        if (!$('lcBox')) { clearInterval(LCHAT_T); return; }
+        try { const r = await api(host ? { action: 'thread', parent_id: pid } : { action: 'msgs' }); fillChat('lcBox', r.messages || [], host); } catch (e) {}
+      };
+      wireComposer('lcMsg', async body => {
+        const r = await api(host ? { action: 'tmsg_send', parent_id: pid, body: body } : { action: 'msg_send', body: body, who: LIVE.name });
+        fillChat('lcBox', r.messages || [], host);
+        if (host) { if (sid) post({ kind: 'chat' }, sid); } else post({ kind: 'chat', from: LIVE.name }, teacherSid());
+      });
+      load(); clearInterval(LCHAT_T); LCHAT_T = setInterval(load, 4000);
+    });
+  if (host) { LIVE.chatFrom = LIVE.chatFrom.filter(n => n !== title); } else LIVE.chatNew = false;
+  renderStrip();
+}
+function liveChatList() {
+  const names = LIVE.chatFrom.slice();
+  if (names.length === 1) return liveChat(LIVE.fam[names[0]], names[0], sidOf(names[0]));
+  sheet('<h2>💬 New messages</h2>' + (names.length ? names.map((n, i) => '<button class="card thr" data-cn="' + i + '"><div style="font-weight:800;text-align:left">' + esc(n) + '</div></button>').join('')
+      : '<div class="empty">New messages from families appear here. Open Messages after class to see everything.</div>') +
+    '<button class="btn ghost block" id="clNo">Close</button>', () => {
+      $('clNo').onclick = closeSheet;
+      document.querySelectorAll('[data-cn]').forEach(b => b.onclick = () => { const n = names[+b.dataset.cn]; liveChat(LIVE.fam[n], n, sidOf(n)); });
+    });
+}
+
 /* ================= THE LIVE CLASS =================
    The video itself is Daily's ready-made room (camera, microphone, everyone's
    tiles, chat; the teacher can also share her screen from a laptop). On top of
@@ -1124,12 +1363,40 @@ function setVideo(t, track) {
   t.vt = track; t.v.srcObject = track ? new MediaStream([track]) : null;
   if (track) { const p = t.v.play(); if (p && p.catch) p.catch(() => {}); }
 }
+/* ---------- everyone else's sound ----------
+   Phones sometimes pause sound by themselves: muting your own mic, a call, switching apps.
+   So each speaker restarts itself the moment it is paused. If the phone insists on a tap
+   first, the next tap anywhere on the screen brings all the sound back. */
+function speaker() {
+  const a = document.createElement('audio');
+  a.autoplay = true; a.setAttribute('playsinline', '');
+  a.addEventListener('pause', () => { if (LIVE && a.srcObject) resume(a); });
+  $('audios').appendChild(a);
+  return a;
+}
+function resume(a) {
+  const now = Date.now();
+  a._fight = now - (a._at || 0) < 400 ? (a._fight || 0) + 1 : 0;   // paused again straight after starting?
+  a._at = now;
+  if (a._fight > 3) return waitForTap();                   // the phone keeps stopping it: ask for a tap
+  const p = a.play(); if (p && p.catch) p.catch(waitForTap);
+}
+function waitForTap() {
+  if (NEED_TAP) return;
+  NEED_TAP = true; renderStrip();
+  document.addEventListener('pointerdown', resumeAll, { once: true, capture: true });
+}
+function resumeAll() {
+  NEED_TAP = false;
+  Object.keys(TILES).forEach(i => { const a = TILES[i].a; if (a && a.srcObject) { a._fight = 0; a._at = 0; if (a.paused) resume(a); } });
+  if (LIVE) renderStrip();
+}
 function setAudio(t, track) {
   if (track === t.at) return;
   t.at = track;
-  if (!t.a) { t.a = document.createElement('audio'); t.a.autoplay = true; t.a.setAttribute('playsinline', ''); $('audios').appendChild(t.a); }
+  if (!t.a) t.a = speaker();
   t.a.srcObject = track ? new MediaStream([track]) : null;
-  if (track) { const p = t.a.play(); if (p && p.catch) p.catch(() => { NEED_TAP = true; renderStrip(); }); }
+  if (track) resume(t.a);
 }
 function dropTile(id) {
   const t = TILES[id]; if (!t) return;
@@ -1205,6 +1472,7 @@ function tileTap(id) {
   sheet('<h2>' + esc(name) + '</h2>' +
     (LIVE.spot === name ? '<button class="btn block" id="tsOff">Back to the normal view</button>' : '<button class="btn block" id="tsOn">⭐ Show ' + esc(name) + ' big to everyone</button>') +
     '<button class="btn teal block" id="tsSpeak">🎤 Ask ' + esc(name) + ' to speak</button>' +
+    '<button class="btn ghost block" id="tsChat">💬 Message ' + esc(name) + '</button>' +
     '<button class="btn ghost block" id="tsStar">Give a star</button>' +
     '<button class="btn ghost block" id="tsMute">🔇 Mute ' + esc(name) + '</button>' +
     '<button class="btn ghost block" id="tsNo">Close</button>', () => {
@@ -1213,14 +1481,11 @@ function tileTap(id) {
       if ($('tsOff')) $('tsOff').onclick = () => { send({ kind: 'spot', name: '' }); closeSheet(); };
       $('tsSpeak').onclick = () => { post({ kind: 'speak' }, sid); LIVE.hands = LIVE.hands.filter(n => n !== name); post({ kind: 'handdown' }, sid); renderStrip(); closeSheet(); toast(name + ' is asked to unmute'); };
       $('tsStar').onclick = () => { send({ kind: 'star', to: name }); closeSheet(); };
+      $('tsChat').onclick = () => liveChat(LIVE.fam[name], name, sid);
       $('tsMute').onclick = () => { try { FRAME.updateParticipant(sid, { setAudio: false }); toast(name + ' muted'); } catch (e) { toast('Could not mute', true); } closeSheet(); };
     });
 }
-function unmuteSpeakers() {
-  NEED_TAP = false;
-  Object.keys(TILES).forEach(i => { const a = TILES[i].a; if (a && a.srcObject) { const p = a.play(); if (p && p.catch) p.catch(() => {}); } });
-  renderStrip();
-}
+function unmuteSpeakers() { resumeAll(); }
 /* the buttons at the bottom */
 function renderCtl() {
   if (!LIVE || !LIVE.joined) return;
@@ -1249,7 +1514,9 @@ let REACT_AT = 0;
 function reactBar() {
   const el = $('reactBar');
   if (!el.classList.contains('hide')) { el.classList.add('hide'); return; }
-  el.innerHTML = REACTS.map(e => '<button data-e="' + e + '" aria-label="Send ' + e + '">' + e + '</button>').join('');
+  el.innerHTML = REACTS.map(e => '<button data-e="' + e + '" aria-label="Send ' + e + '">' + e + '</button>').join('') +
+    (LIVE.host ? '' : '<button id="rxChat" aria-label="Message the teacher">💬</button>');
+  if ($('rxChat')) $('rxChat').onclick = () => { el.classList.add('hide'); liveChat(null, firstName()); };
   el.classList.remove('hide');
   el.querySelectorAll('[data-e]').forEach(b => b.onclick = () => {
     if (Date.now() - REACT_AT < 1200) return; REACT_AT = Date.now();
@@ -1268,7 +1535,7 @@ function floatReact(e, who) {
 function liveReset(c, host) {
   return { cls: c, host: host, name: host ? (INFO.teacher || 'Teacher') : '', tag: rid().slice(0, 4), joined: false,
     hand: false, hands: [], waiting: [], openDoor: false, voicesNew: 0, scores: {}, quiz: null, kq: null, task: null,
-    pads: {}, padsNew: 0, rec: null, ended: false, pollT: null, boardHidden: false };
+    pads: {}, padsNew: 0, rec: null, ended: false, pollT: null, boardHidden: false, fam: {}, chatFrom: [], chatNew: false };
 }
 async function joinLive(c, host) {
   if (LIVE) return;
@@ -1303,6 +1570,8 @@ async function joinLive(c, host) {
   LIVE.joined = true;
   try { if (FRAME.updateSendSettings) FRAME.updateSendSettings({ video: 'bandwidth-optimized' }); } catch (e) {}
   queueTiles();
+  LIVE.onVis = () => { if (!document.hidden) resumeAll(); };   // back from a call or another app
+  document.addEventListener('visibilitychange', LIVE.onVis);
   $('lLeave').onclick = host ? endSheet : leaveAsk;
   $('lMic').onclick = toggleMic; $('lCam').onclick = toggleCam;
   if (host) {
@@ -1333,6 +1602,7 @@ function leaveLive(quiet) {
   if (!LIVE && !FRAME) { $('live').classList.add('hide'); return; }
   const was = LIVE; LIVE = null;
   if (was && was.pollT) clearInterval(was.pollT);
+  if (was && was.onVis) document.removeEventListener('visibilitychange', was.onVis);
   if (was && was.rec && was.rec.mr && was.rec.mr.state === 'recording') { try { was.rec.mr.stop(); } catch (e) {} }
   const f = FRAME; FRAME = null;
   if (f) { try { f.leave(); } catch (e) {} try { f.destroy(); } catch (e) {} }
@@ -1396,11 +1666,16 @@ function onMsg(m, from) {
       $('starName').textContent = String(m.to || '').slice(0, 40) + ' got a star!';
       const p = $('starPop'); p.classList.remove('hide'); setTimeout(() => p.classList.add('hide'), 3000);
       if (!LIVE.host && m.to === LIVE.name) certAdd('stars', 1);
+      if (LIVE.host && mine && m.to) api({ action: 'award', class_id: LIVE.cls.id, kind: 'star', name: m.to }).catch(() => {});   // kept on the child's profile
       break;
     }
     case 'spot': LIVE.spot = String(m.name || '').slice(0, 60); layoutStage(); renderStrip();
       if (!LIVE.host && LIVE.spot === LIVE.name) toast('⭐ You are on the big screen!'); break;
     case 'react': floatReact(m.e, sender); break;
+    case 'chat':
+      if (LIVE.host) { const n = sender || m.from; if (n && LIVE.chatFrom.indexOf(n) < 0) LIVE.chatFrom.push(n); toast('💬 ' + (n || 'A family') + ' sent you a message'); pollRoom(); }
+      else { LIVE.chatNew = true; toast('💬 ' + firstName() + ' sent you a message'); try { if (navigator.vibrate) navigator.vibrate(80); } catch (e) {} }
+      renderStrip(); break;
     case 'podium': if (m.s) showPodium(m.s); else $('podium').classList.add('hide'); break;
     case 'end': if (!LIVE.host) { LIVE.ended = true; if (FRAME) FRAME.leave(); else leaveLive(); } break;
     /* drawing board */
@@ -1449,11 +1724,13 @@ function renderStrip() {
     LIVE.hands.forEach((n, i) => ch.push('<button class="schip" data-hand="' + i + '">✋ ' + esc(n) + '</button>'));
     if (LIVE.voicesNew) ch.push('<button class="schip" data-s="voices">🎙 ' + LIVE.voicesNew + ' new</button>');
     if (LIVE.padsNew) ch.push('<button class="schip" data-s="pads">🎨 ' + LIVE.padsNew + ' new</button>');
+    if (LIVE.chatFrom.length) ch.push('<button class="schip gold" data-s="chats">💬 ' + (LIVE.chatFrom.length === 1 ? esc(LIVE.chatFrom[0]) : LIVE.chatFrom.length + ' messages') + '</button>');
   } else {
     const pts = LIVE.scores[LIVE.name] || 0;
     if (pts) ch.push('<span class="schip">🏆 ' + pts + '</span>');
     if (BOARD.on && (LIVE.boardHidden || VIEW === 'mine')) ch.push('<button class="schip gold" data-s="board">✏️ Show board</button>');
     if (GAME && GSHOW.hidden) ch.push('<button class="schip gold" data-s="game">🎲 Show game</button>');
+    if (LIVE.chatNew) ch.push('<button class="schip gold" data-s="kchat">💬 Message from ' + esc(firstName()) + '</button>');
     if (LIVE.rec && LIVE.rec.min) ch.push('<button class="schip gold" data-s="voice">🎙 Record answer</button>');
   }
   $('liveStrip').innerHTML = ch.join('');
@@ -1467,6 +1744,8 @@ function renderStrip() {
     else if (s === 'voices') voiceSheet(LIVE.cls.id, true);
     else if (s === 'pads') padsSheet();
     else if (s === 'voice') { if (LIVE.rec) { LIVE.rec.min = false; renderVoiceCard(); } }
+    else if (s === 'chats') liveChatList();
+    else if (s === 'kchat') liveChat(null, firstName());
     else if (s === 'game') { GSHOW.hidden = false; renderGame(); renderStrip(); }
     else if (s === 'board') { LIVE.boardHidden = false; VIEW = 'shared'; renderBoard(); renderStrip(); }
   });
@@ -1480,7 +1759,7 @@ async function pollRoom() {
     const r = await api({ action: 'room_state', class_id: LIVE.cls.id });
     if (!LIVE) return;
     const before = LIVE.waiting.map(w => w.parent_id).join();
-    LIVE.waiting = r.waiting || []; LIVE.openDoor = !!r.open_door;
+    LIVE.waiting = r.waiting || []; LIVE.openDoor = !!r.open_door; LIVE.fam = r.families || LIVE.fam;
     if (LIVE.waiting.length && LIVE.waiting.map(w => w.parent_id).join() !== before) toast('🚪 ' + LIVE.waiting.map(w => w.name).join(', ') + ' at the door');
     if ((r.unheard || 0) > LIVE.voicesNew) LIVE.voicesNew = r.unheard;
     renderStrip();
@@ -1523,7 +1802,7 @@ function showSpeak() {
   p.innerHTML = '<div style="font-size:40px">🎤</div><div class="ctitle">Your turn to talk!</div><button class="btn teal block" id="spGo">Turn my microphone on</button><button class="btn ghost block" id="spNo" style="min-height:42px">Not now</button>';
   p.classList.remove('hide');
   const hide = () => p.classList.add('hide');
-  $('spGo').onclick = () => { try { FRAME.setLocalAudio(true); } catch (e) {} hide(); };
+  $('spGo').onclick = () => { try { FRAME.setLocalAudio(true); } catch (e) {} setTimeout(renderCtl, 150); hide(); };
   $('spNo').onclick = hide; setTimeout(hide, 25000);
 }
 function muteAll() {
@@ -1612,6 +1891,7 @@ function judge(m, who) {
   if (right) {
     z.done = true; z.winner = who;
     LIVE.scores[who] = (LIVE.scores[who] || 0) + 1;
+    api({ action: 'award', class_id: LIVE.cls.id, kind: 'point', name: who }).catch(() => {});
     send({ kind: 'score', s: LIVE.scores });                  // scores first, so the result card shows them
     send({ kind: 'qwin', id: z.id, name: who, a: z.a, ans: z.o[z.a] });
   } else {
@@ -2254,7 +2534,7 @@ function showVideoErr(m) {
   const fresh = async () => {
     if (!$('live').classList.contains('hide') || $('overlay').innerHTML) return;
     if (S.screen === 'home') { await loadPublic(); await loadMine(); if (S.screen === 'home' && !$('overlay').innerHTML) ($('landing') ? fillHome() : vHome()); }
-    else if (S.screen === 'tclasses' || S.screen === 'tpay') { await loadTeacher(); if (!$('overlay').innerHTML) render(); }
+    else if (S.screen === 'tclasses' || S.screen === 'tpay' || S.screen === 'tmsgs') { await loadTeacher(); if (!$('overlay').innerHTML) render(); }
   };
   setInterval(fresh, 15000);
   /* coming back to the app (switching from WhatsApp etc.) refreshes at once */
