@@ -249,6 +249,14 @@
   .kmark{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex:0 0 auto}
   .kmark.ok{background:var(--teal-soft);color:var(--teal)} .kmark.no{background:var(--red-soft);color:var(--red)}
   .kmark.wait,.kmark.soon{background:var(--gold-soft);color:#8A5A00}
+  .pinin{font-size:24px;letter-spacing:.5em;text-align:center}
+  .clsmain{gap:14px}
+  .clshero{border-radius:26px;padding:20px 18px;display:flex;flex-direction:column;gap:10px}
+  .clsic{width:72px;height:72px;border-radius:22px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:40px}
+  .clsh{font-family:var(--fd);font-weight:800;font-size:clamp(30px,8.5vw,40px);line-height:1.04;margin:0;color:var(--ink)}
+  .clswhen{background:#fff;border-radius:16px;padding:10px 14px;display:flex;flex-direction:column}
+  .clswhen b{font-family:var(--fd);font-size:22px;line-height:1.1}
+  .clswhen span{color:var(--red);font-weight:800}
   .igbtn{background:linear-gradient(90deg,#F58529,#DD2A7B 55%,#8134AF);color:#fff}
   img.story{width:62%;align-self:center;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
   .thr{border:0;width:100%;text-align:left;cursor:pointer;font:inherit;color:inherit}
@@ -390,6 +398,7 @@ window.addEventListener('popstate', e => {
   }
   let to = st.screen || (ME.role === 'teacher' ? 'tclasses' : 'home');
   if (to === 'book') to = 'home';
+  if (to === 'cls' && !(st.x && st.x.cid)) to = 'home';
   if (to === 'tclass') to = 'tclasses';
   if (to === 'tchat' && !(st.x && st.x.pid)) to = 'tmsgs';
   if (to === 'tkid' && !(st.x && st.x.cid)) to = 'tkids';
@@ -398,10 +407,10 @@ window.addEventListener('popstate', e => {
   NAV_POP = true; try { go(to, st.x || undefined); } finally { NAV_POP = false; }
 });
 function render() {
-  const v = { home: vHome, book: vBook, chat: vChat, tlogin: vTLogin, tclasses: vTClasses, tclass: vTClass, tpay: vTPay, tset: vTSet, tmsgs: vTMsgs, tchat: vTChat, tkids: vTKids, tkid: vTKid }[S.screen] || vHome;
+  const v = { home: vHome, cls: vClass, book: vBook, chat: vChat, tlogin: vTLogin, tclasses: vTClasses, tclass: vTClass, tpay: vTPay, tset: vTSet, tmsgs: vTMsgs, tchat: vTChat, tkids: vTKids, tkid: vTKid }[S.screen] || vHome;
   v();
   if ($('app') && !$('verTag')) {
-    const tag = '<div id="verTag" class="sm" style="text-align:center;opacity:.5;padding:14px 0 22px">kidspri · version 7-Oct-M</div>', last = $('app').lastElementChild;
+    const tag = '<div id="verTag" class="sm" style="text-align:center;opacity:.5;padding:14px 0 22px">kidspri · version 8-Oct-O</div>', last = $('app').lastElementChild;
     if (last && last.classList.contains('band')) last.insertAdjacentHTML('beforebegin', tag); else $('app').insertAdjacentHTML('beforeend', tag);
   }
 }
@@ -553,26 +562,73 @@ function fillHome() {
     : '<div class="empty">New classes are coming soon. ' + (INFO.whatsapp ? 'Message ' + esc(firstName()) + ' on WhatsApp to hear first.' : 'Check back in a day or two.') + '</div>';
   $('hCards').innerHTML = starCards();
   document.querySelectorAll('[data-cert]').forEach(b => b.onclick = () => showCert(b.dataset.cert, false));
-  document.querySelectorAll('[data-book]').forEach(b => b.onclick = () => {
-    const c = CLASSES.find(x => x.id === b.dataset.book);
-    if (ME.role !== 'parent') return authSheet(async () => {
-      /* free class + only one child: book straight away, so signing up is not mistaken for booking */
-      const kids = (MINE && MINE.children) || [];
-      const already = ((MINE && MINE.bookings) || []).some(x => x.class && x.class.id === c.id && x.status !== 'cancelled');
-      if (!c.fee && kids.length === 1 && !already) {
-        try {
-          await api({ action: 'book', class_id: c.id, child_id: kids[0].id, utr: '' });
-          await Promise.all([loadMine(), loadPublic()]);
-          go('home'); return toast('Seat booked for ' + kids[0].name + '!');
-        } catch (e) { toast(e.message, true); }
-      }
-      go('book', { cls: c });
-    });
-    go('book', { cls: c });
-  });
+  document.querySelectorAll('[data-book]').forEach(b => b.onclick = () => bookClass(CLASSES.find(x => x.id === b.dataset.book)));
   document.querySelectorAll('[data-join]').forEach(b => b.onclick = () => {
     const bk = mine.find(x => x.class.id === b.dataset.join); joinLive(bk.class, false);
   });
+}
+function bookClass(c) {
+  if (!c) return;
+  if (ME.role !== 'parent') return authSheet(async () => {
+    /* free class + only one child: book straight away, so signing up is not mistaken for booking */
+    const kids = (MINE && MINE.children) || [];
+    const already = ((MINE && MINE.bookings) || []).some(x => x.class && x.class.id === c.id && x.status !== 'cancelled');
+    if (!c.fee && kids.length === 1 && !already) {
+      try {
+        await api({ action: 'book', class_id: c.id, child_id: kids[0].id, utr: '' });
+        await Promise.all([loadMine(), loadPublic()]);
+        go('home'); return toast('Seat booked for ' + kids[0].name + '!');
+      } catch (e) { toast(e.message, true); }
+    }
+    go('book', { cls: c });
+  });
+  go('book', { cls: c });
+}
+/* ----- one class's own page: what a shared class link opens ----- */
+function classLink(c) { return location.origin + location.pathname + '?class=' + c.id; }
+function vClass() {
+  const c = CLASSES.find(x => x.id === S.cid), name = firstName();
+  if (!c) {
+    $('app').innerHTML = header(false) + '<main><div class="card"><div class="ctitle">This class is no longer open</div>' +
+      '<div class="sm">It may be full, finished or cancelled. Have a look at the other classes.</div>' +
+      '<button class="btn red block" id="cAll">See all classes</button></div></main>';
+    $('cAll').onclick = () => go('home'); wireAuth(); return;
+  }
+  const w = classWhen(c), full = c.left <= 0;
+  const mine = ((MINE && MINE.bookings) || []).filter(b => b.class && b.class.id === c.id && b.status !== 'cancelled');
+  const conf = mine.filter(b => b.status === 'confirmed');
+  $('app').innerHTML = header(false) + '<main class="clsmain">' +
+    '<button class="chip" id="cAll" style="align-self:flex-start">‹ All classes</button>' +
+    '<section class="clshero" style="background:' + (TINT[c.kind] || TINT.Other) + '">' +
+      '<div class="clsic" aria-hidden="true">' + (KIND_ICON[c.kind] || '⭐') + '</div>' +
+      '<div class="sm" style="color:var(--ink);font-weight:800">' + esc(c.kind || 'Class') + ' · live small group</div>' +
+      '<h1 class="clsh">' + esc(c.title) + '</h1>' +
+      '<div class="clswhen"><b>' + esc(w.day) + '</b><span>' + esc(w.time) + ' · ' + c.minutes + ' min</span></div>' +
+      (c.about ? '<p style="margin:0">' + esc(c.about) + '</p>' : '') +
+      '<div class="row" style="flex-wrap:wrap;gap:8px"><span class="tag ok">' + (c.fee ? money(c.fee) : 'Free') + '</span>' +
+        '<span class="tag wait">' + (full ? 'Full' : c.left === 1 ? 'Last seat left' : c.left + ' of ' + c.seats + ' seats left') + '</span></div>' +
+    '</section>' +
+    '<div class="row" style="gap:12px"><div class="ph" id="ph" style="width:56px;height:56px;font-size:24px">' + esc(name.charAt(0)) + '</div>' +
+      '<div><div style="font-weight:800">Live with ' + esc(name) + '</div><div class="sm">At most a few children, so everyone gets a turn.</div></div></div>' +
+    (mine.length ? '<div class="card"><div class="row"><div class="grow" style="font-weight:800">Booked for ' + esc(mine.map(b => b.child).join(', ')) + '</div>' + statusTag(mine[0]) + '</div>' +
+        (conf.length ? '<button class="btn teal block" id="cJoin"' + (roomOpen(c) ? '' : ' disabled') + '>' + (roomOpen(c) ? 'Join the class now' : 'Join opens 15 min before') + '</button>' : '') + '</div>' : '') +
+    '<button class="btn red block" id="cBook"' + (full ? ' disabled' : '') + '>' + (full ? 'This class is full' : mine.length ? 'Book another child' : 'Book a seat') + '</button>' +
+    '<button class="btn ghost block" id="cShare">Share this class with a friend</button>' +
+    '<div class="sm" style="text-align:center">Join from this page up to 15 minutes before. ' + esc(name) + ' lets each child in from a waiting room.</div>' +
+    '</main><div class="band" aria-hidden="true"></div>';
+  wireAuth(); wireWordmark(); loadPhoto();
+  $('cAll').onclick = () => go('home');
+  $('cBook').onclick = () => bookClass(c);
+  if ($('cJoin')) $('cJoin').onclick = () => joinLive(c, false);
+  $('cShare').onclick = async () => {
+    const text = (KIND_ICON[c.kind] || '⭐') + ' ' + c.title + ' — live small-group class for kids on kidspri. ' + w.day + ', ' + w.time + '. Book here: ' + classLink(c);
+    try { if (navigator.share) { await navigator.share({ text: text }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
+    location.href = 'https://wa.me/?text=' + encodeURIComponent(text);
+  };
+}
+function wireAuth() {
+  if ($('hIn')) $('hIn').onclick = () => authSheet(() => render());
+  if ($('hOut')) $('hOut').onclick = () => { ME = { tok: '', role: '' }; keep(); MINE = null; render(); toast('Signed out'); };
 }
 /* the teacher's photo is fetched once and kept on the phone */
 async function loadPhoto() {
@@ -722,35 +778,85 @@ function toyPick(i, btn) {
 }
 
 /* ----- parent: sign up / sign in ----- */
-function authSheet(after, mode) {
-  mode = mode || 'new';
-  sheet('<h2>' + (mode === 'new' ? 'Your details' : 'Sign in') + '</h2>' +
-    '<div class="tabs"><button id="aNew" class="' + (mode === 'new' ? 'on' : '') + '">New here</button><button id="aOld" class="' + (mode === 'old' ? 'on' : '') + '">I have an account</button></div>' +
-    (mode === 'new'
-      ? '<div><label class="f" for="pName">Your name (parent)</label><input class="in" id="pName" autocomplete="name"></div>' +
-        '<div><label class="f" for="pPhone">Mobile number (WhatsApp)</label><input class="in" id="pPhone" inputmode="tel" autocomplete="tel"></div>' +
-        '<div class="row" style="gap:10px"><div class="grow"><label class="f" for="cName">Child’s name</label><input class="in" id="cName"></div>' +
-        '<div style="width:96px"><label class="f" for="cAge">Age</label><input class="in" id="cAge" inputmode="numeric"></div></div>' +
-        '<div><label class="f" for="pPin">Choose a 4-digit PIN</label><input class="in" id="pPin" inputmode="numeric" maxlength="4" type="password" autocomplete="new-password"></div>' +
-        '<div class="sm">You will use your number and this PIN to sign in on another phone.</div>'
-      : '<div><label class="f" for="pPhone">Mobile number</label><input class="in" id="pPhone" inputmode="tel" autocomplete="tel"></div>' +
-        '<div><label class="f" for="pPin">PIN</label><input class="in" id="pPin" inputmode="numeric" maxlength="4" type="password" autocomplete="current-password"></div>') +
-    '<button class="btn block" id="aGo">' + (mode === 'new' ? 'Continue' : 'Sign in') + '</button>',
-    () => {
-      $('aNew').onclick = () => authSheet(after, 'new');
-      $('aOld').onclick = () => authSheet(after, 'old');
+/* Signing in, made simple: type your mobile number → Continue. The app knows whether you are
+   new (then: your name, child, a PIN) or returning (then: your PIN). Nobody has to choose
+   between “sign in” and “sign up”. Forgot the PIN? The teacher sends a one-tap WhatsApp link. */
+const fmtPhone = p => String(p || '').replace(/(\d{5})(\d{5})/, '$1 $2');
+function authSheet(after, step, phone) {
+  step = step || 'phone';
+  const back = '<button class="linkbtn" id="aChg" style="min-height:0;padding:0">change</button>';
+  const finish = async j => {
+    ME = { tok: j.tok, role: 'parent' }; keep(); closeSheet();
+    await loadMine(); toast('Welcome!');
+    if (after) after(); else render();
+  };
+  if (step === 'phone') return sheet('<h2>Your mobile number</h2>' +
+    '<div class="sm">New here or booked before — just type your number.</div>' +
+    '<div><label class="f" for="pPhone">Mobile number (WhatsApp)</label><input class="in" id="pPhone" inputmode="tel" autocomplete="tel" value="' + esc(phone || '') + '"></div>' +
+    '<button class="btn block" id="aNext">Continue</button>', () => {
+      const next = async () => {
+        $('aNext').disabled = true;
+        try {
+          const r = await api({ action: 'phone_check', phone: $('pPhone').value });
+          authSheet(after, r.known ? 'pin' : 'new', $('pPhone').value.replace(/\D/g, '').slice(-10));
+        } catch (e) { $('aNext').disabled = false; toast(e.message, true); }
+      };
+      $('aNext').onclick = next;
+      $('pPhone').onkeydown = e => { if (e.key === 'Enter') next(); };
+    });
+  if (step === 'pin') return sheet('<h2>Welcome back! 👋</h2><div class="sm">' + esc(fmtPhone(phone)) + ' · ' + back + '</div>' +
+    '<div><label class="f" for="pPin">Your 4-digit PIN</label><input class="in pinin" id="pPin" inputmode="numeric" maxlength="4" type="password" autocomplete="current-password"></div>' +
+    '<button class="btn block" id="aGo">Sign in</button>' +
+    '<button class="linkbtn" id="aForgot">Forgot your PIN?</button>', () => {
+      $('aChg').onclick = () => authSheet(after, 'phone', phone);
+      $('aForgot').onclick = () => forgotPin(phone);
       $('aGo').onclick = async () => {
         $('aGo').disabled = true;
-        try {
-          const j = mode === 'new'
-            ? await api({ action: 'parent_signup', name: $('pName').value, phone: $('pPhone').value, child: $('cName').value, age: $('cAge').value, pin: $('pPin').value })
-            : await api({ action: 'parent_login', phone: $('pPhone').value, pin: $('pPin').value });
-          ME = { tok: j.tok, role: 'parent' }; keep(); closeSheet();
-          await loadMine(); toast('Welcome!');
-          if (after) after(); else vHome();
-        } catch (e) { $('aGo').disabled = false; toast(e.message, true); }
+        try { await finish(await api({ action: 'parent_login', phone: phone, pin: $('pPin').value })); }
+        catch (e) { $('aGo').disabled = false; toast(e.message === 'Wrong number or PIN' ? 'That PIN is not right. Try again, or tap “Forgot your PIN?”' : e.message, true); }
+      };
+      $('pPin').oninput = () => { if ($('pPin').value.replace(/\D/g, '').length === 4) $('aGo').click(); };
+    });
+  /* new family */
+  sheet('<h2>Nice to meet you! 🌟</h2><div class="sm">' + esc(fmtPhone(phone)) + ' · ' + back + '</div>' +
+    '<div><label class="f" for="pName">Your name (parent)</label><input class="in" id="pName" autocomplete="name"></div>' +
+    '<div class="row" style="gap:10px"><div class="grow"><label class="f" for="cName">Child’s name</label><input class="in" id="cName"></div>' +
+    '<div style="width:96px"><label class="f" for="cAge">Age</label><input class="in" id="cAge" inputmode="numeric"></div></div>' +
+    '<div><label class="f" for="pPin">Choose a 4-digit PIN</label><input class="in pinin" id="pPin" inputmode="numeric" maxlength="4" type="password" autocomplete="new-password"></div>' +
+    '<div class="sm">You only need the PIN on a new phone. This phone remembers you.</div>' +
+    '<button class="btn block" id="aGo">Continue</button>', () => {
+      $('aChg').onclick = () => authSheet(after, 'phone', phone);
+      $('aGo').onclick = async () => {
+        $('aGo').disabled = true;
+        try { await finish(await api({ action: 'parent_signup', name: $('pName').value, phone: phone, child: $('cName').value, age: $('cAge').value, pin: $('pPin').value })); }
+        catch (e) { $('aGo').disabled = false; toast(e.message, true); }
       };
     });
+}
+function forgotPin(phone) {
+  const name = firstName();
+  const wa = INFO.whatsapp ? 'https://wa.me/91' + INFO.whatsapp + '?text=' + encodeURIComponent('Hello ' + name + ', I forgot my kidspri PIN. My number is ' + fmtPhone(phone) + '. Please send me a sign-in link.') : '';
+  sheet('<h2>No problem!</h2><div>Ask ' + esc(name) + ' for a <b>sign-in link</b>. She sends it on WhatsApp — tap it and you are in. Then you can choose a new PIN.</div>' +
+    (wa ? '<a class="btn teal block" href="' + esc(wa) + '" target="_blank" rel="noopener">Ask ' + esc(name) + ' on WhatsApp</a>' : '<div class="sm">Message ' + esc(name) + ' and ask for a sign-in link.</div>') +
+    '<button class="btn ghost block" id="fpBack">Back</button>', () => { $('fpBack').onclick = () => authSheet(null, 'pin', phone); });
+}
+/* opening a sign-in link (kidspri.com/?k=…) */
+async function linkSignIn(code) {
+  try {
+    const j = await api({ action: 'link_login', code: code });
+    ME = { tok: j.tok, role: 'parent' }; keep(); await loadMine(); render();
+    sheet('<h2>✓ Signed in as ' + esc(j.name || 'you') + '</h2><div>Your classes are ready on this phone.</div>' +
+      '<div class="sm">Want a new PIN for other phones? You can choose one now.</div>' +
+      '<div><label class="f" for="npPin">New 4-digit PIN (optional)</label><input class="in pinin" id="npPin" inputmode="numeric" maxlength="4" type="password" autocomplete="new-password"></div>' +
+      '<button class="btn block" id="npGo">Save the new PIN</button><button class="btn ghost block" id="npNo">Not now</button>', () => {
+        $('npNo').onclick = closeSheet;
+        $('npGo').onclick = async () => {
+          try { await api({ action: 'set_pin', pin: $('npPin').value }); closeSheet(); toast('New PIN saved'); } catch (e) { toast(e.message, true); }
+        };
+      });
+  } catch (e) {
+    sheet('<h2>Sign-in link</h2><div>' + esc(e.message) + '</div><button class="btn block" id="lkIn">Sign in with your number</button>', () => { $('lkIn').onclick = () => authSheet(null); });
+  }
 }
 
 /* ----- parent: book a seat ----- */
@@ -987,17 +1093,18 @@ function classWhen(c) {
   return { day: d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' }), time: d.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' }) };
 }
 function classMsg(c) {
-  const w = classWhen(c), link = location.origin + location.pathname;
+  const w = classWhen(c), link = classLink(c);
   return '🌟 New live class on kidspri!\n' + (KIND_ICON[c.kind] || '⭐') + ' ' + c.title + '\n🗓 ' + w.day + ', ' + w.time + ' (' + c.minutes + ' min)\n' +
     (c.fee ? '₹' + c.fee : 'Free') + ' · only ' + c.seats + ' children, live with ' + (INFO.teacher || 'me') + '\n' + (c.about ? c.about + '\n' : '') + 'Book a seat: ' + link;
 }
 function shareSheet(c) {
   if (!c) return;
-  const link = location.origin + location.pathname;
-  sheet('<h2>📣 Share “' + esc(c.title) + '”</h2><div class="sm">Tell parents about this class. Every post carries the booking link.</div>' +
+  const link = classLink(c);
+  sheet('<h2>📣 Share “' + esc(c.title) + '”</h2><div class="sm">Tell parents about this class. The link opens this class’s own page, ready to book.</div>' +
     '<a class="btn teal block" id="shWa" href="https://wa.me/?text=' + encodeURIComponent(classMsg(c)) + '" target="_blank" rel="noopener">Share on WhatsApp</a>' +
     '<button class="btn block igbtn" id="shIg">Make an Instagram story</button>' +
-    '<button class="btn ghost block" id="shCopy">Copy the booking link</button>' +
+    '<button class="btn ghost block" id="shCopy">Copy this class’s link</button>' +
+    '<div class="mono sm" style="text-align:center;word-break:break-all">' + esc(link) + '</div>' +
     '<button class="btn ghost block" id="shNo">Later</button>', () => {
       $('shNo').onclick = closeSheet;
       $('shCopy').onclick = () => copyText(link, 'Link copied');
@@ -1062,11 +1169,11 @@ async function storySheet(c) {
   const cv = await drawStory(c);
   const blob = await new Promise(r => cv.toBlob(r, 'image/png'));
   const url = URL.createObjectURL(blob), file = 'kidspri-' + String(c.title).replace(/\W+/g, '-').toLowerCase().slice(0, 40) + '.png';
-  const link = location.origin + location.pathname;
+  const link = classLink(c);
   sheet('<h2>📸 Instagram story</h2><img src="' + url + '" alt="Story picture for ' + esc(c.title) + '" class="story">' +
     '<button class="btn block igbtn" id="stShare">Share to Instagram</button>' +
     '<a class="btn ghost block" href="' + url + '" download="' + file + '">Save picture</a>' +
-    '<button class="btn ghost block" id="stCopy">Copy the booking link</button>' +
+    '<button class="btn ghost block" id="stCopy">Copy this class’s link</button>' +
     '<ol class="paysteps"><li>Tap <b>Share to Instagram</b> and choose <b>Stories</b> (or save the picture and pick it in Instagram → Your story).</li>' +
     '<li>Tap the sticker button, add a <b>Link</b> sticker and paste the booking link.</li><li>Post it!</li></ol>' +
     '<button class="btn ghost block" id="stNo">Done</button>', () => {
@@ -1226,7 +1333,8 @@ async function vTKid() {
     '<div class="card"><div style="font-weight:800">Parent</div><div>' + esc(k.parent) + ' · <span class="mono">' + esc(k.phone) + '</span></div>' +
       '<div class="row" style="flex-wrap:wrap"><a class="btn ghost small" href="tel:+91' + esc(k.phone) + '">📞 Call</a>' +
       '<a class="btn ghost small" href="' + esc(wa) + '" target="_blank" rel="noopener">WhatsApp</a>' +
-      '<button class="btn teal small" id="kMsg">💬 Message</button></div></div>' +
+      '<button class="btn teal small" id="kMsg">💬 Message</button></div>' +
+      '<button class="btn ghost small" id="kLink" style="align-self:flex-start">🔗 Send a sign-in link</button></div>' +
     '<div class="card"><div style="font-weight:800">My notes</div><div class="sm">Only you can see these — parents never do.</div>' +
       '<textarea class="in" id="kNote" rows="3" maxlength="2000" placeholder="e.g. Shy at first, loves dancing. Try asking her to show her drawings."></textarea>' +
       '<button class="btn small" id="kNoteGo" style="align-self:flex-start">Save note</button>' +
@@ -1241,6 +1349,16 @@ async function vTKid() {
       : '<div class="sm">No classes booked yet.</div>') + '</div>';
   $('kBack').onclick = () => history.back();
   $('kMsg').onclick = () => go('tchat', { pid: k.parent_id, title: k.name, sub: k.parent });
+  $('kLink').onclick = async () => {
+    let r; try { r = await api({ action: 'login_link', parent_id: k.parent_id }); } catch (e) { return toast(e.message, true); }
+    const link = location.origin + location.pathname + '?k=' + r.code;
+    const text = 'Hello ' + k.parent + '! Here is your kidspri sign-in link for ' + k.name + ' 🌟\nTap to open — you’ll be signed in:\n' + link + '\n(Works once, for 7 days.)';
+    sheet('<h2>🔗 Sign-in link for ' + esc(k.parent) + '</h2><div class="sm">Tapping it signs them in on their phone — no PIN needed. It works once, for 7 days.</div>' +
+      '<a class="btn teal block" href="https://wa.me/91' + esc(k.phone) + '?text=' + encodeURIComponent(text) + '" target="_blank" rel="noopener">Send on WhatsApp</a>' +
+      '<button class="btn ghost block" id="lkCopy">Copy the link</button><button class="btn ghost block" id="lkNo">Close</button>', () => {
+        $('lkNo').onclick = closeSheet; $('lkCopy').onclick = () => copyText(link, 'Link copied');
+      });
+  };
   document.querySelectorAll('[data-sib]').forEach(b => b.onclick = () => go('tkid', { cid: b.dataset.sib }));
   $('kNoteGo').onclick = async () => {
     const body = $('kNote').value.trim(); if (!body) return toast('Write the note first', true);
@@ -2643,15 +2761,20 @@ function showVideoErr(m) {
   wireCanvas();
   await loadPublic();
   NAV_POP = true;            // the first screen is the bottom of the history, not a new step
-  if (location.hash === '#teacher' || ME.role === 'teacher') {
+  const qs = new URLSearchParams(location.search), linkCls = qs.get('class'), linkKey = qs.get('k');
+  if (linkKey) { try { history.replaceState(history.state, '', location.pathname + (linkCls ? '?class=' + encodeURIComponent(linkCls) : '')); } catch (e) {} }
+  if (location.hash === '#teacher' || (ME.role === 'teacher' && !linkCls)) {
     if (ME.role === 'teacher') { await loadTeacher(); go('tclasses'); } else go('tlogin');
   } else { await loadMine(); go('home'); }
   NAV_POP = false;
   try { history.replaceState({ screen: S.screen }, ''); } catch (e) {}
+  if (linkCls && S.screen === 'home') go('cls', { cid: linkCls });   // a shared class link: its page, with the front page behind it
+  if (linkKey) linkSignIn(linkKey);
   /* keep the page fresh: new bookings, confirmations, the Join button opening */
   const fresh = async () => {
     if (!$('live').classList.contains('hide') || $('overlay').innerHTML) return;
     if (S.screen === 'home') { await loadPublic(); await loadMine(); if (S.screen === 'home' && !$('overlay').innerHTML) ($('landing') ? fillHome() : vHome()); }
+    else if (S.screen === 'cls') { await loadPublic(); await loadMine(); if (S.screen === 'cls' && !$('overlay').innerHTML) vClass(); }
     else if (S.screen === 'tclasses' || S.screen === 'tpay' || S.screen === 'tmsgs') { await loadTeacher(); if (!$('overlay').innerHTML) render(); }
   };
   setInterval(fresh, 15000);
