@@ -250,6 +250,7 @@
   .kmark.ok{background:var(--teal-soft);color:var(--teal)} .kmark.no{background:var(--red-soft);color:var(--red)}
   .kmark.wait,.kmark.soon{background:var(--gold-soft);color:#8A5A00}
   .pinin{font-size:24px;letter-spacing:.5em;text-align:center}
+  .card.row{flex-direction:row;align-items:center}
   .clsmain{gap:14px}
   .clshero{border-radius:26px;padding:20px 18px;display:flex;flex-direction:column;gap:10px}
   .clsic{width:72px;height:72px;border-radius:22px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:40px}
@@ -410,7 +411,7 @@ function render() {
   const v = { home: vHome, cls: vClass, book: vBook, chat: vChat, tlogin: vTLogin, tclasses: vTClasses, tclass: vTClass, tpay: vTPay, tset: vTSet, tmsgs: vTMsgs, tchat: vTChat, tkids: vTKids, tkid: vTKid }[S.screen] || vHome;
   v();
   if ($('app') && !$('verTag')) {
-    const tag = '<div id="verTag" class="sm" style="text-align:center;opacity:.5;padding:14px 0 22px">kidspri · version 8-Oct-O</div>', last = $('app').lastElementChild;
+    const tag = '<div id="verTag" class="sm" style="text-align:center;opacity:.5;padding:14px 0 22px">kidspri · version 8-Oct-P</div>', last = $('app').lastElementChild;
     if (last && last.classList.contains('band')) last.insertAdjacentHTML('beforebegin', tag); else $('app').insertAdjacentHTML('beforeend', tag);
   }
 }
@@ -555,8 +556,10 @@ function fillHome() {
            (open ? 'Join the class now' : 'Join opens 15 min before') + '</button>' : '') +
         (b.status === 'rejected' ? '<div class="sm">The teacher could not find this payment. Book again with the right UPI reference, or message her.</div>' : '') +
         (b.status === 'pending' ? '<div class="sm">The teacher checks the payment and confirms your seat. Usually within a few hours.</div>' : '') +
+        ((b.status === 'confirmed' || b.status === 'pending') && startMs(b.class) > Date.now() ? '<button class="linkbtn" data-unbook="' + b.id + '" style="align-self:flex-start;min-height:32px;padding:0">Can’t make it? Cancel this seat</button>' : '') +
         '</div>';
     }).join('') + '</section>' : '');
+  document.querySelectorAll('[data-unbook]').forEach(x => x.onclick = () => cancelSeat(upcoming.find(b => b.id === x.dataset.unbook)));
   if ($('hChat')) $('hChat').onclick = () => go('chat');
   $('hClasses').innerHTML = CLASSES.length ? CLASSES.map(c => classCard(c, byClass[c.id] ? 'Booked for ' + byClass[c.id].join(', ') : '')).join('')
     : '<div class="empty">New classes are coming soon. ' + (INFO.whatsapp ? 'Message ' + esc(firstName()) + ' on WhatsApp to hear first.' : 'Check back in a day or two.') + '</div>';
@@ -566,6 +569,20 @@ function fillHome() {
   document.querySelectorAll('[data-join]').forEach(b => b.onclick = () => {
     const bk = mine.find(x => x.class.id === b.dataset.join); joinLive(bk.class, false);
   });
+}
+function cancelSeat(b) {
+  if (!b) return;
+  const name = firstName(), paid = b.class.fee > 0 && b.status === 'confirmed';
+  sheet('<h2>Cancel ' + esc(b.child) + '’s seat?</h2><div><b>' + esc(b.class.title) + '</b> · ' + esc(when(b.class.starts_at)) + '</div>' +
+    '<div class="sm">The seat goes to another child. ' + esc(name) + ' gets a message that you cancelled' + (paid ? ', and will sort out your refund' : '') + '. You can book again any time if there’s a seat.</div>' +
+    '<button class="btn red block" id="ubGo">Yes, cancel the seat</button><button class="btn ghost block" id="ubNo">Keep my seat</button>', () => {
+      $('ubNo').onclick = closeSheet;
+      $('ubGo').onclick = async () => {
+        $('ubGo').disabled = true;
+        try { await api({ action: 'cancel_booking', id: b.id }); closeSheet(); await Promise.all([loadMine(), loadPublic()]); render(); toast('Seat cancelled — ' + name + ' has been told'); }
+        catch (e) { $('ubGo').disabled = false; toast(e.message, true); }
+      };
+    });
 }
 function bookClass(c) {
   if (!c) return;
@@ -611,7 +628,8 @@ function vClass() {
     '<div class="row" style="gap:12px"><div class="ph" id="ph" style="width:56px;height:56px;font-size:24px">' + esc(name.charAt(0)) + '</div>' +
       '<div><div style="font-weight:800">Live with ' + esc(name) + '</div><div class="sm">At most a few children, so everyone gets a turn.</div></div></div>' +
     (mine.length ? '<div class="card"><div class="row"><div class="grow" style="font-weight:800">Booked for ' + esc(mine.map(b => b.child).join(', ')) + '</div>' + statusTag(mine[0]) + '</div>' +
-        (conf.length ? '<button class="btn teal block" id="cJoin"' + (roomOpen(c) ? '' : ' disabled') + '>' + (roomOpen(c) ? 'Join the class now' : 'Join opens 15 min before') + '</button>' : '') + '</div>' : '') +
+        (conf.length ? '<button class="btn teal block" id="cJoin"' + (roomOpen(c) ? '' : ' disabled') + '>' + (roomOpen(c) ? 'Join the class now' : 'Join opens 15 min before') + '</button>' : '') +
+        (startMs(c) > Date.now() ? mine.map(b => '<button class="linkbtn" data-unbook="' + b.id + '" style="align-self:flex-start;min-height:32px;padding:0">Can’t make it? Cancel ' + esc(b.child) + '’s seat</button>').join('') : '') + '</div>' : '') +
     '<button class="btn red block" id="cBook"' + (full ? ' disabled' : '') + '>' + (full ? 'This class is full' : mine.length ? 'Book another child' : 'Book a seat') + '</button>' +
     '<button class="btn ghost block" id="cShare">Share this class with a friend</button>' +
     '<div class="sm" style="text-align:center">Join from this page up to 15 minutes before. ' + esc(name) + ' lets each child in from a waiting room.</div>' +
@@ -620,6 +638,7 @@ function vClass() {
   $('cAll').onclick = () => go('home');
   $('cBook').onclick = () => bookClass(c);
   if ($('cJoin')) $('cJoin').onclick = () => joinLive(c, false);
+  document.querySelectorAll('[data-unbook]').forEach(x => x.onclick = () => cancelSeat(mine.find(b => b.id === x.dataset.unbook)));
   $('cShare').onclick = async () => {
     const text = (KIND_ICON[c.kind] || '⭐') + ' ' + c.title + ' — live small-group class for kids on kidspri. ' + w.day + ', ' + w.time + '. Book here: ' + classLink(c);
     try { if (navigator.share) { await navigator.share({ text: text }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
@@ -1001,6 +1020,7 @@ function vTClasses() {
         '<div class="row" style="flex-wrap:wrap">' +
           '<button class="btn teal small" data-start="' + c.id + '"' + (open ? '' : ' disabled') + '>' + (open ? 'Start class' : 'Start (15 min before)') + '</button>' +
           '<button class="btn ghost small" data-share="' + c.id + '">📣 Share</button>' +
+          (conf.length + pend.length ? '<button class="btn ghost small" data-kids="' + c.id + '">👥 Children</button>' : '') +
           (conf.length ? '<button class="btn ghost small" data-remind="' + c.id + '">📲 Remind</button>' : '') +
           '<button class="btn ghost small" data-edit="' + c.id + '">Edit</button>' +
           '<button class="btn ghost small" data-cancel="' + c.id + '" style="color:var(--red)">Cancel</button></div></div>';
@@ -1020,6 +1040,7 @@ function vTClasses() {
   document.querySelectorAll('[data-voices]').forEach(b => b.onclick = () => voiceSheet(b.dataset.voices, false));
   document.querySelectorAll('[data-remind]').forEach(b => b.onclick = () => remindSheet(OV.find(c => c.id === b.dataset.remind)));
   document.querySelectorAll('[data-share]').forEach(b => b.onclick = () => shareSheet(OV.find(c => c.id === b.dataset.share)));
+  document.querySelectorAll('[data-kids]').forEach(b => b.onclick = () => classKidsSheet(b.dataset.kids));
   document.querySelectorAll('[data-cancel]').forEach(b => b.onclick = () => {
     const c = OV.find(x => x.id === b.dataset.cancel);
     sheet('<h2>Cancel this class?</h2><div>' + esc(c.title) + '</div><div class="sm">It disappears for parents. Message the booked families and refund or move them to another class.</div>' +
@@ -1028,6 +1049,31 @@ function vTClasses() {
         $('cxGo').onclick = async () => { try { await api({ action: 'class_cancel', id: c.id }); closeSheet(); await loadTeacher(); vTClasses(); toast('Class cancelled'); } catch (e) { toast(e.message, true); } };
       });
   });
+}
+/* who is booked into a class; the teacher can take a child out (e.g. a trial booking) */
+function classKidsSheet(cid) {
+  const c = (OV || []).find(x => x.id === cid); if (!c) return closeSheet();
+  const list = c.bookings.filter(b => b.status === 'confirmed' || b.status === 'pending');
+  sheet('<h2>👥 ' + esc(c.title) + '</h2><div class="sm">' + esc(when(c.starts_at)) + ' · ' + list.length + ' of ' + c.seats + ' seats taken</div>' +
+    (list.length ? list.map(b => '<div class="card row"><div class="grow"><div style="font-weight:800">' + esc(b.child) + (b.age ? ' <span class="sm">· ' + b.age + '</span>' : '') + '</div>' +
+      '<div class="sm">' + esc(b.parent) + ' · ' + esc(b.phone) + '</div></div>' + statusTag(b) +
+      '<button class="btn ghost small" data-rm="' + b.id + '" style="color:var(--red)">Remove</button></div>').join('')
+      : '<div class="empty">Nobody is booked yet.</div>') +
+    '<button class="btn ghost block" id="ckNo">Close</button>', () => {
+      $('ckNo').onclick = closeSheet;
+      document.querySelectorAll('[data-rm]').forEach(x => x.onclick = () => {
+        const b = list.find(y => y.id === x.dataset.rm);
+        sheet('<h2>Remove ' + esc(b.child) + ' from this class?</h2><div class="sm">' + esc(c.title) + ' · ' + esc(when(c.starts_at)) + '</div>' +
+          '<div class="sm">The seat becomes free again. The child stays in Students.' + (c.fee && b.status === 'confirmed' ? ' If they paid, remember to refund them.' : '') + '</div>' +
+          '<button class="btn red block" id="rmGo">Remove</button><button class="btn ghost block" id="rmNo">Keep</button>', () => {
+            $('rmNo').onclick = () => classKidsSheet(cid);
+            $('rmGo').onclick = async () => {
+              try { await api({ action: 'remove_booking', id: b.id }); await loadTeacher(); render(); toast(b.child + ' removed from the class'); classKidsSheet(cid); }
+              catch (e) { toast(e.message, true); }
+            };
+          });
+      });
+    });
 }
 /* a ready-written WhatsApp reminder for each booked family; she taps Send for each one */
 function remindSheet(c) {
@@ -1346,8 +1392,21 @@ async function vTKid() {
       '<div class="grow"><div style="font-weight:700">' + esc(c.title) + '</div><div class="sm">' + esc(when(c.at)) +
         (c.status === 'pending' ? ' · payment being checked' : !c.came && new Date(c.at) > new Date() ? ' · coming up' : !c.came ? ' · missed' : '') + '</div></div>' +
       '<div class="sm" style="color:var(--ink);white-space:nowrap">' + (c.stars ? '⭐ ' + c.stars + ' ' : '') + (c.points ? '🏆 ' + c.points : '') + '</div></div>').join('')
-      : '<div class="sm">No classes booked yet.</div>') + '</div>';
+      : '<div class="sm">No classes booked yet.</div>') + '</div>' +
+    '<button class="btn ghost block" id="kDel" style="color:var(--red)">Delete this student</button>';
   $('kBack').onclick = () => history.back();
+  $('kDel').onclick = () => sheet('<h2>Delete ' + esc(k.name) + '?</h2>' +
+    '<div>This removes ' + esc(k.name) + '’s bookings, stars, quiz points and your notes. It cannot be undone.</div>' +
+    (r.siblings.length ? '<div class="sm">' + esc(k.parent) + '’s account stays, because ' + esc(r.siblings.map(s => s.name).join(', ')) + ' is still with you.</div>'
+                       : '<div class="sm">' + esc(k.name) + ' is ' + esc(k.parent) + '’s only child, so the family’s account and messages are removed too.</div>') +
+    '<button class="btn red block" id="kdGo">Delete</button><button class="btn ghost block" id="kdNo">Keep</button>', () => {
+      $('kdNo').onclick = closeSheet;
+      $('kdGo').onclick = async () => {
+        $('kdGo').disabled = true;
+        try { await api({ action: 'student_delete', child_id: cid }); closeSheet(); toast(k.name + ' deleted'); await loadUnread(); go('tkids'); }
+        catch (e) { $('kdGo').disabled = false; toast(e.message, true); }
+      };
+    });
   $('kMsg').onclick = () => go('tchat', { pid: k.parent_id, title: k.name, sub: k.parent });
   $('kLink').onclick = async () => {
     let r; try { r = await api({ action: 'login_link', parent_id: k.parent_id }); } catch (e) { return toast(e.message, true); }
