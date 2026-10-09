@@ -180,6 +180,11 @@
   .kitrow img{width:48px;height:36px;object-fit:cover;border-radius:6px;flex:0 0 auto}
   .kitrow.share{background:var(--teal-soft);border-color:transparent;font-weight:400}
   .kitchips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+  .wkgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .wkcell{border:1.5px solid var(--line);border-radius:12px;background:#fff;padding:6px;display:flex;flex-direction:column;gap:4px;cursor:pointer;min-width:0}
+  .wkcell canvas{width:100%!important;height:auto!important;border-radius:8px}
+  .wkname{font-weight:800;font-size:14px;text-align:left}
+  #wkBig canvas{border:1px solid var(--line);border-radius:10px;max-width:100%}
   .tb.on{background:#fff;color:var(--ink)}
   .tb.gold{background:var(--gold);color:var(--ink)}
   .thumb{border-radius:10px;border:1.5px solid var(--line);max-width:100%}
@@ -205,10 +210,13 @@
   #musicBar .tb:disabled{opacity:.5}
   #match{position:absolute;inset:0;z-index:6;background:#0A0F1F;display:flex;flex-direction:column}
   .mhead{color:#fff;font-weight:800;padding:8px 12px 0;font-family:var(--fd);font-size:18px}
-  .mgridp{flex:1;min-height:0;display:grid;gap:8px;padding:8px 10px;align-content:center;overflow:auto}
+  .mgridp{flex:1;min-height:0;display:grid;gap:8px;padding:8px 10px;align-content:safe center;grid-auto-rows:max-content;overflow:auto}
   .mcell{min-height:clamp(96px,17vh,170px);background:#fff;border:3px solid transparent;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px;gap:4px;color:var(--ink);font:inherit}
   .mcell:disabled{opacity:1}
-  .mcell img{width:100%;max-width:140px;aspect-ratio:1;object-fit:cover;border-radius:10px}
+  .mcell{min-width:0;overflow:hidden}
+  .mcell img{width:var(--pic,96px);height:var(--pic,96px);flex:0 0 auto;object-fit:cover;border-radius:10px;display:block}
+  .mgridp .mcell{min-height:0}
+  .mgridp .memo{font-size:min(var(--pic,72px),72px);line-height:1}
   .memo{font-size:clamp(40px,12vw,72px);line-height:1.1}
   .mword{font-weight:800;font-size:14px;border-bottom:2px dashed #C9CEDD;min-width:70%;text-align:center;padding-bottom:2px}
   .mcell.got .mword{color:var(--teal);border-bottom-color:var(--teal)}
@@ -451,7 +459,7 @@ function render() {
   const v = { home: vHome, cls: vClass, book: vBook, chat: vChat, tlogin: vTLogin, tclasses: vTClasses, tclass: vTClass, tpay: vTPay, tset: vTSet, tmsgs: vTMsgs, tchat: vTChat, tkids: vTKids, tkid: vTKid, tmat: vTMat, try: vTry }[S.screen] || vHome;
   v();
   if ($('app') && !$('verTag')) {
-    const tag = '<div id="verTag" class="sm" style="text-align:center;opacity:.5;padding:14px 0 22px">kidspri · version 9-Oct-T</div>', last = $('app').lastElementChild;
+    const tag = '<div id="verTag" class="sm" style="text-align:center;opacity:.5;padding:14px 0 22px">kidspri · version 9-Oct-U</div>', last = $('app').lastElementChild;
     if (last && last.classList.contains('band')) last.insertAdjacentHTML('beforebegin', tag); else $('app').insertAdjacentHTML('beforeend', tag);
   }
 }
@@ -1947,7 +1955,7 @@ function liveReset(c, host) {
 async function joinLive(c, host) {
   if (LIVE) return;
   IS_HOST = host; LIVE = liveReset(c, host);
-  BOARD = { on: false, all: false, title: '', strokes: [], bg: null }; MYPAD = { strokes: [] }; VIEW = null; GAME = null; GSHOW = { pos: {}, busy: false, hidden: false };
+  BOARD = { on: false, all: false, title: '', strokes: [], bg: null }; MYPAD = { strokes: [] }; WORK = null; VIEW = null; GAME = null; GSHOW = { pos: {}, busy: false, hidden: false };
   MUSIC = null; MATCH = null;
   $('live').classList.remove('hide'); $('liveTitle').textContent = (c.status === 'practice' ? '🧪 ' : '') + c.title;
   try { history.pushState({ live: 1, screen: S.screen }, ''); } catch (e) {}
@@ -2055,6 +2063,7 @@ function syncTo(sid) {
   if (GAME) post({ kind: 'game', g: GAME }, sid);
   if (BOARD.bg) post({ kind: 'bimg', id: BOARD.bg.id }, sid);
   if (MATCH) post({ kind: 'match', id: MATCH.id, sid: MATCH.set.id, po: MATCH.po }, sid);
+  if (WORK) post({ kind: 'work', id: WORK.id, sheet: WORK.sheet, title: WORK.title }, sid);
   if (MUSIC && MUSIC.el) {
     post({ kind: 'mload', id: MUSIC.id, title: MUSIC.title }, sid);
     if (MUSIC.state === 'playing') post({ kind: 'mplay', id: MUSIC.id, pos: MUSIC.el.currentTime, mic: MUSIC.kidsMic, title: MUSIC.title }, sid);
@@ -2131,6 +2140,9 @@ function onMsg(m, from) {
     case 'mprog': gotProg(m, sender); break;
     case 'mshow': if (!LIVE.host && MATCH && MATCH.id === m.id) { MATCH.show = true; renderMatch(); } break;
     case 'bimg': if (!mine) gotBoardImg(m); break;
+    case 'work': if (!LIVE.host) gotWork(m); break;
+    case 'wst': if (LIVE.host) gotChunk(m, all => workStrokes(m, sender, all)); break;
+    case 'wundo': case 'wclear': case 'wdone': if (LIVE.host) workEvent(m, sender); break;
     case 'pad': if (LIVE.host) gotChunk(m, all => { const who = m.from || sender || 'A child'; LIVE.pads[who] = { strokes: all, at: Date.now() }; LIVE.padsNew++; toast('🎨 ' + who + ' sent a drawing'); renderStrip(); }); break;
   }
 }
@@ -2148,6 +2160,7 @@ function renderStrip() {
     LIVE.hands.forEach((n, i) => ch.push('<button class="schip" data-hand="' + i + '">✋ ' + esc(n) + '</button>'));
     if (LIVE.voicesNew) ch.push('<button class="schip" data-s="voices">🎙 ' + LIVE.voicesNew + ' new</button>');
     if (LIVE.padsNew) ch.push('<button class="schip" data-s="pads">🎨 ' + LIVE.padsNew + ' new</button>');
+    if (WORK) { const k = Object.values(WORK.kids), d = k.filter(x => x.done).length; ch.push('<button class="schip gold" data-s="work">📄 Worksheets' + (k.length ? ' · ' + d + '/' + k.length + ' done' : '') + '</button>'); }
     if (LIVE.chatFrom.length) ch.push('<button class="schip gold" data-s="chats">💬 ' + (LIVE.chatFrom.length === 1 ? esc(LIVE.chatFrom[0]) : LIVE.chatFrom.length + ' messages') + '</button>');
   } else {
     const pts = LIVE.scores[LIVE.name] || 0;
@@ -2169,6 +2182,7 @@ function renderStrip() {
     else if (s === 'door') doorSheet();
     else if (s === 'voices') voiceSheet(LIVE.cls.id, true);
     else if (s === 'pads') padsSheet();
+    else if (s === 'work') workSheet();
     else if (s === 'voice') { if (LIVE.rec) { LIVE.rec.min = false; renderVoiceCard(); } }
     else if (s === 'chats') liveChatList();
     else if (s === 'kchat') liveChat(null, firstName());
@@ -2466,19 +2480,21 @@ function renderBoard() {
   const sizes = [0, 1, 2].map(i => '<button class="tb' + (TOOL.w === i ? ' on' : '') + '" data-w="' + i + '" aria-label="Line size ' + (i + 1) + '"><span style="display:inline-block;border-radius:50%;background:currentColor;width:' + (6 + i * 6) + 'px;height:' + (6 + i * 6) + 'px"></span></button>').join('');
   const tools = edit ? sw + sizes + '<button class="tb' + (TOOL.w === 3 ? ' on' : '') + '" id="bEr">Eraser</button><button class="tb" id="bUndo">↶ Undo</button>' : '';
   let right = '';
-  if (VIEW === 'mine') right = '<button class="tb" id="bClr">Clear</button><button class="tb gold" id="bSend">Send to teacher</button><button class="tb" id="bClose">✕</button>';
+  if (VIEW === 'mine' && MYPAD.work) right = '<button class="tb" id="bClr">Clear</button><button class="tb gold" id="bDone">' + (MYPAD.done ? 'Done ✓' : 'I’m done ✓') + '</button><button class="tb" id="bClose">✕</button>';
+  else if (VIEW === 'mine') right = '<button class="tb" id="bClr">Clear</button><button class="tb gold" id="bSend">Send to teacher</button><button class="tb" id="bClose">✕</button>';
   else if (IS_HOST) right = '<label class="tb" for="bPic" style="display:inline-flex;align-items:center;cursor:pointer">🖼 Picture</label><input type="file" id="bPic" accept="image/*" class="hide">' +
     (BOARD.bg ? '<button class="tb" id="bNoPic">✕ Picture</button>' : '') + '<button class="tb" id="bClr">Clear</button><button class="tb' + (BOARD.all ? ' gold' : '') + '" id="bAll">' + (BOARD.all ? 'Kids drawing: ON' : 'Let kids draw') + '</button><button class="tb" id="bClose">Close board</button>';
   else right = (BOARD.all ? '' : '<span class="sm" style="color:#C9CEDD;padding:0 6px">' + esc(BOARD.title || 'Teacher’s board') + '</span>') + '<button class="tb" id="bHide">Big video</button>';
   $('bTools').innerHTML = tools + '<span class="grow"></span>' + right;
-  $('bTitle').textContent = VIEW === 'mine' ? 'My drawing pad' : (BOARD.title || (IS_HOST ? 'Board — everyone sees this' : ''));
+  $('bTitle').textContent = VIEW === 'mine' ? (MYPAD.work ? '📄 ' + (MYPAD.title || 'My worksheet') + ' · just for you (' + firstName() + ' can see it)' : 'My drawing pad') : (BOARD.title || (IS_HOST ? 'Board — everyone sees this' : ''));
   $('bTools').querySelectorAll('[data-c]').forEach(b => b.onclick = () => { TOOL.c = +b.dataset.c; if (TOOL.w === 3) TOOL.w = 1; renderBoard(); });
   $('bTools').querySelectorAll('[data-w]').forEach(b => b.onclick = () => { TOOL.w = +b.dataset.w; renderBoard(); });
   if ($('bEr')) $('bEr').onclick = () => { TOOL.w = 3; renderBoard(); };
   if ($('bUndo')) $('bUndo').onclick = undo;
   if ($('bPic')) $('bPic').onchange = () => { const f = $('bPic').files[0]; if (f) boardPicture(f); };
   if ($('bNoPic')) $('bNoPic').onclick = () => { setBoardBg(''); post({ kind: 'bimg', id: '' }); };
-  if ($('bClr')) $('bClr').onclick = () => { if (VIEW === 'mine') MYPAD.strokes = []; else { BOARD.strokes = []; post({ kind: 'bclear' }); } drawAll(); };
+  if ($('bDone')) $('bDone').onclick = () => { MYPAD.done = true; post({ kind: 'wdone', w: MYPAD.work, from: LIVE.name }, teacherSid()); toast('Well done! ' + firstName() + ' can see it ✓'); renderBoard(); };
+  if ($('bClr')) $('bClr').onclick = () => { if (VIEW === 'mine' && MYPAD.work) post({ kind: 'wclear', w: MYPAD.work, from: LIVE.name }, teacherSid()); if (VIEW === 'mine') MYPAD.strokes = []; else { BOARD.strokes = []; post({ kind: 'bclear' }); } drawAll(); };
   if ($('bSend')) $('bSend').onclick = async () => {
     if (!MYPAD.strokes.length) return toast('Draw something first', true);
     await sendChunks('pad', MYPAD.strokes, teacherSid(), { from: LIVE.name }); toast('Sent to the teacher! 🎨');
@@ -2523,7 +2539,7 @@ function flush() {
   post({ kind: 'st', id: DRAWING.id, c: DRAWING.c, w: DRAWING.w, p: PENDING }); PENDING = [];
 }
 function undo() {
-  if (VIEW === 'mine') { MYPAD.strokes.pop(); return drawAll(); }
+  if (VIEW === 'mine') { const s = MYPAD.strokes.pop(); if (s && MYPAD.work) post({ kind: 'wundo', w: MYPAD.work, from: LIVE.name, id: s.id }, teacherSid()); return drawAll(); }
   const id = MYIDS.pop(); if (!id) return;
   BOARD.strokes = BOARD.strokes.filter(s => s.id !== id); post({ kind: 'bundo', id: id }); drawAll();
 }
@@ -2544,7 +2560,11 @@ function wireCanvas() {
     const from = p.length; p.push(pt[0], pt[1]); paint(ctx2(), DRAWING, from);
     if (VIEW === 'shared') { PENDING.push(pt[0], pt[1]); if (!FLUSH_T) FLUSH_T = setTimeout(flush, 90); }
   });
-  const end = () => { if (!DRAWING) return; if (FLUSH_T) { clearTimeout(FLUSH_T); } flush(); DRAWING = null; };
+  const end = () => {
+    if (!DRAWING) return; if (FLUSH_T) { clearTimeout(FLUSH_T); } flush();
+    if (VIEW === 'mine' && MYPAD.work && LIVE) sendChunks('wst', [DRAWING], teacherSid(), { w: MYPAD.work, from: LIVE.name });
+    DRAWING = null;
+  };
   cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
   window.addEventListener('resize', () => { if (!$('board').classList.contains('hide')) fitBoard(); if (!$('game').classList.contains('hide')) fitGame(); });
 }
@@ -3269,6 +3289,15 @@ function kidTap(kind, i) {
     try { if (navigator.vibrate) navigator.vibrate(60); } catch (e) {}
   }
 }
+/* pictures as big as the space allows, so each one sits inside its card on any phone */
+function fitMatch() {
+  const g = document.querySelector('#match .mgridp'); if (!g || !MATCH) return;
+  const n = MATCH.set.items.length, cols = n <= 4 ? 2 : 3, rows = Math.ceil(n / cols);
+  const colW = (g.clientWidth - 20 - (cols - 1) * 8) / cols, rowH = (g.clientHeight - 16 - (rows - 1) * 8) / rows;
+  const pic = Math.floor(Math.max(44, Math.min(150, colW - 22, rowH - 44)));
+  g.style.setProperty('--pic', pic + 'px');
+}
+window.addEventListener('resize', () => { if (MATCH && !$('match').classList.contains('hide')) fitMatch(); });
 function renderMatch() {
   const el = $('match'), M = MATCH;
   if (!M || !LIVE || M.hidden) { el.classList.add('hide'); el.innerHTML = ''; setActMode(); return; }
@@ -3295,7 +3324,8 @@ function renderMatch() {
         '<div class="sm" style="text-align:center">' + (M.sel ? (M.sel.k === 'w' ? 'Now tap its picture' : 'Now tap its word') : 'Tap a word, then its picture') + '</div>';
     below += '<div class="row"><span class="grow"></span><button class="tb" id="maHide">Big video</button></div>';
   }
-  el.innerHTML = '<div class="mhead">🧩 ' + esc(M.set.title) + '</div><div class="mgridp" style="grid-template-columns:repeat(' + (n <= 4 ? 2 : 3) + ',1fr)">' + pics + '</div><div class="gpanel">' + below + '</div>';
+  el.innerHTML = '<div class="mhead">🧩 ' + esc(M.set.title) + '</div><div class="mgridp" style="grid-template-columns:repeat(' + (n <= 4 ? 2 : 3) + ',minmax(0,1fr))">' + pics + '</div><div class="gpanel">' + below + '</div>';
+  fitMatch();
   el.querySelectorAll('[data-p]').forEach(b => b.onclick = () => kidTap('p', +b.dataset.p));
   el.querySelectorAll('[data-w]').forEach(b => b.onclick = () => kidTap('w', +b.dataset.w));
   if ($('maEnd')) $('maEnd').onclick = matchEnd;
@@ -3346,7 +3376,7 @@ async function gotBoardImg(m) {
   try { const r = await api({ action: 'media_get', id: m.id }); setBoardBg(m.id, r.data); } catch (e) {}
 }
 function paintBg(x) {
-  const b = BOARD.bg; if (!b || VIEW !== 'shared') return;
+  const b = VIEW === 'mine' ? MYPAD.bg : VIEW === 'shared' ? BOARD.bg : null; if (!b) return;
   const s = Math.min(BW / b.img.naturalWidth, BH / b.img.naturalHeight), w = b.img.naturalWidth * s, h = b.img.naturalHeight * s;
   x.drawImage(b.img, (BW - w) / 2, (BH - h) / 2, w, h);
 }
@@ -3473,7 +3503,7 @@ function kitRow() {
 }
 function wireKitRow() {
   const k = LIVE && LIVE.kit; if (!k) return;
-  document.querySelectorAll('[data-ks]').forEach(b => b.onclick = () => { closeSheet(); putSheet(k.sheets[+b.dataset.ks]); });
+  document.querySelectorAll('[data-ks]').forEach(b => b.onclick = () => sheetChoice(k.sheets[+b.dataset.ks]));
   document.querySelectorAll('[data-kg]').forEach(b => b.onclick = () => { closeSheet(); musicLoad(k.songs[+b.dataset.kg]); });
   document.querySelectorAll('[data-ka]').forEach(b => b.onclick = () => { closeSheet(); matchStart(k.acts[+b.dataset.ka].id); });
 }
@@ -3486,17 +3516,17 @@ async function putSheet(x) {
 }
 async function sheetsSheet(inClass) {
   let list = []; try { list = (await api({ action: 'sheet_list' })).sheets || []; } catch (e) { return toast(e.message, true); }
-  sheet('<h2>📄 Worksheets</h2><div class="sm">Tap one to put it on the board for everyone. Turn on “Let kids draw” so children can write on it.</div>' +
+  sheet('<h2>📄 Worksheets</h2><div class="sm">Tap one: give each child their own copy, or put one on the board for everyone.</div>' +
     (list.length ? '<div class="shgrid">' + list.map((x, i) => '<div class="shcell"><button class="shpic" data-sp="' + i + '"><img data-thumb="' + x.id + '" alt=""></button><div class="shname">' + esc(x.title) + '</div></div>').join('') + '</div>'
       : '<div class="empty">No worksheets saved yet.</div>') +
     '<label class="btn ghost block" for="wsFile" style="cursor:pointer">+ Take a photo / add from this phone</label><input type="file" id="wsFile" accept="image/*" class="hide">' +
     '<button class="btn ghost block" id="wsNo">Close</button>', () => {
       fillThumbs();
       $('wsNo').onclick = closeSheet;
-      document.querySelectorAll('[data-sp]').forEach(b => b.onclick = () => { closeSheet(); putSheet(list[+b.dataset.sp]); });
+      document.querySelectorAll('[data-sp]').forEach(b => b.onclick = () => sheetChoice(list[+b.dataset.sp]));
       $('wsFile').onchange = async () => {
         const f = $('wsFile').files[0]; if (!f) return;
-        try { const id = await addSheet(f); closeSheet(); putSheet({ id: id, title: 'Worksheet' }); } catch (e) { toast(e.message, true); }
+        try { const id = await addSheet(f); sheetChoice({ id: id, title: 'Worksheet' }); } catch (e) { toast(e.message, true); }
       };
     });
 }
@@ -3509,6 +3539,113 @@ async function classSheets(c) {
     '<div class="shgrid">' + list.map((x, i) => '<div class="shcell"><button class="shpic" data-cs="' + i + '"><img data-thumb="' + x.id + '" alt=""></button><div class="shname">' + esc(x.title) + '</div></div>').join('') + '</div></div>';
   fillThumbs();
   document.querySelectorAll('[data-cs]').forEach(b => b.onclick = () => viewSheet(list[+b.dataset.cs]));
+}
+
+
+/* ================= A WORKSHEET FOR EACH CHILD =================
+   The teacher gives every child their own copy. It opens on the child's pad; only the
+   child (and the teacher) see what they write. Each finished line goes to the teacher. */
+let WORK = null;
+function sheetChoice(x) {
+  sheet('<h2>📄 ' + esc(x.title) + '</h2>' +
+    '<button class="btn teal block" id="scOwn">✏️ Each child gets their own copy</button><div class="sm">Every child works on it alone. You see all of them live.</div>' +
+    '<button class="btn ghost block" id="scBoard">👥 Together on the board</button><div class="sm">One shared sheet. Everyone sees everyone’s lines.</div>' +
+    '<button class="btn ghost block" id="scNo">Back</button>', () => {
+      $('scNo').onclick = closeSheet;
+      $('scOwn').onclick = () => { closeSheet(); giveSheet(x); };
+      $('scBoard').onclick = () => { closeSheet(); putSheet(x); };
+    });
+}
+async function giveSheet(x) {
+  let d; try { d = await sheetData(x.id); } catch (e) { return toast(e.message, true); }
+  const img = new Image(); img.src = d;
+  WORK = { id: rid(), sheet: x.id, title: x.title, img: img, kids: {} };
+  kidNames().forEach(n => WORK.kids[n] = { strokes: [], done: false, at: 0 });
+  post({ kind: 'work', id: WORK.id, sheet: x.id, title: x.title });
+  renderStrip(); toast('Each child has “' + x.title + '” on their pad');
+  img.onload = () => workSheet();
+}
+async function gotWork(m) {
+  if (!m.id) { if (MYPAD.work) { MYPAD = { strokes: [] }; if (VIEW === 'mine') { VIEW = BOARD.on && !LIVE.boardHidden ? 'shared' : null; } renderBoard(); renderStrip(); } return; }
+  if (MYPAD.work === m.id) return;
+  let d; try { d = await sheetData(m.sheet); } catch (e) { return; }
+  const img = new Image();
+  img.onload = () => {
+    if (!LIVE) return;
+    MYPAD = { strokes: [], work: m.id, title: String(m.title || ''), bg: { id: m.sheet, img: img }, done: false };
+    VIEW = 'mine'; LIVE.boardHidden = false; renderBoard(); renderStrip();
+    toast('📄 ' + firstName() + ' gave you a worksheet');
+  };
+  img.src = d;
+}
+function workKid(name) { if (!WORK.kids[name]) WORK.kids[name] = { strokes: [], done: false, at: 0 }; return WORK.kids[name]; }
+function workStrokes(m, who, all) {
+  if (!WORK || m.w !== WORK.id) return;
+  const k = workKid(m.from || who);
+  all.forEach(s => {                                   // a long line comes in pieces: id_0, id_398, …
+    const base = String(s.id).replace(/_\d+$/, ''), old = k.strokes.find(z => z.id === base);
+    if (old) old.p = old.p.concat((s.p || []).slice(2)); else k.strokes.push({ id: base, c: s.c, w: s.w, p: (s.p || []).slice() });
+  });
+  k.at = Date.now(); workRefresh(m.from || who);
+}
+function workEvent(m, who) {
+  if (!WORK || m.w !== WORK.id) return;
+  const n = m.from || who, k = workKid(n);
+  if (m.kind === 'wundo') k.strokes = k.strokes.filter(s => s.id !== m.id);
+  if (m.kind === 'wclear') k.strokes = [];
+  if (m.kind === 'wdone') { k.done = true; toast('📄 ' + n + ' finished the worksheet'); }
+  workRefresh(n); renderStrip();
+}
+function workCanvas(k, w) {
+  const h = Math.round(w * BH / BW), dpr = window.devicePixelRatio || 1, cv = document.createElement('canvas');
+  cv.width = w * dpr; cv.height = h * dpr; cv.style.width = w + 'px'; cv.style.height = h + 'px'; cv.className = 'thumb';
+  const x = cv.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, cv.width, cv.height);
+  x.setTransform(w * dpr / BW, 0, 0, w * dpr / BW, 0, 0); x.lineCap = 'round'; x.lineJoin = 'round';
+  const im = WORK.img; if (im && im.naturalWidth) { const s = Math.min(BW / im.naturalWidth, BH / im.naturalHeight), iw = im.naturalWidth * s, ih = im.naturalHeight * s; x.drawImage(im, (BW - iw) / 2, (BH - ih) / 2, iw, ih); }
+  k.strokes.forEach(s => paint(x, s, 0)); return cv;
+}
+let WORK_RAF = 0;
+function workRefresh(name) {
+  if (WORK_RAF) return;
+  WORK_RAF = requestAnimationFrame(() => {
+    WORK_RAF = 0; if (!WORK) return;
+    if ($('wkGrid')) fillWorkGrid();
+    if ($('wkBig') && $('wkBig').dataset.n) { const n = $('wkBig').dataset.n, k = WORK.kids[n]; if (k) { $('wkBig').innerHTML = ''; $('wkBig').appendChild(workCanvas(k, Math.min(window.innerWidth - 48, 700))); } }
+  });
+}
+function fillWorkGrid() {
+  const names = Object.keys(WORK.kids), w = Math.floor(Math.min(window.innerWidth - 60, 640) / 2);
+  $('wkGrid').innerHTML = names.length ? names.map((n, i) => '<button class="wkcell" data-wk="' + i + '"><div id="wkc' + i + '"></div><div class="wkname">' + (WORK.kids[n].done ? '✓ ' : '') + esc(n) + '</div></button>').join('') : '<div class="empty">No children in class yet.</div>';
+  names.forEach((n, i) => $('wkc' + i).appendChild(workCanvas(WORK.kids[n], w)));
+  document.querySelectorAll('[data-wk]').forEach(b => b.onclick = () => workBig(names[+b.dataset.wk]));
+}
+function workSheet() {
+  if (!WORK) return;
+  const k = Object.values(WORK.kids), d = k.filter(x => x.done).length;
+  sheet('<h2>📄 ' + esc(WORK.title) + '</h2><div class="sm">Each child’s own copy, live. ' + d + ' of ' + k.length + ' done. Tap one to see it big.</div>' +
+    '<div class="wkgrid" id="wkGrid"></div>' +
+    '<button class="btn ghost block" id="wkEnd" style="color:var(--red)">End the worksheet</button><button class="btn ghost block" id="wkNo">Close</button>', () => {
+      fillWorkGrid();
+      $('wkNo').onclick = closeSheet;
+      $('wkEnd').onclick = () => { if (!confirm('End the worksheet? It closes on the children’s phones.')) return; WORK = null; post({ kind: 'work', id: '' }); closeSheet(); renderStrip(); };
+    });
+}
+function workBig(n) {
+  const k = WORK && WORK.kids[n]; if (!k) return;
+  sheet('<h2>' + (k.done ? '✓ ' : '') + esc(n) + '</h2><div id="wkBig" data-n="' + esc(n) + '"></div>' +
+    '<div class="row" style="gap:8px"><button class="btn small grow" id="wbStar">⭐ Star</button><button class="btn teal small grow" id="wbShow">Show everyone</button></div>' +
+    '<button class="btn ghost block" id="wbBack">‹ All children</button>', () => {
+      $('wkBig').appendChild(workCanvas(k, Math.min(window.innerWidth - 48, 700)));
+      $('wbBack').onclick = workSheet;
+      $('wbStar').onclick = () => { send({ kind: 'star', to: n }); toast('⭐ sent to ' + n); };
+      $('wbShow').onclick = () => {
+        BOARD.strokes = k.strokes.map((s, j) => ({ id: 'w' + rid() + j, c: s.c, w: s.w, p: s.p.slice() }));
+        BOARD.on = true; BOARD.all = false; BOARD.title = n + '’s worksheet'; VIEW = 'shared'; MYIDS = [];
+        setBoardBg(WORK.sheet, WORK.img.src); post({ kind: 'bimg', id: WORK.sheet });
+        post({ kind: 'board', on: true, all: false, title: BOARD.title }); sendChunks('bload', BOARD.strokes, '*');
+        closeSheet(); renderBoard(); renderStrip();
+      };
+    });
 }
 
 /* ================= PRACTICE ROOM: try every class tool without a class ================= */
