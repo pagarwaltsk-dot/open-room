@@ -168,6 +168,18 @@
   .sw{width:34px;height:34px;border-radius:50%;border:3px solid #2A3352;flex:0 0 auto}
   .sw.on{border-color:#fff;box-shadow:0 0 0 2px var(--gold)}
   .tb{border:0;border-radius:10px;min-height:38px;padding:0 10px;background:#222A44;color:#fff;font-weight:800;font-size:13px;white-space:nowrap;flex:0 0 auto}
+  .tb.lt{background:#EEF1F7;color:var(--ink);min-height:34px}
+  .shgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+  .shcell{display:flex;flex-direction:column;gap:5px;min-width:0}
+  .shpic{border:1.5px solid var(--line);border-radius:12px;background:#fff;padding:0;aspect-ratio:4/3;overflow:hidden;cursor:pointer}
+  .shpic img{width:100%;height:100%;object-fit:cover;display:block}
+  .shname{font-weight:700;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .shbig{width:100%;border-radius:12px;border:1px solid var(--line);max-height:60vh;object-fit:contain;background:#fff}
+  .kitrow{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1.5px solid var(--line);border-radius:12px;background:#fff;font-weight:700;cursor:pointer}
+  .kitrow input{width:22px;height:22px;flex:0 0 auto;accent-color:var(--teal)}
+  .kitrow img{width:48px;height:36px;object-fit:cover;border-radius:6px;flex:0 0 auto}
+  .kitrow.share{background:var(--teal-soft);border-color:transparent;font-weight:400}
+  .kitchips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
   .tb.on{background:#fff;color:var(--ink)}
   .tb.gold{background:var(--gold);color:var(--ink)}
   .thumb{border-radius:10px;border:1.5px solid var(--line);max-width:100%}
@@ -436,10 +448,10 @@ window.addEventListener('popstate', e => {
   NAV_POP = true; try { go(to, st.x || undefined); } finally { NAV_POP = false; }
 });
 function render() {
-  const v = { home: vHome, cls: vClass, book: vBook, chat: vChat, tlogin: vTLogin, tclasses: vTClasses, tclass: vTClass, tpay: vTPay, tset: vTSet, tmsgs: vTMsgs, tchat: vTChat, tkids: vTKids, tkid: vTKid }[S.screen] || vHome;
+  const v = { home: vHome, cls: vClass, book: vBook, chat: vChat, tlogin: vTLogin, tclasses: vTClasses, tclass: vTClass, tpay: vTPay, tset: vTSet, tmsgs: vTMsgs, tchat: vTChat, tkids: vTKids, tkid: vTKid, tmat: vTMat, try: vTry }[S.screen] || vHome;
   v();
   if ($('app') && !$('verTag')) {
-    const tag = '<div id="verTag" class="sm" style="text-align:center;opacity:.5;padding:14px 0 22px">kidspri · version 9-Oct-S</div>', last = $('app').lastElementChild;
+    const tag = '<div id="verTag" class="sm" style="text-align:center;opacity:.5;padding:14px 0 22px">kidspri · version 9-Oct-T</div>', last = $('app').lastElementChild;
     if (last && last.classList.contains('band')) last.insertAdjacentHTML('beforebegin', tag); else $('app').insertAdjacentHTML('beforeend', tag);
   }
 }
@@ -595,12 +607,14 @@ function fillHome() {
         '<div class="sm">' + esc(b.child) + ' · ' + esc(when(b.class.starts_at)) + '</div></div>' + statusTag(b) + '</div>' +
         (b.status === 'confirmed' ? '<button class="btn teal block" data-join="' + b.class.id + '"' + (open ? '' : ' disabled') + '>' +
            (open ? 'Join the class now' : 'Join opens 15 min before') + '</button>' : '') +
+        (b.class.shared && b.status !== 'rejected' ? '<button class="btn ghost block" data-mats="' + b.class.id + '">📎 ' + b.class.shared + ' worksheet' + (b.class.shared > 1 ? 's' : '') + ' from ' + esc(firstName()) + '</button>' : '') +
         (b.status === 'rejected' ? '<div class="sm">The teacher could not find this payment. Book again with the right UPI reference, or message her.</div>' : '') +
         (b.status === 'pending' ? '<div class="sm">The teacher checks the payment and confirms your seat. Usually within a few hours.</div>' : '') +
         ((b.status === 'confirmed' || b.status === 'pending') && startMs(b.class) > Date.now() ? '<button class="linkbtn" data-unbook="' + b.id + '" style="align-self:flex-start;min-height:32px;padding:0">Can’t make it? Cancel this seat</button>' : '') +
         '</div>';
     }).join('') + '</section>' : '');
   document.querySelectorAll('[data-unbook]').forEach(x => x.onclick = () => cancelSeat(upcoming.find(b => b.id === x.dataset.unbook)));
+  document.querySelectorAll('[data-mats]').forEach(x => x.onclick = () => go('cls', { cid: x.dataset.mats }));
   if ($('hChat')) $('hChat').onclick = () => go('chat');
   $('hClasses').innerHTML = CLASSES.length ? CLASSES.map(c => classCard(c, byClass[c.id] ? 'Booked for ' + byClass[c.id].join(', ') : '', bkByClass[c.id])).join('')
     : '<div class="empty">New classes are coming soon. ' + (INFO.whatsapp ? 'Message ' + esc(firstName()) + ' on WhatsApp to hear first.' : 'Check back in a day or two.') + '</div>';
@@ -692,6 +706,7 @@ function vClass() {
           '<button class="btn red block" id="cBook">Book a seat</button>'
         : '<button class="btn red block" id="cBook"' + (full || startMs(c) <= Date.now() ? ' disabled' : '') + '>' + (startMs(c) <= Date.now() ? 'This class has started' : full ? 'This class is full' : mine.length ? 'Book another child' : 'Book a seat') + '</button>') +
     '<button class="btn ghost block" id="cShare">Share this class with a friend</button>' +
+    (mine.length && c.shared ? '<div id="cSheets"></div>' : '') +
     '<div class="sm" style="text-align:center">Join from this page up to 15 minutes before. ' + esc(name) + ' lets each child in from a waiting room.</div>' +
     '</main><div class="band" aria-hidden="true"></div>';
   wireAuth(); wireWordmark(); loadPhoto();
@@ -699,6 +714,7 @@ function vClass() {
   if ($('cBook')) $('cBook').onclick = () => bookClass(c);
   if ($('cSignin')) $('cSignin').onclick = () => signInFor(c.id);
   if ($('cJoin')) $('cJoin').onclick = () => joinLive(c, false);
+  if ($('cSheets')) classSheets(c);
   document.querySelectorAll('[data-unbook]').forEach(x => x.onclick = () => cancelSeat(mine.find(b => b.id === x.dataset.unbook)));
   $('cShare').onclick = async () => {
     const text = (KIND_ICON[c.kind] || '⭐') + ' ' + c.title + ' — live small-group class for kids on kidspri. ' + w.day + ', ' + w.time + '. Book here: ' + classLink(c);
@@ -1071,6 +1087,7 @@ function vTClasses() {
   const done = (OV || []).filter(c => c.status === 'open' && startMs(c) + (c.minutes + 30) * 60000 <= Date.now()).reverse();
   $('app').innerHTML = header(true) + '<main>' + tTabs('tclasses') +
     '<button class="btn block" id="tNew">+ Open a new class</button>' +
+    '<div class="row" style="gap:10px"><button class="btn ghost grow" id="tMat">📚 Study material</button><button class="btn ghost grow" id="tTry">🧪 Practice room</button></div>' +
     (list.length ? list.map(c => {
       const conf = c.bookings.filter(b => b.status === 'confirmed'), pend = c.bookings.filter(b => b.status === 'pending');
       const open = roomOpen(c);
@@ -1081,6 +1098,7 @@ function vTClasses() {
         '<div class="row" style="flex-wrap:wrap">' +
           '<button class="btn teal small" data-start="' + c.id + '"' + (open ? '' : ' disabled') + '>' + (open ? 'Start class' : 'Start (15 min before)') + '</button>' +
           '<button class="btn ghost small" data-share="' + c.id + '">📣 Share</button>' +
+          '<button class="btn ghost small" data-kit="' + c.id + '">📚 Material' + (kitCount(c.kit) ? ' · ' + kitCount(c.kit) : '') + '</button>' +
           (conf.length + pend.length ? '<button class="btn ghost small" data-kids="' + c.id + '">👥 Children</button>' : '') +
           (conf.length ? '<button class="btn ghost small" data-remind="' + c.id + '">📲 Remind</button>' : '') +
           '<button class="btn ghost small" data-edit="' + c.id + '">Edit</button>' +
@@ -1096,6 +1114,8 @@ function vTClasses() {
     '</main>';
   wireTeacher();
   $('tNew').onclick = () => go('tclass', { edit: null });
+  $('tMat').onclick = () => go('tmat'); $('tTry').onclick = practiceSheet;
+  document.querySelectorAll('[data-kit]').forEach(b => b.onclick = () => kitSheet(OV.find(c => c.id === b.dataset.kit)));
   document.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => go('tclass', { edit: OV.find(c => c.id === b.dataset.edit) }));
   document.querySelectorAll('[data-start]').forEach(b => b.onclick = () => joinLive(OV.find(c => c.id === b.dataset.start), true));
   document.querySelectorAll('[data-voices]').forEach(b => b.onclick = () => voiceSheet(b.dataset.voices, false));
@@ -1351,8 +1371,8 @@ function vTSet() {
     '<div><label class="f" for="sUpiName">Name on the UPI account</label><input class="in" id="sUpiName" value="' + esc(INFO.upi_name) + '"></div>' +
     '<div><label class="f" for="sPin">New teacher PIN (leave empty to keep)</label><input class="in" id="sPin" inputmode="numeric" type="password" autocomplete="new-password"></div>' +
     '<button class="btn block" id="sGo">Save</button>' +
-    '<div class="card"><div style="font-weight:800">For your classes</div><div class="sm">Get these ready before class. In class they are under More.</div>' +
-      '<div class="row" style="flex-wrap:wrap;gap:8px"><button class="btn ghost small" id="sSongs">🎵 Songs</button><button class="btn ghost small" id="sActs">🧩 Match-it activities</button></div></div>' +
+    '<div class="card"><div style="font-weight:800">For your classes</div><div class="sm">Songs, worksheets and Match-it games: get them ready before class.</div>' +
+      '<button class="btn ghost small" id="sMat" style="align-self:flex-start">📚 Study material</button></div>' +
     '<button class="btn ghost block" id="sOut">Sign out of teacher</button>' +
     '<div class="sm">Booking link for parents: <span class="mono">' + esc(location.origin + location.pathname) + '</span></div>' +
     '<div class="card" style="border:1.5px solid var(--red-soft)"><div style="font-weight:800">Start fresh</div>' +
@@ -1378,7 +1398,7 @@ function vTSet() {
     try { const j = await api(body); INFO = j.info || INFO; toast('Saved'); go('tclasses'); } catch (e) { $('sGo').disabled = false; toast(e.message, true); }
   };
   $('sOut').onclick = () => { ME = { tok: '', role: '' }; keep(); go('home'); };
-  $('sSongs').onclick = () => songsSheet(false); $('sActs').onclick = () => matchSheet(false);
+  $('sMat').onclick = () => go('tmat');
   $('sWipe').onclick = () => sheet('<h2>Delete everything and start fresh?</h2>' +
     '<div>All classes, bookings, parents, children and voice answers will be deleted. This cannot be undone.</div>' +
     '<div><label class="f" for="wPin">Type your teacher PIN to confirm</label><input class="in" id="wPin" inputmode="numeric" type="password" autocomplete="off"></div>' +
@@ -1452,6 +1472,7 @@ async function vTKid() {
       '<div class="grow"><div class="ctitle" style="font-size:24px">' + esc(k.name) + '</div>' +
       '<div class="sm">' + (k.age ? k.age + ' years · ' : '') + 'joined ' + esc(new Date(k.since).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })) + '</div>' +
       (r.siblings.length ? '<div class="sm">Also in the family: ' + r.siblings.map(s => '<button class="linkbtn" style="min-height:0;padding:0" data-sib="' + s.id + '">' + esc(s.name) + '</button>').join(', ') + '</div>' : '') + '</div></div>' +
+      '<button class="btn ghost small" id="kEdit" style="align-self:flex-start">✏️ Edit details</button>' +
       '<div class="kstats"><div><b>' + came + '<small>/' + booked + '</small></b><span>classes came</span></div><div><b>⭐ ' + stars + '</b><span>stars</span></div><div><b>🏆 ' + points + '</b><span>quiz points</span></div></div></div>' +
     '<div class="card"><div style="font-weight:800">Parent</div><div>' + esc(k.parent) + ' · <span class="mono">' + esc(k.phone) + '</span></div>' +
       '<div class="row" style="flex-wrap:wrap"><a class="btn ghost small" href="tel:+91' + esc(k.phone) + '">📞 Call</a>' +
@@ -1472,6 +1493,21 @@ async function vTKid() {
       : '<div class="sm">No classes booked yet.</div>') + '</div>' +
     '<button class="btn ghost block" id="kDel" style="color:var(--red)">Delete this student</button>';
   $('kBack').onclick = () => history.back();
+  $('kEdit').onclick = () => sheet('<h2>✏️ Edit details</h2><div class="sm">Fix a name or number the parent typed wrong. The parent signs in with the new number and the same PIN.</div>' +
+      '<div><label class="f" for="eName">Child’s name</label><input class="in" id="eName" maxlength="60" value="' + esc(k.name) + '"></div>' +
+      '<div><label class="f" for="eAge">Age</label><input class="in" id="eAge" inputmode="numeric" maxlength="2" value="' + esc(k.age || '') + '"></div>' +
+      '<div><label class="f" for="ePar">Parent’s name</label><input class="in" id="ePar" maxlength="60" value="' + esc(k.parent) + '"></div>' +
+      '<div><label class="f" for="ePhone">Parent’s mobile number</label><input class="in" id="ePhone" inputmode="tel" maxlength="14" value="' + esc(k.phone) + '"></div>' +
+      '<button class="btn block" id="eGo">Save</button><button class="btn ghost block" id="eNo">Cancel</button>', () => {
+        $('eNo').onclick = closeSheet;
+        $('eGo').onclick = async () => {
+          $('eGo').disabled = true;
+          try {
+            await api({ action: 'student_edit', child_id: cid, name: $('eName').value, age: $('eAge').value, parent: $('ePar').value, phone: $('ePhone').value });
+            closeSheet(); toast('Saved'); await loadTeacher(); vTKid();
+          } catch (e) { $('eGo').disabled = false; toast(e.message, true); }
+        };
+      });
   $('kDel').onclick = () => sheet('<h2>Delete ' + esc(k.name) + '?</h2>' +
     '<div>This removes ' + esc(k.name) + '’s bookings, stars, quiz points and your notes. It cannot be undone.</div>' +
     (r.siblings.length ? '<div class="sm">' + esc(k.parent) + '’s account stays, because ' + esc(r.siblings.map(s => s.name).join(', ')) + ' is still with you.</div>'
@@ -1913,7 +1949,7 @@ async function joinLive(c, host) {
   IS_HOST = host; LIVE = liveReset(c, host);
   BOARD = { on: false, all: false, title: '', strokes: [], bg: null }; MYPAD = { strokes: [] }; VIEW = null; GAME = null; GSHOW = { pos: {}, busy: false, hidden: false };
   MUSIC = null; MATCH = null;
-  $('live').classList.remove('hide'); $('liveTitle').textContent = c.title;
+  $('live').classList.remove('hide'); $('liveTitle').textContent = (c.status === 'practice' ? '🧪 ' : '') + c.title;
   try { history.pushState({ live: 1, screen: S.screen }, ''); } catch (e) {}
   $('liveCtl').innerHTML = '<button id="lLeave" style="background:#E5484D">Leave</button>';
   $('lLeave').onclick = () => leaveLive();
@@ -1948,7 +1984,7 @@ async function joinLive(c, host) {
   $('lMic').onclick = toggleMic; $('lCam').onclick = toggleCam;
   if (host) {
     $('lQuiz').onclick = quizSheet; $('lBoard').onclick = toggleBoard; $('lGame').onclick = gameSheet; $('lMore').onclick = moreSheet;
-    pollRoom(); LIVE.pollT = setInterval(pollRoom, 4000);
+    pollRoom(); LIVE.pollT = setInterval(pollRoom, 4000); loadKit(c);
   } else {
     $('lHand').onclick = toggleHand; $('lDraw').onclick = openMyPad; $('lFun').onclick = reactBar;
     $('lChat').onclick = () => liveChat(null, firstName());
@@ -2205,8 +2241,9 @@ function muteAll() {
 /* ---------- teacher's “More” ---------- */
 function moreSheet() {
   const pads = Object.keys(LIVE.pads).length;
-  sheet('<h2>More</h2><div class="mgrid">' +
+  sheet('<h2>More</h2>' + kitRow() + '<div class="mgrid">' +
     '<button class="mbtn" id="mMusic">🎵<span>Music' + (MUSIC ? ' (on)' : '') + '</span></button>' +
+    '<button class="mbtn" id="mSheets">📄<span>Worksheets</span></button>' +
     '<button class="mbtn" id="mMatch">🧩<span>Match it</span></button>' +
     '<button class="mbtn" id="mStar">⭐<span>Give a star</span></button>' +
     '<button class="mbtn" id="mMute">🔇<span>Mute all children</span></button>' +
@@ -2222,6 +2259,7 @@ function moreSheet() {
     '</div><button class="btn ghost block" id="mNo">Close</button>', () => {
       $('mNo').onclick = closeSheet;
       $('mMusic').onclick = () => songsSheet(true); $('mMatch').onclick = () => matchSheet(true);
+      $('mSheets').onclick = () => sheetsSheet(true); wireKitRow();
       $('mStar').onclick = starSheet; $('mMute').onclick = muteAll; $('mVoice').onclick = askVoiceSheet;
       $('mHear').onclick = () => voiceSheet(LIVE.cls.id, true); $('mPads').onclick = padsSheet; $('mPts').onclick = pointsSheet;
       $('mDoor').onclick = doorSheet; $('mTask').onclick = taskSheet;
@@ -3313,6 +3351,199 @@ function paintBg(x) {
   x.drawImage(b.img, (BW - w) / 2, (BH - h) / 2, w, h);
 }
 
+
+/* ================= STUDY MATERIAL: songs, worksheets and Match-it, made before class ================= */
+function kitCount(k) { k = k || {}; return (k.songs || []).length + (k.acts || []).length + (k.sheets || []).length; }
+const SHEETS = {};                                   // worksheet pictures already fetched on this phone
+async function sheetData(id) {
+  if (SHEETS[id]) return SHEETS[id];
+  const r = await api({ action: 'media_get', id: id }); SHEETS[id] = r.data; return r.data;
+}
+function fillThumbs() {
+  document.querySelectorAll('img[data-thumb]').forEach(async im => {
+    if (im.src) return;
+    try { im.src = await sheetData(im.dataset.thumb); } catch (e) {}
+  });
+}
+async function vTMat() {
+  if (ME.role !== 'teacher') return go('tlogin');
+  $('app').innerHTML = header(true) + '<main id="matMain"><div class="sm">Loading…</div></main>';
+  wireTeacher();
+  let songs = [], acts = [], sheets = [];
+  try {
+    [songs, acts, sheets] = await Promise.all([api({ action: 'music_list' }).then(r => r.songs || []), api({ action: 'act_list' }).then(r => r.acts || []), api({ action: 'sheet_list' }).then(r => r.sheets || [])]);
+  } catch (e) { return toast(e.message, true); }
+  if (S.screen !== 'tmat') return;
+  $('matMain').innerHTML =
+    '<button class="chip" id="mtBack" style="align-self:flex-start">‹ Classes</button>' +
+    '<div class="ctitle">📚 Study material</div>' +
+    '<div class="sm">Get everything ready before class. Then on a class tap <b>📚 Material</b> to pick what it uses — it waits for you under <b>More</b> in the class, and worksheets can go to the families before class.</div>' +
+    '<div class="card"><div class="row"><div class="grow"><div style="font-weight:800">📄 Worksheets &amp; pictures</div><div class="sm">' + sheets.length + ' saved · photos of worksheets, flashcards, pictures to talk about</div></div></div>' +
+      '<label class="btn block" for="mtFile" style="cursor:pointer">+ Add from this phone</label><input type="file" id="mtFile" accept="image/*" multiple class="hide">' +
+      '<div class="sm" id="mtProg" style="font-weight:800"></div>' +
+      (sheets.length ? '<div class="shgrid">' + sheets.map((x, i) => '<div class="shcell"><button class="shpic" data-sv="' + i + '"><img data-thumb="' + x.id + '" alt=""></button>' +
+        '<div class="shname">' + esc(x.title) + '</div><div class="row" style="gap:6px"><button class="tb lt" data-sr="' + i + '">Rename</button><button class="tb lt" data-sx="' + i + '">Delete</button></div></div>').join('') + '</div>'
+        : '<div class="empty">No worksheets yet. Take a photo of a worksheet or pick pictures from the gallery.</div>') + '</div>' +
+    '<div class="card"><div class="row"><div class="grow"><div style="font-weight:800">🎵 Songs</div><div class="sm">' + songs.length + ' saved · for dance and music classes</div></div>' +
+      '<button class="btn ghost small" id="mtSongs">Open</button></div></div>' +
+    '<div class="card"><div class="row"><div class="grow"><div style="font-weight:800">🧩 Match-it games</div><div class="sm">' + acts.length + ' of your own · ' + MATCH_SETS.length + ' ready-made</div></div>' +
+      '<button class="btn ghost small" id="mtActs">Open</button></div></div>' +
+    '<div class="card"><div class="row"><div class="grow"><div style="font-weight:800">🧪 Try it out</div><div class="sm">Open the practice room and use all of this, without making a class.</div></div>' +
+      '<button class="btn ghost small" id="mtTry">Practice</button></div></div>';
+  fillThumbs();
+  $('mtBack').onclick = () => go('tclasses');
+  $('mtSongs').onclick = () => songsSheet(false); $('mtActs').onclick = () => matchSheet(false); $('mtTry').onclick = practiceSheet;
+  $('mtFile').onchange = async () => {
+    const files = [...$('mtFile').files]; if (!files.length) return;
+    let n = 0;
+    for (const f of files) {
+      $('mtProg').textContent = 'Saving ' + (n + 1) + ' of ' + files.length + '…';
+      try { await addSheet(f); n++; } catch (e) { toast(e.message, true); }
+    }
+    toast(n === 1 ? 'Worksheet saved' : n + ' worksheets saved'); vTMat();
+  };
+  document.querySelectorAll('[data-sv]').forEach(b => b.onclick = () => viewSheet(sheets[+b.dataset.sv]));
+  document.querySelectorAll('[data-sr]').forEach(b => b.onclick = async () => {
+    const x = sheets[+b.dataset.sr], t = prompt('Name for this worksheet', x.title); if (!t || !t.trim()) return;
+    try { await api({ action: 'sheet_rename', id: x.id, title: t }); vTMat(); } catch (e) { toast(e.message, true); }
+  });
+  document.querySelectorAll('[data-sx]').forEach(b => b.onclick = async () => {
+    const x = sheets[+b.dataset.sx]; if (!confirm('Delete “' + x.title + '”? Classes that use it will not show it any more.')) return;
+    try { await api({ action: 'sheet_del', id: x.id }); delete SHEETS[x.id]; vTMat(); } catch (e) { toast(e.message, true); }
+  });
+}
+async function addSheet(f) {
+  let d; try { d = await shrinkPic(f, 1400, 0.78); if (d.length > 850000) d = await shrinkPic(f, 1000, 0.65); }
+  catch (e) { throw new Error('Could not open “' + f.name + '”'); }
+  const title = (f.name || 'Worksheet').replace(/\.[a-z0-9]+$/i, '').replace(/[_-]+/g, ' ').slice(0, 60) || 'Worksheet';
+  const r = await api({ action: 'sheet_add', title: /^(img|image|photo|screenshot|pxl|dsc)\b/i.test(title) ? 'Worksheet ' + new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : title, data: d });
+  SHEETS[r.id] = d; return r.id;
+}
+async function viewSheet(x, canSave) {
+  let d = ''; try { d = await sheetData(x.id); } catch (e) { return toast(e.message, true); }
+  sheet('<h2>' + esc(x.title) + '</h2><img src="' + d + '" alt="' + esc(x.title) + '" class="shbig">' +
+    '<a class="btn teal block" download="' + esc(x.title.replace(/[^\w ]+/g, '').trim() || 'worksheet') + '.jpg" href="' + d + '">Save to this phone</a>' +
+    '<button class="btn ghost block" id="vsNo">Close</button>', () => { $('vsNo').onclick = closeSheet; });
+}
+/* pick what a class uses */
+async function kitSheet(c) {
+  if (!c) return;
+  let songs = [], acts = [], sheets = [];
+  try {
+    [songs, acts, sheets] = await Promise.all([api({ action: 'music_list' }).then(r => r.songs || []), api({ action: 'act_list' }).then(r => r.acts || []), api({ action: 'sheet_list' }).then(r => r.sheets || [])]);
+  } catch (e) { return toast(e.message, true); }
+  const k = c.kit || {}, has = (list, id) => (k[list] || []).indexOf(id) >= 0;
+  const allActs = acts.map(a => ({ id: a.id, title: a.title })).concat(MATCH_SETS.map(a => ({ id: a.id, title: a.title + ' (ready-made)' })));
+  const box = (list, x) => '<label class="kitrow"><input type="checkbox" data-k="' + list + '" value="' + esc(x.id) + '"' + (has(list, x.id) ? ' checked' : '') + '>' +
+    (list === 'sheets' ? '<img data-thumb="' + x.id + '" alt="">' : '') + '<span>' + esc(x.title) + '</span></label>';
+  sheet('<h2>📚 Material for “' + esc(c.title) + '”</h2><div class="sm">Tick what this class uses. In class it is at the top of <b>More</b>, ready to tap.</div>' +
+    '<div class="f">📄 Worksheets &amp; pictures</div>' + (sheets.length ? sheets.map(x => box('sheets', x)).join('') : '<div class="sm">None yet — add them in 📚 Study material.</div>') +
+    '<label class="kitrow share"><input type="checkbox" id="kShare"' + (k.share ? ' checked' : '') + '><span><b>Send the worksheets to booked families</b><br><span class="sm">They see them on the class page now, to print or keep ready.</span></span></label>' +
+    '<div class="f">🎵 Songs</div>' + (songs.length ? songs.map(x => box('songs', x)).join('') : '<div class="sm">None yet.</div>') +
+    '<div class="f">🧩 Match-it</div>' + allActs.map(x => box('acts', x)).join('') +
+    '<button class="btn block" id="kGo">Save</button><button class="btn ghost block" id="kMore">＋ Add new material</button><button class="btn ghost block" id="kNo">Close</button>', () => {
+      fillThumbs();
+      $('kNo').onclick = closeSheet; $('kMore').onclick = () => { closeSheet(); go('tmat'); };
+      $('kGo').onclick = async () => {
+        const pick = list => [...document.querySelectorAll('[data-k="' + list + '"]:checked')].map(i => i.value);
+        const kit = { songs: pick('songs'), acts: pick('acts'), sheets: pick('sheets'), share: $('kShare').checked };
+        $('kGo').disabled = true;
+        try { await api({ action: 'class_kit_save', class_id: c.id, kit: kit }); closeSheet(); await loadTeacher(); render(); toast('Material saved for this class'); }
+        catch (e) { $('kGo').disabled = false; toast(e.message, true); }
+      };
+    });
+}
+/* in class: the class's own material, one tap away */
+async function loadKit(c) {
+  LIVE.kit = null;
+  if (!kitCount(c.kit)) return;
+  try {
+    const r = await api({ action: 'class_kit', class_id: c.id });
+    let mine = []; if ((r.acts || []).some(id => !MATCH_SETS.find(m => m.id === id))) { try { mine = (await api({ action: 'act_list' })).acts || []; } catch (e) {} }
+    const acts = (r.acts || []).map(id => MATCH_SETS.find(m => m.id === id) || mine.find(m => m.id === id)).filter(Boolean).map(a => ({ id: a.id, title: a.title }));
+    if (LIVE) LIVE.kit = { songs: r.songs || [], acts: acts, sheets: r.sheets || [] };
+  } catch (e) {}
+}
+function kitRow() {
+  const k = LIVE && LIVE.kit; if (!k || !(k.songs.length + k.acts.length + k.sheets.length)) return '';
+  return '<div class="f">📚 Ready for this class</div><div class="kitchips">' +
+    k.sheets.map((x, i) => '<button class="chip" data-ks="' + i + '">📄 ' + esc(x.title) + '</button>').join('') +
+    k.songs.map((x, i) => '<button class="chip" data-kg="' + i + '">🎵 ' + esc(x.title) + '</button>').join('') +
+    k.acts.map((x, i) => '<button class="chip" data-ka="' + i + '">🧩 ' + esc(x.title) + '</button>').join('') + '</div>';
+}
+function wireKitRow() {
+  const k = LIVE && LIVE.kit; if (!k) return;
+  document.querySelectorAll('[data-ks]').forEach(b => b.onclick = () => { closeSheet(); putSheet(k.sheets[+b.dataset.ks]); });
+  document.querySelectorAll('[data-kg]').forEach(b => b.onclick = () => { closeSheet(); musicLoad(k.songs[+b.dataset.kg]); });
+  document.querySelectorAll('[data-ka]').forEach(b => b.onclick = () => { closeSheet(); matchStart(k.acts[+b.dataset.ka].id); });
+}
+/* a saved worksheet on the board for everyone (children can draw on it when “Let kids draw” is on) */
+async function putSheet(x) {
+  let d; try { d = await sheetData(x.id); } catch (e) { return toast(e.message, true); }
+  if (!BOARD.on) toggleBoard();
+  setBoardBg(x.id, d); post({ kind: 'bimg', id: x.id });
+  toast('“' + x.title + '” is on the board');
+}
+async function sheetsSheet(inClass) {
+  let list = []; try { list = (await api({ action: 'sheet_list' })).sheets || []; } catch (e) { return toast(e.message, true); }
+  sheet('<h2>📄 Worksheets</h2><div class="sm">Tap one to put it on the board for everyone. Turn on “Let kids draw” so children can write on it.</div>' +
+    (list.length ? '<div class="shgrid">' + list.map((x, i) => '<div class="shcell"><button class="shpic" data-sp="' + i + '"><img data-thumb="' + x.id + '" alt=""></button><div class="shname">' + esc(x.title) + '</div></div>').join('') + '</div>'
+      : '<div class="empty">No worksheets saved yet.</div>') +
+    '<label class="btn ghost block" for="wsFile" style="cursor:pointer">+ Take a photo / add from this phone</label><input type="file" id="wsFile" accept="image/*" class="hide">' +
+    '<button class="btn ghost block" id="wsNo">Close</button>', () => {
+      fillThumbs();
+      $('wsNo').onclick = closeSheet;
+      document.querySelectorAll('[data-sp]').forEach(b => b.onclick = () => { closeSheet(); putSheet(list[+b.dataset.sp]); });
+      $('wsFile').onchange = async () => {
+        const f = $('wsFile').files[0]; if (!f) return;
+        try { const id = await addSheet(f); closeSheet(); putSheet({ id: id, title: 'Worksheet' }); } catch (e) { toast(e.message, true); }
+      };
+    });
+}
+/* families: worksheets the teacher sent for a booked class */
+async function classSheets(c) {
+  const box = $('cSheets'); if (!box) return;
+  let list = []; try { list = (await api({ action: 'class_sheets', class_id: c.id })).sheets || []; } catch (e) { return; }
+  if (!list.length || !$('cSheets')) return;
+  box.innerHTML = '<div class="card"><div style="font-weight:800">📎 From ' + esc(firstName()) + ' for this class</div><div class="sm">Tap to open. Print it or keep it ready on a second screen.</div>' +
+    '<div class="shgrid">' + list.map((x, i) => '<div class="shcell"><button class="shpic" data-cs="' + i + '"><img data-thumb="' + x.id + '" alt=""></button><div class="shname">' + esc(x.title) + '</div></div>').join('') + '</div></div>';
+  fillThumbs();
+  document.querySelectorAll('[data-cs]').forEach(b => b.onclick = () => viewSheet(list[+b.dataset.cs]));
+}
+
+/* ================= PRACTICE ROOM: try every class tool without a class ================= */
+async function practiceSheet() {
+  let r; try { r = await api({ action: 'practice' }); } catch (e) { return toast(e.message, true); }
+  const link = location.origin + location.pathname + '?try=' + r.code;
+  sheet('<h2>🧪 Practice room</h2><div>Try everything — quiz, board, worksheets, music, Match-it, games — any time, without making a class. Families never see this room.</div>' +
+    '<button class="btn teal block" id="prGo">Open the practice room</button>' +
+    '<div class="card"><div style="font-weight:800">See it as a child too</div><div class="sm">Open this link on a second phone (or ask a friend). It joins as “Test child” — no sign-up, no waiting room. Works for this practice session only.</div>' +
+      '<a class="btn ghost block" href="https://wa.me/?text=' + encodeURIComponent('kidspri practice room — open to join as a test child: ' + link) + '" target="_blank" rel="noopener">Send the link on WhatsApp</a>' +
+      '<button class="btn ghost block" id="prCopy">Copy the link</button></div>' +
+    '<button class="btn ghost block" id="prNo">Close</button>', () => {
+      $('prNo').onclick = closeSheet; $('prCopy').onclick = () => copyText(link, 'Link copied');
+      $('prGo').onclick = () => { closeSheet(); joinLive(r.class, true); };
+    });
+}
+let TRY = null;
+async function tryJoin(code) {
+  try {
+    const r = await api({ action: 'practice_join', code: code });
+    TRY = { cls: r.class, back: { tok: ME.tok, role: ME.role } };
+    ME = { tok: r.tok, role: 'tester' };            // only for this visit — not kept on the phone
+    go('try');
+  } catch (e) { toast(e.message, true); }
+}
+function vTry() {
+  if (!TRY) return go('home');
+  $('app').innerHTML = header(false) + '<main><div class="card"><div class="ctitle">🧪 Practice room</div>' +
+    '<div>You are the <b>Test child</b>. You see exactly what children see in class.</div>' +
+    '<button class="btn teal block" id="tyGo">Join the practice room</button>' +
+    '<button class="btn ghost block" id="tyEnd">Finish testing</button></div></main>';
+  $('tyGo').onclick = () => joinLive(TRY.cls, false);
+  $('tyEnd').onclick = () => { ME = TRY.back; TRY = null; history.replaceState({ screen: 'home' }, '', location.pathname); go('home'); };
+}
+
 /* ---------------- start ---------------- */
 (async function start() {
   if (SUPA_URL.indexOf('http') !== 0) {
@@ -3322,7 +3553,7 @@ function paintBg(x) {
   wireCanvas();
   await loadPublic();
   NAV_POP = true;            // the first screen is the bottom of the history, not a new step
-  const qs = new URLSearchParams(location.search), linkCls = qs.get('class'), linkKey = qs.get('k');
+  const qs = new URLSearchParams(location.search), linkCls = qs.get('class'), linkKey = qs.get('k'), tryCode = qs.get('try');
   if (linkKey) { try { history.replaceState(history.state, '', location.pathname + (linkCls ? '?class=' + encodeURIComponent(linkCls) : '')); } catch (e) {} }
   if (location.hash === '#teacher' || (ME.role === 'teacher' && !linkCls)) {
     if (ME.role === 'teacher') { await loadTeacher(); go('tclasses'); } else go('tlogin');
@@ -3331,6 +3562,7 @@ function paintBg(x) {
   try { history.replaceState({ screen: S.screen }, ''); } catch (e) {}
   if (linkCls && S.screen === 'home') go('cls', { cid: linkCls });   // a shared class link: its page, with the front page behind it
   if (linkKey) linkSignIn(linkKey);
+  if (tryCode) tryJoin(tryCode);
   /* keep the page fresh: new bookings, confirmations, the Join button opening */
   const fresh = async () => {
     if (!$('live').classList.contains('hide') || $('overlay').innerHTML) return;
